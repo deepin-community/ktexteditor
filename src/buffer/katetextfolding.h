@@ -41,7 +41,7 @@ public:
     /**
      * Cleanup
      */
-    ~TextFolding();
+    ~TextFolding() override;
 
     /**
      * Folding state of a range
@@ -66,7 +66,7 @@ public:
      * @return on success, id of new range >= 0, else -1, we return no pointer as folding ranges might be auto-deleted internally!
      *         the ids are stable for one Kate::TextFolding, e.g. you can rely in unit tests that you get 0,1,.... for successfully created ranges!
      */
-    qint64 newFoldingRange(const KTextEditor::Range &range, FoldingRangeFlags flags = FoldingRangeFlags());
+    qint64 newFoldingRange(KTextEditor::Range range, FoldingRangeFlags flags = FoldingRangeFlags());
 
     /**
      * Returns the folding range associated with @p id.
@@ -202,7 +202,7 @@ private:
          * @param range folding range
          * @param flags flags for the new folding range
          */
-        FoldingRange(TextBuffer &buffer, const KTextEditor::Range &range, FoldingRangeFlags flags);
+        FoldingRange(TextBuffer &buffer, KTextEditor::Range range, FoldingRangeFlags flags);
 
         /**
          * Cleanup
@@ -251,6 +251,11 @@ private:
          */
         qint64 id;
     };
+
+    /**
+     * Clear all folding range collections but leave global id counter intact.
+     */
+    void clearFoldingRanges();
 
     /**
      * Fill known folding ranges in a QVariantList to store in configs.

@@ -13,8 +13,6 @@
 #include <QObject>
 #include <QPointer>
 
-#include <ktexteditor_export.h>
-
 class QTimer;
 namespace KTextEditor
 {
@@ -32,13 +30,13 @@ namespace Kate
  * In case Kate crashes, this can be used to replay all edit actions to
  * recover the lost data.
  */
-class KTEXTEDITOR_EXPORT SwapFile : public QObject
+class SwapFile : public QObject
 {
     Q_OBJECT
 
 public:
     explicit SwapFile(KTextEditor::DocumentPrivate *document);
-    ~SwapFile();
+    ~SwapFile() override;
     bool shouldRecover() const;
 
     void fileClosed();
@@ -64,10 +62,10 @@ protected Q_SLOTS:
     void startEditing();
     void finishEditing();
 
-    void wrapLine(const KTextEditor::Cursor &position);
+    void wrapLine(const KTextEditor::Cursor position);
     void unwrapLine(int line);
-    void insertText(const KTextEditor::Cursor &position, const QString &text);
-    void removeText(const KTextEditor::Range &range);
+    void insertText(const KTextEditor::Cursor position, const QString &text);
+    void removeText(KTextEditor::Range range);
 
 public Q_SLOTS:
     void discard();

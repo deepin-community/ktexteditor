@@ -35,6 +35,7 @@
 #include <ktexteditor/command.h>
 #include <ktexteditor/movingrange.h>
 
+#include <KActionCollection>
 #include <KCharsets>
 #include <KColorUtils>
 #include <KConfigGroup>
@@ -2441,8 +2442,6 @@ void KateIconBorder::mouseReleaseEvent(QMouseEvent *e)
             const bool singleClick = style()->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick, nullptr, this);
             if (e->button() == Qt::LeftButton && singleClick) {
                 Q_EMIT m_view->annotationActivated(m_view, cursorOnLine);
-            } else if (e->button() == Qt::RightButton) {
-                showAnnotationMenu(cursorOnLine, e->globalPos());
             }
         }
     }
@@ -2464,6 +2463,47 @@ void KateIconBorder::mouseDoubleClickEvent(QMouseEvent *e)
     }
     QMouseEvent forward(QEvent::MouseButtonDblClick, QPoint(0, e->y()), e->button(), e->buttons(), e->modifiers());
     m_viewInternal->mouseDoubleClickEvent(&forward);
+}
+
+void KateIconBorder::contextMenuEvent(QContextMenuEvent *e)
+{
+    const BorderArea area = positionToArea(e->pos());
+    const int cursorOnLine = m_viewInternal->yToKateTextLayout(e->y()).line();
+
+    if (area == AnnotationBorder) {
+        showAnnotationMenu(cursorOnLine, e->globalPos());
+        return;
+    }
+
+    QMenu menu(this);
+
+    KActionCollection *ac = m_view->actionCollection();
+
+    // NOTE Assumes cursor position was updated before the menu opens
+    if (QAction *bookmarkToggle = ac->action(QStringLiteral("bookmarks_toggle"))) {
+        menu.addAction(bookmarkToggle);
+    }
+    if (QAction *bookmarkClear = ac->action(QStringLiteral("bookmarks_clear"))) {
+        menu.addAction(bookmarkClear);
+    }
+
+    menu.addSeparator();
+
+    if (QAction *toggleDynWrap = ac->action(QStringLiteral("view_dynamic_word_wrap"))) {
+        menu.addAction(toggleDynWrap);
+    }
+    menu.addSeparator();
+    if (QAction *toggleIconBar = ac->action(QStringLiteral("view_border"))) {
+        menu.addAction(toggleIconBar);
+    }
+    if (QAction *toggleLineNumbers = ac->action(QStringLiteral("view_line_numbers"))) {
+        menu.addAction(toggleLineNumbers);
+    }
+    if (QAction *toggleFoldingMarkers = ac->action(QStringLiteral("view_folding_markers"))) {
+        menu.addAction(toggleFoldingMarkers);
+    }
+
+    menu.exec(e->globalPos());
 }
 
 void KateIconBorder::wheelEvent(QWheelEvent *e)

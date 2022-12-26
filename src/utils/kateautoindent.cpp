@@ -262,7 +262,7 @@ void KateAutoIndent::reloadScript()
     setMode(currentMode);
 }
 
-void KateAutoIndent::scriptIndent(KTextEditor::ViewPrivate *view, const KTextEditor::Cursor &position, QChar typedChar)
+void KateAutoIndent::scriptIndent(KTextEditor::ViewPrivate *view, const KTextEditor::Cursor position, QChar typedChar)
 {
     // start edit
     doc->pushEditState();
@@ -360,7 +360,7 @@ void KateAutoIndent::updateConfig()
     indentWidth = config->indentationWidth();
 }
 
-bool KateAutoIndent::changeIndent(const KTextEditor::Range &range, int change)
+bool KateAutoIndent::changeIndent(KTextEditor::Range range, int change)
 {
     std::vector<int> skippedLines;
 
@@ -390,7 +390,7 @@ bool KateAutoIndent::changeIndent(const KTextEditor::Range &range, int change)
     return true;
 }
 
-void KateAutoIndent::indent(KTextEditor::ViewPrivate *view, const KTextEditor::Range &range)
+void KateAutoIndent::indent(KTextEditor::ViewPrivate *view, KTextEditor::Range range)
 {
     // no script, do nothing...
     if (!m_script) {
@@ -410,7 +410,7 @@ void KateAutoIndent::indent(KTextEditor::ViewPrivate *view, const KTextEditor::R
     doc->setUndoMergeAllEdits(false);
 }
 
-void KateAutoIndent::userTypedChar(KTextEditor::ViewPrivate *view, const KTextEditor::Cursor &position, QChar typedChar)
+void KateAutoIndent::userTypedChar(KTextEditor::ViewPrivate *view, const KTextEditor::Cursor position, QChar typedChar)
 {
     // normal mode
     if (m_mode == MODE_NORMAL()) {

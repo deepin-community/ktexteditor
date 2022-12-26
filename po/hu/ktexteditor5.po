@@ -3,13 +3,13 @@
 # Arpad Biro <biro_arpad@yahoo.com>, 2004.
 # Kristóf Kiszel <ulysses@kubuntu.org>, 2010, 2011, 2012, 2014, 2015.
 # Balázs Úr <urbalazs@gmail.com>, 2012, 2013, 2014.
-# Kristof Kiszel <kiszel.kristof@gmail.com>, 2018.
+# Kristof Kiszel <kiszel.kristof@gmail.com>, 2018, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: KDE 4.4\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
-"POT-Creation-Date: 2021-08-29 00:15+0000\n"
-"PO-Revision-Date: 2018-10-23 19:26+0200\n"
+"POT-Creation-Date: 2022-01-01 00:40+0000\n"
+"PO-Revision-Date: 2021-11-15 13:48+0100\n"
 "Last-Translator: Kristof Kiszel <kiszel.kristof@gmail.com>\n"
 "Language-Team: Hungarian <kde-l10n-hu@kde.org>\n"
 "Language: hu\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 2.0\n"
+"X-Generator: Lokalize 21.08.3\n"
 
 #: completion/katecompletionmodel.cpp:135
 #, kde-format
@@ -124,7 +124,7 @@ msgstr "Né&zet"
 #: data/katepart5ui.rc:60
 #, kde-format
 msgid "Zoom"
-msgstr ""
+msgstr "Nagyítás"
 
 #. i18n: ectx: Menu (view_menu_word_wrap)
 #: data/katepart5ui.rc:68
@@ -132,10 +132,8 @@ msgstr ""
 msgid "Word Wrap"
 msgstr "Szótördelés"
 
-#. i18n: ectx: property (title), widget (QGroupBox, gbBorders)
 #. i18n: ectx: Menu (view_menu_borders)
-#: data/katepart5ui.rc:75 dialogs/bordersappearanceconfigwidget.ui:17
-#: dialogs/katedialogs.cpp:678
+#: data/katepart5ui.rc:75 dialogs/katedialogs.cpp:679
 #, kde-format
 msgid "Borders"
 msgstr "Szegélyek"
@@ -171,13 +169,19 @@ msgid "&Settings"
 msgstr "&Beállítások"
 
 #. i18n: ectx: ToolBar (mainToolBar)
-#: data/katepart5ui.rc:166
+#: data/katepart5ui.rc:167
 #, kde-format
 msgid "Main Toolbar"
 msgstr "Fő eszköztár"
 
+#. i18n: ectx: property (text), widget (QLabel, label)
+#: dialogs/bordersappearanceconfigwidget.ui:25
+#, kde-format
+msgid "Code block folding:"
+msgstr "Kódblokk-kibontás"
+
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkShowFoldingMarkers)
-#: dialogs/bordersappearanceconfigwidget.ui:23
+#: dialogs/bordersappearanceconfigwidget.ui:32
 #, kde-format
 msgid ""
 "If this option is checked, every new view will display marks for folding."
@@ -186,35 +190,35 @@ msgstr ""
 "láthatók."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkShowFoldingMarkers)
-#: dialogs/bordersappearanceconfigwidget.ui:26
+#: dialogs/bordersappearanceconfigwidget.ui:35
 #, kde-format
-msgid "Show &folding markers"
-msgstr "Szegélyjel&zők megjelenítése"
+msgid "Show arrows to collapse code blocks"
+msgstr "Nyilak megjelenítése kódblokkok összecsukásához"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkShowFoldingPreview)
-#: dialogs/bordersappearanceconfigwidget.ui:51
-#, fuzzy, kde-format
-#| msgid ""
-#| "<p>If this option is checked, every new view will show marks on the "
-#| "vertical scrollbar.</p><p>These marks will show bookmarks, for instance.</"
-#| "p>"
+#: dialogs/bordersappearanceconfigwidget.ui:42
+#, kde-format
 msgid ""
 "If checked, hovering over a folded region shows a preview of the folded text "
 "in a popup."
 msgstr ""
-"<p>Ha be van jelölve ez az opció, akkor az összes új nézet függőleges "
-"gördítősávján megjelenik egy jelzősáv.</p><p>Ezen látszanak például a "
-"könyvjelzők szimbólumai.</p>"
+"Ha be van jelölve, egy összecsukott területre rámutatáskor megjelenik annak "
+"előnézete egy felugró ablakban."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkShowFoldingPreview)
-#: dialogs/bordersappearanceconfigwidget.ui:54
-#, fuzzy, kde-format
-#| msgid "Show print preview of current document"
-msgid "Show preview of folded code"
-msgstr "A jelenlegi dokumentum nyomtatási képének megjelenítése"
+#: dialogs/bordersappearanceconfigwidget.ui:45
+#, kde-format
+msgid "Show preview of folded blocks on hover"
+msgstr "Előnézet összecsukott blokkokhoz rámutatáskor"
+
+#. i18n: ectx: property (text), widget (QLabel, label_2)
+#: dialogs/bordersappearanceconfigwidget.ui:68
+#, kde-format
+msgid "Left side:"
+msgstr "Bal oldal:"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkIconBorder)
-#: dialogs/bordersappearanceconfigwidget.ui:63
+#: dialogs/bordersappearanceconfigwidget.ui:75
 #, kde-format
 msgid ""
 "<p>If this option is checked, every new view will display an icon border on "
@@ -225,13 +229,15 @@ msgstr ""
 "jelzősáv.</p><p>Ezen látszanak például a könyvjelzők szimbólumai.</p>"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkIconBorder)
-#: dialogs/bordersappearanceconfigwidget.ui:66
+#. i18n: ectx: property (text), widget (QCheckBox, chkScrollbarMarks)
+#: dialogs/bordersappearanceconfigwidget.ui:78
+#: dialogs/bordersappearanceconfigwidget.ui:131
 #, kde-format
-msgid "Show &icon border"
-msgstr "Ikonsze&gély megjelenítése"
+msgid "Show marks"
+msgstr "Jelzősávok megjelenítése"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkLineNumbers)
-#: dialogs/bordersappearanceconfigwidget.ui:73
+#: dialogs/bordersappearanceconfigwidget.ui:85
 #, kde-format
 msgid ""
 "If this option is checked, every new view will display line numbers on the "
@@ -241,13 +247,13 @@ msgstr ""
 "láthatóak lesznek a sorszámok."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkLineNumbers)
-#: dialogs/bordersappearanceconfigwidget.ui:76
+#: dialogs/bordersappearanceconfigwidget.ui:88
 #, kde-format
 msgid "Show &line numbers"
 msgstr "A s&orszámok megjelenítése"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkShowLineModification)
-#: dialogs/bordersappearanceconfigwidget.ui:83
+#: dialogs/bordersappearanceconfigwidget.ui:95
 #, kde-format
 msgid ""
 "If this option is checked, a small indicator for modified and saved lines is "
@@ -257,13 +263,19 @@ msgstr ""
 "módosított és mentett sorok mellett."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkShowLineModification)
-#: dialogs/bordersappearanceconfigwidget.ui:86
+#: dialogs/bordersappearanceconfigwidget.ui:98
 #, kde-format
-msgid "Show line modification markers"
-msgstr "Sormódosítás-jelölők megjelenítése"
+msgid "Highlight changed and unsaved lines"
+msgstr "Módosított és nem mentett sorok kiemelése"
+
+#. i18n: ectx: property (text), widget (QLabel, label_3)
+#: dialogs/bordersappearanceconfigwidget.ui:121
+#, kde-format
+msgid "Scrollbars"
+msgstr "Görgetősávok"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkScrollbarMarks)
-#: dialogs/bordersappearanceconfigwidget.ui:93
+#: dialogs/bordersappearanceconfigwidget.ui:128
 #, kde-format
 msgid ""
 "<p>If this option is checked, every new view will show marks on the vertical "
@@ -273,35 +285,30 @@ msgstr ""
 "gördítősávján megjelenik egy jelzősáv.</p><p>Ezen látszanak például a "
 "könyvjelzők szimbólumai.</p>"
 
-#. i18n: ectx: property (text), widget (QCheckBox, chkScrollbarMarks)
-#: dialogs/bordersappearanceconfigwidget.ui:96
-#, kde-format
-msgid "Show &scrollbar marks"
-msgstr "&Gördítősávjelzők megjelenítése"
-
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkScrollbarPreview)
-#: dialogs/bordersappearanceconfigwidget.ui:103
-#, fuzzy, kde-format
-#| msgid ""
-#| "<p>If this option is checked, every new view will show marks on the "
-#| "vertical scrollbar.</p><p>These marks will show bookmarks, for instance.</"
-#| "p>"
+#: dialogs/bordersappearanceconfigwidget.ui:138
+#, kde-format
 msgid ""
 "<p>If this option is checked, hovering over the vertical scrollbar will show "
 "a preview of the text.</p>"
 msgstr ""
-"<p>Ha be van jelölve ez az opció, akkor az összes új nézet függőleges "
-"gördítősávján megjelenik egy jelzősáv.</p><p>Ezen látszanak például a "
-"könyvjelzők szimbólumai.</p>"
+"</p>Ha ez az opció be van jelölve,  a függőleges görgetősávra rámutatáskor "
+"megjelenik a szöveg előnézete.</p>"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkScrollbarPreview)
-#: dialogs/bordersappearanceconfigwidget.ui:106
+#: dialogs/bordersappearanceconfigwidget.ui:141
 #, kde-format
-msgid "Show text &preview on scrollbar"
-msgstr "Szöveg elő&nézetének megjelenítése a gördítősávon"
+msgid "Show preview when hovering over scrollbar"
+msgstr "Előnézet megjelenítése a görgetősávra rámutatáskor"
+
+#. i18n: ectx: property (text), widget (QLabel, label_4)
+#: dialogs/bordersappearanceconfigwidget.ui:164
+#, kde-format
+msgid "Minimap:"
+msgstr "Minitérkép"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkScrollbarMiniMap)
-#: dialogs/bordersappearanceconfigwidget.ui:113
+#: dialogs/bordersappearanceconfigwidget.ui:171
 #, kde-format
 msgid ""
 "If this option is checked, every new view will show a mini map on the "
@@ -311,13 +318,13 @@ msgstr ""
 "minitérképét a függőleges görgetősávon."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkScrollbarMiniMap)
-#: dialogs/bordersappearanceconfigwidget.ui:116
+#: dialogs/bordersappearanceconfigwidget.ui:174
 #, kde-format
-msgid "Show scrollbar mini-map"
-msgstr "Gördítősáv minitérkép megjelenítése"
+msgid "Show minimap"
+msgstr "Minitérkép megjelenítése"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkScrollbarMiniMapAll)
-#: dialogs/bordersappearanceconfigwidget.ui:132
+#: dialogs/bordersappearanceconfigwidget.ui:184
 #, kde-format
 msgid ""
 "If this option is checked, every new view will show a mini map of the whole "
@@ -327,60 +334,43 @@ msgstr ""
 "egész dokumentum minitérképét a függőleges görgetősávon."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkScrollbarMiniMapAll)
-#: dialogs/bordersappearanceconfigwidget.ui:135
+#: dialogs/bordersappearanceconfigwidget.ui:187
 #, kde-format
 msgid "Map the whole document"
 msgstr "Az egész dokumentum feltérképezése"
 
 #. i18n: ectx: property (text), widget (QLabel, labelMiniMapWidth)
-#: dialogs/bordersappearanceconfigwidget.ui:145
-#, fuzzy, kde-format
-#| msgid "Minimap Width"
+#: dialogs/bordersappearanceconfigwidget.ui:213
+#, kde-format
 msgid "Minim&ap width:"
-msgstr "Minitérkép szélessége"
-
-#. i18n: ectx: property (text), widget (QLabel, lblShowScrollbars)
-#: dialogs/bordersappearanceconfigwidget.ui:205
-#, fuzzy, kde-format
-#| msgid "Scrollbars visibility:"
-msgid "Scro&llbars visibility:"
-msgstr "Görgetősávok láthatósága:"
+msgstr "Minitérké&p szélessége:"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, cmbShowScrollbars)
-#: dialogs/bordersappearanceconfigwidget.ui:216 dialogs/katedialogs.cpp:682
+#: dialogs/bordersappearanceconfigwidget.ui:224 dialogs/katedialogs.cpp:683
 #, kde-format
 msgid "Always On"
 msgstr "mindig bekapcsolva"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, cmbShowScrollbars)
-#: dialogs/bordersappearanceconfigwidget.ui:221
+#: dialogs/bordersappearanceconfigwidget.ui:229
 #, kde-format
 msgid "Show When Needed"
 msgstr "Megjelenítés, ha szükséges"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, cmbShowScrollbars)
-#: dialogs/bordersappearanceconfigwidget.ui:226
+#: dialogs/bordersappearanceconfigwidget.ui:234
 #, kde-format
 msgid "Always Off"
 msgstr "Mindig ki"
 
-#. i18n: ectx: property (whatsThis), widget (QGroupBox, gbSortBookmarks)
-#: dialogs/bordersappearanceconfigwidget.ui:246
+#. i18n: ectx: property (text), widget (QLabel, lblShowScrollbars)
+#: dialogs/bordersappearanceconfigwidget.ui:242
 #, kde-format
-msgid ""
-"Choose how the bookmarks should be ordered in the <b>Bookmarks</b> menu."
-msgstr ""
-"A könyvjelzők rendezési módját lehet itt beállítani (ahogy megjelennek a "
-"<b>Könyvjelzők</b> menüben)."
-
-#. i18n: ectx: property (title), widget (QGroupBox, gbSortBookmarks)
-#: dialogs/bordersappearanceconfigwidget.ui:249
-#, kde-format
-msgid "Sort Bookmarks Menu"
-msgstr "A könyvjelzők sorbarendezése"
+msgid "Scro&llbars visibility:"
+msgstr "Gör&getősávok láthatósága:"
 
 #. i18n: ectx: property (whatsThis), widget (QRadioButton, rbSortBookmarksByCreation)
-#: dialogs/bordersappearanceconfigwidget.ui:255
+#: dialogs/bordersappearanceconfigwidget.ui:252
 #, kde-format
 msgid ""
 "Each new bookmark will be added to the bottom, independently from where it "
@@ -390,30 +380,34 @@ msgstr ""
 "dokumentum melyik sorára mutatnak."
 
 #. i18n: ectx: property (text), widget (QRadioButton, rbSortBookmarksByCreation)
-#: dialogs/bordersappearanceconfigwidget.ui:258
-#, fuzzy, kde-format
-#| msgid "By c&reation"
-msgid "B&y creation"
-msgstr "létrehozási &dátum szerint"
+#: dialogs/bordersappearanceconfigwidget.ui:255
+#, kde-format
+msgid "By date created"
+msgstr "Létrehozás dátuma szerint"
 
 #. i18n: ectx: property (whatsThis), widget (QRadioButton, rbSortBookmarksByPosition)
-#: dialogs/bordersappearanceconfigwidget.ui:265
+#: dialogs/bordersappearanceconfigwidget.ui:262
 #, kde-format
 msgid "The bookmarks will be ordered by the line numbers they are placed at."
 msgstr ""
 "A könyvjelzők aszerint lesznek rendezve, hogy milyen sorszámú sorra mutatnak."
 
 #. i18n: ectx: property (text), widget (QRadioButton, rbSortBookmarksByPosition)
-#: dialogs/bordersappearanceconfigwidget.ui:268
-#, fuzzy, kde-format
-#| msgid "By &position"
-msgid "By posi&tion"
-msgstr "pozí&ció szerint"
+#: dialogs/bordersappearanceconfigwidget.ui:265
+#, kde-format
+msgid "By line number"
+msgstr "Sorszám szerint"
+
+#. i18n: ectx: property (text), widget (QLabel, label_5)
+#: dialogs/bordersappearanceconfigwidget.ui:272
+#, kde-format
+msgid "Sort bookmarks menu:"
+msgstr "Könyvjelzők menü rendezése:"
 
 #. i18n: ectx: property (title), widget (QGroupBox, gbGeneral)
 #. i18n: ectx: property (title), widget (QGroupBox, gbViInputMode)
-#: dialogs/completionconfigtab.ui:20 dialogs/katedialogs.cpp:545
-#: dialogs/katedialogs.cpp:674 dialogs/katedialogs.cpp:905
+#: dialogs/completionconfigtab.ui:20 dialogs/katedialogs.cpp:546
+#: dialogs/katedialogs.cpp:675 dialogs/katedialogs.cpp:908
 #: vimode/config/configwidget.ui:29
 #, kde-format
 msgid "General"
@@ -427,10 +421,9 @@ msgstr "&Automatikus kiegészítés bekapcsolása"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkAutoSelectFirstEntry)
 #: dialogs/completionconfigtab.ui:33
-#, fuzzy, kde-format
-#| msgid "&Auto completion enabled"
+#, kde-format
 msgid "Auto select &first completion entry"
-msgstr "&Automatikus kiegészítés bekapcsolva"
+msgstr "&Első kiegészítési bejegyzés automatikus kiválasztása"
 
 #. i18n: ectx: property (title), widget (QGroupBox, gbWordCompletion)
 #: dialogs/completionconfigtab.ui:43
@@ -474,14 +467,14 @@ msgstr ""
 "A kulcsszó-kiegészítés a dokumentum nyelvén létező szavak alapján biztosítja "
 "a javaslatokat."
 
-#. i18n: ectx: property (title), widget (QGroupBox, gbStaticWordWrap)
-#: dialogs/editconfigwidget.ui:17 view/kateview.cpp:725
+#. i18n: ectx: property (text), widget (QLabel, label)
+#: dialogs/editconfigwidget.ui:22
 #, kde-format
-msgid "Static Word Wrap"
-msgstr "Statikus tördelés"
+msgid "Word wrap:"
+msgstr "Szótördelés:"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkStaticWordWrap)
-#: dialogs/editconfigwidget.ui:23
+#: dialogs/editconfigwidget.ui:29
 #, kde-format
 msgid ""
 "<p>Automatically start a new line of text when the current line exceeds the "
@@ -500,44 +493,36 @@ msgstr ""
 "<b>Megjelenés</b> lapon, a beállításoknál.</p>"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkStaticWordWrap)
-#: dialogs/editconfigwidget.ui:26
+#: dialogs/editconfigwidget.ui:32
 #, kde-format
-msgid "Enable static &word wrap"
-msgstr "A statikus &sortördelés bekapcsolása"
+msgid "Wrap &words at a fixed column"
+msgstr "Sza&vak tördelése rögzített oszlopban"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkShowStaticWordWrapMarker)
-#: dialogs/editconfigwidget.ui:33
-#, fuzzy, kde-format
-#| msgid ""
-#| "<p>If this option is checked, a vertical line will be drawn at the word "
-#| "wrap column as defined in the <strong>Editing</strong> properties.</"
-#| "p><p>Note that the word wrap marker is only drawn if you use a fixed "
-#| "pitch font.</p>"
+#: dialogs/editconfigwidget.ui:39
+#, kde-format
 msgid ""
 "<p>If this option is checked, a vertical line will be drawn at the word wrap "
 "column as defined in the <strong>Editing</strong> properties.</p>"
 msgstr ""
 "<p>Ha ez be van jelölve, függőleges vonal fog megjelenni a tördelési "
 "oszlopban, amely a <strong>szerkesztési</strong> tulajdonságoknál állítható "
-"be.</p><p>A vonal csak akkor jelenik meg, ha állandó szélességű betűtípus "
-"van beállítva.</p>"
+"be.</p>"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkShowStaticWordWrapMarker)
-#: dialogs/editconfigwidget.ui:36
-#, fuzzy, kde-format
-#| msgid "Show Static &Word Wrap Marker"
-msgid "Show static word wra&p marker"
-msgstr "Sortördelésjel&zők megjelenítése"
+#: dialogs/editconfigwidget.ui:42
+#, kde-format
+msgid "&Draw vertical line at the word wrap column"
+msgstr "Függőleges vonal &rajzolása a tördelési oszlopban"
 
 #. i18n: ectx: property (text), widget (QLabel, lblWordWrap)
-#: dialogs/editconfigwidget.ui:57
-#, fuzzy, kde-format
-#| msgid "W&rap words at:"
+#: dialogs/editconfigwidget.ui:49
+#, kde-format
 msgid "Wra&p words at:"
 msgstr "Tördelési &oszlop:"
 
 #. i18n: ectx: property (whatsThis), widget (KPluralHandlingSpinBox, sbWordWrap)
-#: dialogs/editconfigwidget.ui:67
+#: dialogs/editconfigwidget.ui:59
 #, kde-format
 msgid ""
 "If the Word Wrap option is selected this entry determines the length (in "
@@ -547,72 +532,73 @@ msgstr ""
 "meg, hogy melyik oszlop elérésekor fog a program automatikusan új sort "
 "kezdeni."
 
-#. i18n: ectx: property (title), widget (QGroupBox, gbInputMode)
-#: dialogs/editconfigwidget.ui:101
-#, kde-format
-msgid "Input Mode"
-msgstr "Beviteli mód"
-
 #. i18n: ectx: property (text), widget (QLabel, lblInputMode)
-#: dialogs/editconfigwidget.ui:107
+#: dialogs/editconfigwidget.ui:91
 #, kde-format
 msgid "Default input mode:"
 msgstr "Alapértelmezett beviteli mód:"
 
-#. i18n: ectx: property (title), widget (QGroupBox, gbAutoBrackets)
-#: dialogs/editconfigwidget.ui:133
+#. i18n: ectx: property (text), widget (QLabel, label_2)
+#: dialogs/editconfigwidget.ui:117
 #, kde-format
-msgid "Auto Brackets"
-msgstr "Automatikus zárójelek"
+msgid "Brackets:"
+msgstr "Zárójelek:"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkAutoBrackets)
-#: dialogs/editconfigwidget.ui:139
-#, fuzzy, kde-format
-#| msgid "Flash matching brackets"
-msgid "Enable automatic brackets"
-msgstr "Zárójelpárok villogtatása"
+#: dialogs/editconfigwidget.ui:124
+#, kde-format
+msgid "Automatically close brackets when opening bracket is typed"
+msgstr "Zárójelek automatikus lezárása a nyitó zárójel leírásakor"
 
 #. i18n: ectx: property (whatsThis), widget (QLabel, lbEncloseSelection)
-#: dialogs/editconfigwidget.ui:154
+#: dialogs/editconfigwidget.ui:137
 #, kde-format
 msgid ""
 "When some text is selected these chars will be added on both its sides in a "
 "way \"Auto Bracket\" do"
 msgstr ""
+"Szöveg kijelölésekor ezek a karakterek kerülnek hozzáadásra annak mindkét "
+"oldalán, ahogy az „Automatikus zárójelek” is teszi"
 
 #. i18n: ectx: property (text), widget (QLabel, lbEncloseSelection)
-#: dialogs/editconfigwidget.ui:157
-#, fuzzy, kde-format
-#| msgid "Cursor && Selection"
-msgid "Chars to enclose selection:"
-msgstr "Kurzor és kijelölés"
-
-#. i18n: ectx: property (title), widget (QGroupBox, gbCopyAndPaste)
-#: dialogs/editconfigwidget.ui:195
+#: dialogs/editconfigwidget.ui:140
 #, kde-format
-msgid "Copy and Paste"
-msgstr "Másolás és beillesztés"
+msgid "Enclosing characters:"
+msgstr "Zárójelek:"
+
+#. i18n: ectx: property (text), widget (QLabel, label_4)
+#: dialogs/editconfigwidget.ui:160
+#, kde-format
+msgid "Copy and paste:"
+msgstr "Másolás és beillesztés:"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkTextDragAndDrop)
-#: dialogs/editconfigwidget.ui:201
-#, fuzzy, kde-format
-#| msgid "Move selected lines down."
-msgid "Move selected text by drag and drop"
-msgstr "A kijelölt sorokat lejjebb mozgatja."
+#: dialogs/editconfigwidget.ui:167
+#, kde-format
+msgid "Move selected text when dragged"
+msgstr "A kijelölt szöveg mozgatása húzással"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkSmartCopyCut)
-#: dialogs/editconfigwidget.ui:208
+#: dialogs/editconfigwidget.ui:174
 #, kde-format
-msgid "Copy/Cut the current line if no selection"
-msgstr ""
-"Ha nincs kijelölés, akkor az aktuális sorra vonatkozzanak a másolás és "
-"kivágás műveletek"
+msgid "Copy/cut the current line if invoked without any text selected"
+msgstr "Az aktuális sor másolása/kivágása, ha nincs kijelölve szöveg"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkMousePasteAtCursorPosition)
-#: dialogs/editconfigwidget.ui:215
+#: dialogs/editconfigwidget.ui:181
 #, kde-format
-msgid "Paste by mouse at cursor position"
+msgid "Don't move the text cursor when pasting by mouse"
+msgstr "Ne mozgassa a szövegkurzort, ha egérrel történik a beillesztés"
+
+#. i18n: ectx: property (text), widget (QLabel, lblBracketHelp)
+#: dialogs/editconfigwidget.ui:194
+#, kde-format
+msgid ""
+"When you type these characters while text is selected, they will surround "
+"the selected text instead of replacing it."
 msgstr ""
+"Ha ezeket a karaktereket gépeli be, miközben van kijelölve szöveg, azok "
+"körbeveszik azt ahelyett, hogy lecserélnék."
 
 #. i18n: ectx: property (text), widget (QLabel, lblFiletype)
 #: dialogs/filetypeconfigwidget.ui:14
@@ -1021,7 +1007,7 @@ msgstr "Helyesírás-ellenőrzés"
 msgid "Text Navigation"
 msgstr "Szöveg navigáció"
 
-#: dialogs/katedialogs.cpp:519
+#: dialogs/katedialogs.cpp:520
 #, kde-format
 msgctxt "Wrap words at (value is at 20 or larger)"
 msgid " character"
@@ -1029,64 +1015,75 @@ msgid_plural " characters"
 msgstr[0] " karakter"
 msgstr[1] " karakter"
 
-#: dialogs/katedialogs.cpp:524
+#: dialogs/katedialogs.cpp:525
 #, kde-format
 msgid "Feature is not active"
-msgstr ""
+msgstr "A funkció nincs bekapcsolva"
 
-#: dialogs/katedialogs.cpp:526
-#, fuzzy, kde-format
-#| msgid "Disabled Breakpoint"
+#: dialogs/katedialogs.cpp:527
+#, kde-format
 msgid "Disable Feature"
-msgstr "Letiltott töréspont"
+msgstr "Funkció kikapcsolása"
 
-#: dialogs/katedialogs.cpp:528
+#: dialogs/katedialogs.cpp:529
 #, kde-format
 msgid "May be handy with Markdown"
-msgstr ""
+msgstr "Markdownnal praktikus lehet"
 
-#: dialogs/katedialogs.cpp:530
+#: dialogs/katedialogs.cpp:531
 #, kde-format
 msgid "Mirror characters, similar but not exactly like auto brackets"
 msgstr ""
+"Karakterek tükrözése, hasonló, de nem ugyanaz, mint az automatikus zárójelek"
 
-#: dialogs/katedialogs.cpp:532
-#, fuzzy, kde-format
-#| msgid "Non-word character"
+#: dialogs/katedialogs.cpp:533
+#, kde-format
 msgid "Non letter character"
-msgstr "Szóelválasztó karakter"
+msgstr "Nem betű karakter"
 
-#: dialogs/katedialogs.cpp:646
+#: dialogs/katedialogs.cpp:647
 #, kde-format
 msgid "Editing"
 msgstr "Szerkesztés"
 
-#: dialogs/katedialogs.cpp:651
+#: dialogs/katedialogs.cpp:652
 #, kde-format
 msgid "Editing Options"
 msgstr "Szerkesztési beállítások"
 
-#: dialogs/katedialogs.cpp:680
+#: dialogs/katedialogs.cpp:681
 #, kde-format
 msgid "Off"
 msgstr "Ki"
 
-#: dialogs/katedialogs.cpp:681
+#: dialogs/katedialogs.cpp:682
 #, kde-format
 msgid "Follow Line Numbers"
 msgstr "a sorszámok után"
 
-#: dialogs/katedialogs.cpp:838 dialogs/katedialogs.cpp:843
+#: dialogs/katedialogs.cpp:839 dialogs/katedialogs.cpp:844
 #, kde-format
 msgid "Appearance"
 msgstr "Megjelenés"
 
-#: dialogs/katedialogs.cpp:906
+#: dialogs/katedialogs.cpp:877
+#, kde-format
+msgid ""
+"%1 backs up unsaved files to \"swap files.\" Swap files allow %1 to recover "
+"your work in the case of a system crash. Disabling swap files may cause data "
+"loss in case of a system crash."
+msgstr ""
+"A(z) %1 biztonsági másolatot készít a nem mentett fájlokról ideiglenes "
+"fájlokba. Az ideiglenes fájlok lehetővé teszik a(z) %1 programnak a munkája "
+"visszaállítását rendszerösszeomlás esetén. Az ideiglenes fájlok kikapcsolása "
+"adatvesztést okozhat."
+
+#: dialogs/katedialogs.cpp:909
 #, kde-format
 msgid "Advanced"
 msgstr "Speciális"
 
-#: dialogs/katedialogs.cpp:971
+#: dialogs/katedialogs.cpp:974
 #, kde-format
 msgid ""
 "You did not provide a backup suffix or prefix. Using default suffix: '~'"
@@ -1094,115 +1091,111 @@ msgstr ""
 "Nincs megadva előtag vagy utótag a biztonsági mentéshez, az alapértelmezés "
 "(„~”) lesz érvényes"
 
-#: dialogs/katedialogs.cpp:971
+#: dialogs/katedialogs.cpp:974
 #, kde-format
 msgid "No Backup Suffix or Prefix"
 msgstr "Nincs előtag vagy utótag a biztonsági mentéshez"
 
-#: dialogs/katedialogs.cpp:1093
+#: dialogs/katedialogs.cpp:1096
 #, kde-format
 msgid "Open/Save"
 msgstr "Megnyitás/mentés"
 
-#: dialogs/katedialogs.cpp:1098
+#: dialogs/katedialogs.cpp:1101
 #, kde-format
 msgid "File Opening & Saving"
 msgstr "Fájlok megnyitása, mentése"
 
-#: dialogs/katedialogs.cpp:1121
+#: dialogs/katedialogs.cpp:1124
 #, kde-format
 msgid "&Line:"
-msgstr ""
+msgstr "&Sor:"
 
-#: dialogs/katedialogs.cpp:1122
+#: dialogs/katedialogs.cpp:1125
 #, kde-format
 msgid "Go to line number from clipboard"
-msgstr ""
+msgstr "Ugrás a vágólapon található sorszámra"
 
-#: dialogs/katedialogs.cpp:1133
+#: dialogs/katedialogs.cpp:1136
 #, kde-format
 msgid "Go to"
-msgstr ""
+msgstr "Ugrás"
 
-#: dialogs/katedialogs.cpp:1209
+#: dialogs/katedialogs.cpp:1212
 #, kde-format
 msgid "No valid line number found in clipboard"
-msgstr ""
+msgstr "Nem található érvényes sorszám a vágólapon"
 
-#: dialogs/katedialogs.cpp:1273
+#: dialogs/katedialogs.cpp:1276
 #, kde-format
 msgid "Dictionary:"
 msgstr "Szótár:"
 
-#: dialogs/katedialogs.cpp:1325
-#, fuzzy, kde-format
-#| msgid "Enable &auto completion"
+#: dialogs/katedialogs.cpp:1328
+#, kde-format
 msgid "Enable Auto Reload"
-msgstr "&Automatikus kiegészítés bekapcsolása"
+msgstr "Automatikus újratöltés bekapcsolása"
 
-#: dialogs/katedialogs.cpp:1327
+#: dialogs/katedialogs.cpp:1330
 #, kde-format
 msgid "Will never again warn about on disk changes but always reload."
 msgstr ""
+"Soha többé nem figyelmeztet a lemezen történt változtatásokra, hanem mindig "
+"újratölt."
 
-#: dialogs/katedialogs.cpp:1332
-#, fuzzy, kde-format
-#| msgid "&View Difference"
+#: dialogs/katedialogs.cpp:1335
+#, kde-format
 msgid "View &Difference"
 msgstr "Az &eltérések megtekintése"
 
-#: dialogs/katedialogs.cpp:1334
+#: dialogs/katedialogs.cpp:1337
 #, kde-format
 msgid "Shows a diff of the changes"
 msgstr "Megjeleníti a változtatások különbségeit"
 
-#: dialogs/katedialogs.cpp:1339
+#: dialogs/katedialogs.cpp:1342
 #, kde-format
 msgid "&Reload"
 msgstr "Újr&atöltés"
 
-#: dialogs/katedialogs.cpp:1341
-#, fuzzy, kde-format
-#| msgid ""
-#| "Reload the file from disk. If you have unsaved changes, they will be lost."
+#: dialogs/katedialogs.cpp:1344
+#, kde-format
 msgid "Reload the file from disk. Unsaved changes will be lost."
 msgstr "A fájl újratöltése a lemezről. A nem mentett módosítások elvesznek."
 
-#: dialogs/katedialogs.cpp:1345
-#, fuzzy, kde-format
-#| msgid "&Close"
+#: dialogs/katedialogs.cpp:1348
+#, kde-format
 msgctxt "@action:button closes the opened file"
 msgid "&Close File"
-msgstr "&Bezárás"
+msgstr "Fájl &bezárása"
 
-#: dialogs/katedialogs.cpp:1347
+#: dialogs/katedialogs.cpp:1350
 #, kde-format
 msgid "Close the file, discarding its content."
-msgstr ""
+msgstr "A fájl bezárása, a tartalmának eldobásával."
 
-#: dialogs/katedialogs.cpp:1351
+#: dialogs/katedialogs.cpp:1354
 #, kde-format
 msgid "&Save As..."
 msgstr "Men&tés másként…"
 
-#: dialogs/katedialogs.cpp:1353
+#: dialogs/katedialogs.cpp:1356
 #, kde-format
 msgid "Lets you select a location and save the file again."
 msgstr "Lehetővé teszi a fájl elmentését más helyre."
 
 #. i18n: ectx: property (text), widget (QPushButton, m_skipBtn)
-#: dialogs/katedialogs.cpp:1358 spellcheck/spellcheckbar.ui:143
+#: dialogs/katedialogs.cpp:1361 spellcheck/spellcheckbar.ui:143
 #, kde-format
 msgid "&Ignore"
 msgstr "&Figyelmen kívül hagyás"
 
-#: dialogs/katedialogs.cpp:1359
-#, fuzzy, kde-format
-#| msgid "Ignore the changes. You will not be prompted again."
+#: dialogs/katedialogs.cpp:1362
+#, kde-format
 msgid "Ignores the changes on disk without any action."
-msgstr "A módosítások eldobása. Többször nem ad figyelmeztetést a program."
+msgstr "Mellőzi a lemezen történt változtatásokat."
 
-#: dialogs/katedialogs.cpp:1425 swapfile/kateswapdiffcreator.cpp:122
+#: dialogs/katedialogs.cpp:1428 swapfile/kateswapdiffcreator.cpp:122
 #, kde-format
 msgid ""
 "The diff command failed. Please make sure that diff(1) is installed and in "
@@ -1211,18 +1204,18 @@ msgstr ""
 "A diff parancs végrehajtása nem sikerült. Ellenőrizze, hogy a diff(1) "
 "parancs telepítve van-e és szerepel-e az elérési útban."
 
-#: dialogs/katedialogs.cpp:1427 swapfile/kateswapdiffcreator.cpp:90
+#: dialogs/katedialogs.cpp:1430 swapfile/kateswapdiffcreator.cpp:90
 #: swapfile/kateswapdiffcreator.cpp:124
 #, kde-format
 msgid "Error Creating Diff"
 msgstr "Hiba történt a diff-fájl létrehozásakor"
 
-#: dialogs/katedialogs.cpp:1434 swapfile/kateswapdiffcreator.cpp:131
+#: dialogs/katedialogs.cpp:1437 swapfile/kateswapdiffcreator.cpp:131
 #, kde-format
 msgid "The files are identical."
 msgstr "A fájlok teljesen egyformák."
 
-#: dialogs/katedialogs.cpp:1434 swapfile/kateswapdiffcreator.cpp:131
+#: dialogs/katedialogs.cpp:1437 swapfile/kateswapdiffcreator.cpp:131
 #, kde-format
 msgid "Diff Output"
 msgstr "Diff kimenet"
@@ -1271,12 +1264,14 @@ msgstr "A k&urzor mozgatható a PageUp/PageDown billentyűkkel"
 #, kde-format
 msgid "Selects whether cursor jumps full words or breaks at camel case humps."
 msgstr ""
+"Ezzel válaszhatja ki, hogy a kurzor teljes szavakat ugorjon, vagy megálljon "
+"a CamelCase púpjainál."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkCamelCursor)
 #: dialogs/navigationconfigwidget.ui:58
 #, kde-format
 msgid "Enable camel case cursor movement"
-msgstr ""
+msgstr "CamelCase kurzormozgatás bekapcsolása"
 
 #. i18n: ectx: property (text), widget (QLabel, lblAutoCenterCursor)
 #: dialogs/navigationconfigwidget.ui:79
@@ -1294,9 +1289,11 @@ msgstr ""
 "A program igyekszik a kurzor előtt és után a megadott számú sort láthatóan "
 "tartani."
 
+#. i18n: ectx: property (text), item, widget (QComboBox, cmbSwapFileMode)
 #. i18n: ectx: property (specialValueText), widget (QSpinBox, spbSwapFileSync)
 #. i18n: ectx: property (specialValueText), widget (QSpinBox, sbAutoCenterCursor)
-#: dialogs/navigationconfigwidget.ui:92 dialogs/opensaveconfigadvwidget.ui:163
+#: dialogs/navigationconfigwidget.ui:92 dialogs/opensaveconfigadvwidget.ui:112
+#: dialogs/opensaveconfigadvwidget.ui:160
 #, kde-format
 msgid "Disabled"
 msgstr "Letiltva"
@@ -1345,33 +1342,18 @@ msgid ""
 "When selected, composed characters are removed with their diacritics instead "
 "of only removing the base character. This is useful for Indic locales."
 msgstr ""
+"Ha be van jelölve, az összetett karakterek a mellékjeleikkel együtt kerülnek "
+"törlésre a báziskarakter törlése helyett. Ez indiai területi beállításokhoz "
+"hasznos."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkBackspaceRemoveComposed)
 #: dialogs/navigationconfigwidget.ui:177
 #, kde-format
 msgid "Backspace key removes character’s base with its diacritics"
-msgstr ""
-
-#. i18n: ectx: property (whatsThis), widget (QGroupBox, gbBackup)
-#: dialogs/opensaveconfigadvwidget.ui:20
-#, kde-format
-msgid ""
-"<p>Backing up on save will cause Kate to copy the disk file to '&lt;"
-"prefix&gt;&lt;filename&gt;&lt;suffix&gt;' before saving changes.<p>The "
-"suffix defaults to <strong>~</strong> and prefix is empty by default."
-msgstr ""
-"<p>Ha be van jelölve a „Biztonsági másolat mentésnél” opció, akkor a másolat "
-"neve „&lt;előtag&gt;fájlnév&gt;&lt;utótag&gt;” lesz.<p>Az utótag "
-"alapértelmezése: <strong>~</strong>, az előtag alapértelmezés szerint üres."
-
-#. i18n: ectx: property (title), widget (QGroupBox, gbBackup)
-#: dialogs/opensaveconfigadvwidget.ui:23
-#, kde-format
-msgid "Backup on Save"
-msgstr "Biztonsági másolat mentésnél"
+msgstr "A Backspace billentyű törli a karakter bázisát a mellékjeleivel együtt"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkBackupLocalFiles)
-#: dialogs/opensaveconfigadvwidget.ui:32
+#: dialogs/opensaveconfigadvwidget.ui:34
 #, kde-format
 msgid ""
 "If this option is enabled, backups for local files will be created when "
@@ -1381,13 +1363,13 @@ msgstr ""
 "fájlokról."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkBackupLocalFiles)
-#: dialogs/opensaveconfigadvwidget.ui:35
+#: dialogs/opensaveconfigadvwidget.ui:37
 #, kde-format
 msgid "&Local files"
 msgstr "&Helyi fájlok"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkBackupRemoteFiles)
-#: dialogs/opensaveconfigadvwidget.ui:42
+#: dialogs/opensaveconfigadvwidget.ui:44
 #, kde-format
 msgid ""
 "If this option is enabled, backups for remote files will be created when "
@@ -1397,99 +1379,85 @@ msgstr ""
 "fájlokról."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkBackupRemoteFiles)
-#: dialogs/opensaveconfigadvwidget.ui:45
+#: dialogs/opensaveconfigadvwidget.ui:47
 #, kde-format
 msgid "&Remote files"
 msgstr "&Távoli fájlok"
 
-#. i18n: ectx: property (text), widget (QLabel, label_5)
-#: dialogs/opensaveconfigadvwidget.ui:52
+#. i18n: ectx: property (text), widget (QLabel, label)
+#: dialogs/opensaveconfigadvwidget.ui:54
 #, kde-format
-msgid "&Prefix:"
-msgstr "&Előtag:"
+msgid "Write a backup file on save for:"
+msgstr "Biztonsági másolat készítése mentéskor:"
 
 #. i18n: ectx: property (whatsThis), widget (QLineEdit, edtBackupPrefix)
-#: dialogs/opensaveconfigadvwidget.ui:62
+#: dialogs/opensaveconfigadvwidget.ui:61
 #, kde-format
 msgid "Enter the prefix to prepend to the backup file names."
 msgstr "Adja meg a biztonsági másolatok fájlneveinek előtagját."
 
-#. i18n: ectx: property (text), widget (QLabel, label_6)
-#: dialogs/opensaveconfigadvwidget.ui:69
+#. i18n: ectx: property (text), widget (QLabel, label_5)
+#: dialogs/opensaveconfigadvwidget.ui:68
 #, kde-format
-msgid "&Suffix:"
-msgstr "&Utótag:"
+msgid "Prefix for backup files:"
+msgstr "Biztonsági másolat fájlok előtagja:"
 
 #. i18n: ectx: property (whatsThis), widget (QLineEdit, edtBackupSuffix)
-#: dialogs/opensaveconfigadvwidget.ui:79
+#: dialogs/opensaveconfigadvwidget.ui:78
 #, kde-format
 msgid "Enter the suffix to append to the backup file names."
 msgstr "Adja meg a biztonsági másolatok fájlneveinek utótagját."
 
-#. i18n: ectx: property (title), widget (QGroupBox, gpSwapFileOptions)
-#: dialogs/opensaveconfigadvwidget.ui:95
+#. i18n: ectx: property (text), widget (QLabel, label_6)
+#: dialogs/opensaveconfigadvwidget.ui:85
 #, kde-format
-msgid "Swap File Options"
-msgstr "Lapozófájl beállítások"
-
-#. i18n: ectx: property (text), widget (QLabel, lblSwapFileMode)
-#: dialogs/opensaveconfigadvwidget.ui:101
-#, kde-format
-msgid "Swap file:"
-msgstr "Lapozófájl:"
-
-#. i18n: ectx: property (text), item, widget (QComboBox, cmbSwapFileMode)
-#: dialogs/opensaveconfigadvwidget.ui:112
-#, kde-format
-msgid "Disable"
-msgstr "Letiltva"
+msgid "Suffix for backup files:"
+msgstr "Biztonsági másolat fájlok utótagja:"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, cmbSwapFileMode)
 #: dialogs/opensaveconfigadvwidget.ui:117
 #, kde-format
-msgid "Enable"
-msgstr "Engedélyezve"
+msgid "Enabled, Store In Default Directory"
+msgstr "Bekapcsolva, tárolás az alapértelmezett mappában"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, cmbSwapFileMode)
 #: dialogs/opensaveconfigadvwidget.ui:122
 #, kde-format
-msgid "Alternative Directory"
-msgstr "Alternatív mappa"
+msgid "Enabled, Store In Custom Directory"
+msgstr "Bekapcsolva, tárolás saját mappában"
 
-#. i18n: ectx: property (text), widget (QLabel, lblSwapDirectory)
+#. i18n: ectx: property (text), widget (QLabel, lblSwapFileMode)
 #: dialogs/opensaveconfigadvwidget.ui:130
 #, kde-format
-msgid "Directory:"
-msgstr "Mappa:"
+msgid "Swap file mode:"
+msgstr "Ideiglenes fájlok módja:"
 
-#. i18n: ectx: property (placeholderText), widget (KUrlRequester, kurlSwapDirectory)
-#: dialogs/opensaveconfigadvwidget.ui:146
-#, fuzzy, kde-format
-#| msgid "Directory for swp files"
-msgid "Directory for swp files"
-msgstr "Könyvtár a lapozófájlokhoz"
-
-#. i18n: ectx: property (text), widget (QLabel, lblSwapFileSync)
-#: dialogs/opensaveconfigadvwidget.ui:153
+#. i18n: ectx: property (text), widget (QLabel, lblSwapDirectory)
+#: dialogs/opensaveconfigadvwidget.ui:150
 #, kde-format
-msgid "Sync every:"
-msgstr "Szinkronizálás:"
+msgid "Store swap files in:"
+msgstr "Ideiglenes fájlok tárolása itt:"
 
 #. i18n: ectx: property (suffix), widget (QSpinBox, spbSwapFileSync)
-#: dialogs/opensaveconfigadvwidget.ui:166
+#: dialogs/opensaveconfigadvwidget.ui:163
 #, kde-format
 msgid "s"
 msgstr "s"
 
-#. i18n: ectx: property (text), widget (QLabel, label_2)
-#: dialogs/opensaveconfigadvwidget.ui:185
+#. i18n: ectx: property (text), widget (QLabel, lblSwapFileSync)
+#: dialogs/opensaveconfigadvwidget.ui:182
+#, kde-format
+msgid "Save swap files every:"
+msgstr "Ideiglenes fájlok mentési időköze:"
+
+#. i18n: ectx: property (text), widget (QLabel, lblExplanatory)
+#: dialogs/opensaveconfigadvwidget.ui:198
 #, kde-format
 msgid ""
-"Be aware, that disabling the swap file synchronization may lead to data loss "
-"in case of a system crash."
+"This string is located in katedialogs.cpp in KateSaveConfigTab's constructor."
 msgstr ""
-"Legyen tudatában annak, hogy a lapozófájl szinkronizálásának letiltása "
-"adatvesztéshez vezethet rendszerösszeomlás esetén."
+"Ez a sztring a katedialogs.cpp-ben a KateSaveConfigTab konstruktorában "
+"található."
 
 #. i18n: ectx: property (title), widget (QGroupBox, gbFileFormat)
 #: dialogs/opensaveconfigwidget.ui:12
@@ -1690,25 +1658,21 @@ msgstr "Új sor hozzáfűzése a fájl végéhez mentéskor"
 
 #. i18n: ectx: property (text), widget (QLabel, label_3)
 #: dialogs/textareaappearanceconfigwidget.ui:28
-#, fuzzy, kde-format
-#| msgid "Editor Plugins"
+#, kde-format
 msgid "Editor font:"
-msgstr "Szerkesztőbővítmények"
+msgstr "Szerkesztő betűtípusa:"
 
 #. i18n: ectx: property (text), widget (QLabel, label)
 #: dialogs/textareaappearanceconfigwidget.ui:64
-#, fuzzy, kde-format
-#| msgid "Ignore white space changes"
+#, kde-format
 msgid "Show whitespace indicators:"
-msgstr "Az üres karakterek változása ne számítson módosításnak"
+msgstr "Térközkarakter-jelző megjelenítése:"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, spacesComboBox)
 #: dialogs/textareaappearanceconfigwidget.ui:77
-#, fuzzy, kde-format
-#| msgctxt "short translation please"
-#| msgid "Sets the end of line mode."
+#, kde-format
 msgid "At the end of a line"
-msgstr "Beállítja a sorvégmódot."
+msgstr "A sor végén"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, spacesComboBox)
 #: dialogs/textareaappearanceconfigwidget.ui:82
@@ -1718,23 +1682,21 @@ msgstr "Mindig"
 
 #. i18n: ectx: property (text), widget (QLabel, lbMarkerDescription)
 #: dialogs/textareaappearanceconfigwidget.ui:90
-#, fuzzy, kde-format
-#| msgid "Whitespace Highlighting"
+#, kde-format
 msgid "Whitespace indicator size:"
-msgstr "Üres karakterek kiemelése"
+msgstr "Térközjelző mérete:"
 
 #. i18n: ectx: property (whatsThis), widget (QSlider, sliSetMarkerSize)
 #: dialogs/textareaappearanceconfigwidget.ui:103
 #, kde-format
 msgid "Size of the visible highlight marker."
-msgstr ""
+msgstr "A látható kiemelésjelző mérete."
 
 #. i18n: ectx: property (text), widget (QLabel, label_2)
 #: dialogs/textareaappearanceconfigwidget.ui:128
-#, fuzzy, kde-format
-#| msgid "Show line modification markers"
+#, kde-format
 msgid "Show tab indicators:"
-msgstr "Sormódosítás-jelölők megjelenítése"
+msgstr "Tabulátorjelző megjelenítése:"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkShowTabs)
 #: dialogs/textareaappearanceconfigwidget.ui:135
@@ -1748,10 +1710,9 @@ msgstr ""
 
 #. i18n: ectx: property (text), widget (QLabel, label_4)
 #: dialogs/textareaappearanceconfigwidget.ui:161
-#, fuzzy, kde-format
-#| msgid "Animate bracket matching"
+#, kde-format
 msgid "Bracket matching:"
-msgstr "Zárójelpárok animálása"
+msgstr "Zárójel-illesztés:"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkShowWholeBracketExpression)
 #: dialogs/textareaappearanceconfigwidget.ui:168
@@ -1773,7 +1734,7 @@ msgstr "Kiemelés a kijelölt zárójelpárban"
 #: dialogs/textareaappearanceconfigwidget.ui:178
 #, kde-format
 msgid "Show the matching open bracket and lines adjacent to it for context"
-msgstr ""
+msgstr "Nyitó zárójelpár és a szomszédos sorok megjelenítése"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkShowBracketMatchPreview)
 #: dialogs/textareaappearanceconfigwidget.ui:181
@@ -1784,13 +1745,16 @@ msgid ""
 "bracket, especially in long function/class declarations and deeply nested if "
 "blocks"
 msgstr ""
+"Ha ez be van kapcsolva, megjelenik a nyitó zárójelpár körüli sorok "
+"előnézete. Ez segíthet a záró zárójelpár kontextusának gyors "
+"meghatározásához, különösen hosszú függvények vagy osztályok és mélyen "
+"beágyazott blokkok esetén"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkShowBracketMatchPreview)
 #: dialogs/textareaappearanceconfigwidget.ui:184
-#, fuzzy, kde-format
-#| msgid "Show print preview of current document"
+#, kde-format
 msgid "Show preview of matching open bracket"
-msgstr "A jelenlegi dokumentum nyomtatási képének megjelenítése"
+msgstr "Nyitó zárójelpár előnézetének megjelenítése"
 
 #. i18n: ectx: property (toolTip), widget (QCheckBox, chkAnimateBracketMatching)
 #: dialogs/textareaappearanceconfigwidget.ui:191
@@ -1811,6 +1775,7 @@ msgstr ""
 #, kde-format
 msgid "Flash matching bracket when cursor moves to other bracket in pair"
 msgstr ""
+"Illeszkedő zárójelek villogtatása, ha a kurzor a pár másik tagja fölött van"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkShowIndentationLines)
 #: dialogs/textareaappearanceconfigwidget.ui:204
@@ -1832,7 +1797,7 @@ msgstr "Behúzási &vonalak mutatása"
 #: dialogs/textareaappearanceconfigwidget.ui:230
 #, kde-format
 msgid "Counts:"
-msgstr ""
+msgstr "Számok:"
 
 #. i18n: ectx: property (toolTip), widget (QCheckBox, chkShowWordCount)
 #: dialogs/textareaappearanceconfigwidget.ui:237
@@ -1841,7 +1806,7 @@ msgid "Show/hide word count in status bar"
 msgstr "Szószám megjelenítése/elrejtése az állapotsávban"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkShowWordCount)
-#: dialogs/textareaappearanceconfigwidget.ui:240
+#: dialogs/textareaappearanceconfigwidget.ui:240 view/katestatusbar.cpp:228
 #, kde-format
 msgid "Show word count"
 msgstr "Szószám megjelenítése"
@@ -1853,7 +1818,7 @@ msgid "Show/hide line count in status bar"
 msgstr "Sorszám megjelenítése/elrejtése az állapotsávban"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkShowLineCount)
-#: dialogs/textareaappearanceconfigwidget.ui:250
+#: dialogs/textareaappearanceconfigwidget.ui:250 view/katestatusbar.cpp:225
 #, kde-format
 msgid "Show line count"
 msgstr "Sorszám megjelenítése"
@@ -1880,23 +1845,21 @@ msgstr "Első sor összecsukása"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkDynWrapAtStaticMarker)
 #: dialogs/textareaappearanceconfigwidget.ui:299
-#, fuzzy, kde-format
-#| msgid "Enable static &word wrap"
+#, kde-format
 msgid "Wrap dynamically at static word wrap marker"
-msgstr "A statikus &sortördelés bekapcsolása"
+msgstr "Dinamikus tördelés a sortördelésjelzőknél"
 
 #. i18n: ectx: property (text), widget (QCheckBox, cbxWordWrap)
 #: dialogs/textareaappearanceconfigwidget.ui:306
-#, fuzzy, kde-format
-#| msgid "&Dynamic Word Wrap"
+#, kde-format
 msgid "Dynamic Word Wrap:"
-msgstr "&Dinamikus sortördelés"
+msgstr "Dinamikus sortördelés:"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkDynWrapAnywhere)
 #: dialogs/textareaappearanceconfigwidget.ui:313
 #, kde-format
 msgid "Disregard word boundaries for dynamic wrapping"
-msgstr ""
+msgstr "Szóhatárok figyelmen kívül hagyása dinamikus tördelésnél"
 
 #. i18n: ectx: property (whatsThis), widget (QComboBox, cmbDynamicWordWrapIndicator)
 #: dialogs/textareaappearanceconfigwidget.ui:320
@@ -1906,10 +1869,9 @@ msgstr "Itt lehet megadni, hogy mikor jelenjenek meg dinamikus tördelésjelzők
 
 #. i18n: ectx: property (text), widget (QLabel, lblDynamicWordWrapIndicators)
 #: dialogs/textareaappearanceconfigwidget.ui:327
-#, fuzzy, kde-format
-#| msgid "Dynamic Word Wrap Indicators"
+#, kde-format
 msgid "D&ynamic word wrap indicators:"
-msgstr "Dinamikus sortördelésjelzők"
+msgstr "Dina&mikus sortördelésjelzők:"
 
 #. i18n: ectx: property (whatsThis), widget (QSpinBox, sbDynamicWordWrapDepth)
 #: dialogs/textareaappearanceconfigwidget.ui:343
@@ -1940,14 +1902,13 @@ msgstr "A nézet szélességének százaléka"
 #: dialogs/textareaappearanceconfigwidget.ui:362
 #, kde-format
 msgid "Don't indent lines wider than:"
-msgstr ""
+msgstr "Ennél szélesebb sorokat ne húzza be:"
 
 #. i18n: ectx: property (text), widget (QLabel, label_5)
 #: dialogs/textareaappearanceconfigwidget.ui:372
-#, fuzzy, kde-format
-#| msgid "Indentation Properties"
+#, kde-format
 msgid "Indent wrapped lines:"
-msgstr "Behúzási jellemzők"
+msgstr "Tördelt sorok behúzása:"
 
 #: document/katebuffer.cpp:151
 #, kde-format
@@ -1960,18 +1921,17 @@ msgstr "Új fájl"
 msgid "The file %1 does not exist."
 msgstr "A(z) %1 fájl nem létezik."
 
-#: document/katedocument.cpp:249
-#, fuzzy, kde-format
-#| msgid "Close Document"
+#: document/katedocument.cpp:248
+#, kde-format
 msgid "Auto Reload Document"
-msgstr "A dokumentum bezárása"
+msgstr "A dokumentum automatikus újratöltése"
 
-#: document/katedocument.cpp:250
+#: document/katedocument.cpp:249
 #, kde-format
 msgid "Automatic reload the document when it was changed on disk"
-msgstr ""
+msgstr "A dokumentum automatikus újratöltése, ha megváltozott a lemezen"
 
-#: document/katedocument.cpp:2265
+#: document/katedocument.cpp:2275
 #, kde-format
 msgid ""
 "The file %1 could not be loaded, as it was not possible to read from it.<br /"
@@ -1980,23 +1940,23 @@ msgstr ""
 "A(z) %1 fájlt nem sikerült betölteni, mert nem sikerült olvasni a fájlból."
 "<br />Ellenőrizze, van-e olvasási jogosultsága a fájlhoz."
 
-#: document/katedocument.cpp:2270
+#: document/katedocument.cpp:2280
 #, kde-format
 msgctxt "translators: you can also translate 'Try Again' with 'Reload'"
 msgid "Try Again"
 msgstr "Próbálja újra"
 
-#: document/katedocument.cpp:2274 document/katedocument.cpp:5987
+#: document/katedocument.cpp:2284 document/katedocument.cpp:6001
 #, kde-format
 msgid "&Close"
 msgstr "&Bezárás"
 
-#: document/katedocument.cpp:2275 document/katedocument.cpp:5988
+#: document/katedocument.cpp:2285 document/katedocument.cpp:6002
 #, kde-format
 msgid "Close message"
 msgstr "Üzenet bezárása"
 
-#: document/katedocument.cpp:2286
+#: document/katedocument.cpp:2296
 #, kde-format
 msgid ""
 "The file %1 could not be loaded, as it was not possible to read from it.\n"
@@ -2007,7 +1967,7 @@ msgstr ""
 "\n"
 "Ellenőrizze, van-e olvasási jogosultsága a fájlhoz."
 
-#: document/katedocument.cpp:2400
+#: document/katedocument.cpp:2410
 #, kde-format
 msgid ""
 "The file %1 was opened with %2 encoding but contained invalid characters."
@@ -2020,7 +1980,7 @@ msgstr ""
 "az adattartalom.<br />Nyissa meg újból a fájlt a megfelelő kódolással, vagy "
 "engedélyezze az írást a menüben."
 
-#: document/katedocument.cpp:2412
+#: document/katedocument.cpp:2422
 #, kde-format
 msgid ""
 "The file %1 was opened with %2 encoding but contained invalid characters. It "
@@ -2033,7 +1993,7 @@ msgstr ""
 "adattartalom. Nyissa meg újból a fájlt a megfelelő kódolással, vagy "
 "engedélyezze az írást a menüben."
 
-#: document/katedocument.cpp:2425
+#: document/katedocument.cpp:2435
 #, kde-format
 msgid ""
 "The file %1 was opened and contained lines longer than the configured Line "
@@ -2046,17 +2006,17 @@ msgstr ""
 "> Ezek a sorok tördelve lettek, a dokumentum pedig csak olvasható módba lett "
 "állítva, mivel a mentés módosítani a tartalmát."
 
-#: document/katedocument.cpp:2432
+#: document/katedocument.cpp:2442
 #, kde-format
 msgid "Temporarily raise limit and reload file"
 msgstr "Limit ideiglenes megemelése és a fájl újratöltése"
 
-#: document/katedocument.cpp:2435
+#: document/katedocument.cpp:2445
 #, kde-format
 msgid "Close"
 msgstr "Bezárás"
 
-#: document/katedocument.cpp:2442
+#: document/katedocument.cpp:2452
 #, kde-format
 msgid ""
 "The file %1 was opened and contained lines longer than the configured Line "
@@ -2069,7 +2029,7 @@ msgstr ""
 "> Ezek a sorok tördelve lettek, a dokumentum pedig csak olvasható módba lett "
 "állítva, mivel a mentés módosítani a tartalmát."
 
-#: document/katedocument.cpp:2469
+#: document/katedocument.cpp:2479
 #, kde-format
 msgid ""
 "Do you really want to save this unmodified file? You could overwrite changed "
@@ -2078,18 +2038,18 @@ msgstr ""
 "Biztosan el szeretné menteni a betöltött, de nem módosított állapotot? A "
 "lemezen levő változat módosításai így elvesznek."
 
-#: document/katedocument.cpp:2470
+#: document/katedocument.cpp:2480
 #, kde-format
 msgid "Trying to Save Unmodified File"
 msgstr "A fájl mentése módosítás nélkül"
 
-#: document/katedocument.cpp:2471 document/katedocument.cpp:2482
-#: document/katedocument.cpp:2498
+#: document/katedocument.cpp:2481 document/katedocument.cpp:2492
+#: document/katedocument.cpp:2508
 #, kde-format
 msgid "Save Nevertheless"
 msgstr "Igen, mentés"
 
-#: document/katedocument.cpp:2480
+#: document/katedocument.cpp:2490
 #, kde-format
 msgid ""
 "Do you really want to save this file? Both your open file and the file on "
@@ -2098,18 +2058,15 @@ msgstr ""
 "Biztosan el szeretné menteni ezt a fájlt? A betöltött és a lemezen levő "
 "változat is megváltozott, ezért adatvesztés fordulhat elő."
 
-#: document/katedocument.cpp:2481 document/katedocument.cpp:2497
-#: document/katedocument.cpp:2789 syntax/katethemeconfig.cpp:1110
+#: document/katedocument.cpp:2491 document/katedocument.cpp:2507
+#: document/katedocument.cpp:2799 syntax/katethemeconfig.cpp:1110
 #: syntax/katethemeconfig.cpp:1258
 #, kde-format
 msgid "Possible Data Loss"
 msgstr "Adatvesztési veszély"
 
-#: document/katedocument.cpp:2495
-#, fuzzy, kde-format
-#| msgid ""
-#| "The selected encoding cannot encode every unicode character in this "
-#| "document. Do you really want to save it? There could be some data lost."
+#: document/katedocument.cpp:2505
+#, kde-format
 msgid ""
 "The selected encoding cannot encode every Unicode character in this "
 "document. Do you really want to save it? There could be some data lost."
@@ -2118,13 +2075,8 @@ msgstr ""
 "feldolgozni. Biztosan el szeretné így menteni? A dokumentum anyagának egy "
 "része elveszhet."
 
-#: document/katedocument.cpp:2540
-#, fuzzy, kde-format
-#| msgid ""
-#| "The document could not be saved, as it was not possible to write to %1.\n"
-#| "\n"
-#| "Check that you have write access to this file or that enough disk space "
-#| "is available."
+#: document/katedocument.cpp:2550
+#, kde-format
 msgid ""
 "The document could not be saved, as it was not possible to write to %1.\n"
 "Check that you have write access to this file or that enough disk space is "
@@ -2133,11 +2085,12 @@ msgid ""
 "the file is successfully written."
 msgstr ""
 "A dokumentumot nem sikerült elmenteni, mert nem lehetett írni ide: %1.\n"
-"\n"
 "Ellenőrizze, hogy rendelkezik-e írási jogosultsággal a fájlhoz és van-e elég "
-"szabad lemezterület."
+"szabad lemezterület.\n"
+"Az eredeti fájl elveszhet vagy sérülhet. Ne lépjen ki az alkalmazásból, amíg "
+"az írás sikeresen meg nem történt."
 
-#: document/katedocument.cpp:2661
+#: document/katedocument.cpp:2671
 #, kde-format
 msgid ""
 "For file %1 no backup copy could be created before saving. If an error "
@@ -2149,50 +2102,50 @@ msgstr ""
 "mentés közben hiba történik, adatvesztés következhet be. Lehet, hogy az "
 "adathordozó betelt vagy a könyvtárba nincs jogosultsága írni."
 
-#: document/katedocument.cpp:2665
+#: document/katedocument.cpp:2675
 #, kde-format
 msgid "Failed to create backup copy."
 msgstr "Nem sikerült biztonsági másolatot készíteni."
 
-#: document/katedocument.cpp:2666
+#: document/katedocument.cpp:2676
 #, kde-format
 msgid "Try to Save Nevertheless"
 msgstr "Igen, mentés"
 
-#: document/katedocument.cpp:2788
+#: document/katedocument.cpp:2798
 #, kde-format
 msgid "Do you really want to continue to close this file? Data loss may occur."
 msgstr ""
 "Biztosan be szeretné zárni a fájlt? Adatvesztés lehet a bezárás "
 "következménye."
 
-#: document/katedocument.cpp:2790
+#: document/katedocument.cpp:2800
 #, kde-format
 msgid "Close Nevertheless"
 msgstr "Bezárás"
 
-#: document/katedocument.cpp:4261
+#: document/katedocument.cpp:4281
 #, kde-format
 msgid "Untitled"
 msgstr "Nincs cím"
 
-#: document/katedocument.cpp:4307 document/katedocument.cpp:4494
-#: document/katedocument.cpp:4504 document/katedocument.cpp:5205
+#: document/katedocument.cpp:4327 document/katedocument.cpp:4517
+#: document/katedocument.cpp:4527 document/katedocument.cpp:5219
 #, kde-format
 msgid "Save File"
 msgstr "A fájl mentése"
 
-#: document/katedocument.cpp:4310
+#: document/katedocument.cpp:4330
 #, kde-format
 msgid "Save failed"
 msgstr "A mentés nem sikerült"
 
-#: document/katedocument.cpp:4515
+#: document/katedocument.cpp:4538
 #, kde-format
 msgid "Save Copy of File"
 msgstr "Másolat mentése"
 
-#: document/katedocument.cpp:4527
+#: document/katedocument.cpp:4550
 #, kde-format
 msgid ""
 "The document could not be saved, as it was not possible to write to %1.\n"
@@ -2205,12 +2158,8 @@ msgstr ""
 "Ellenőrizze, hogy rendelkezik-e írási jogosultsággal a fájlhoz és van-e elég "
 "szabad lemezterület."
 
-#: document/katedocument.cpp:4765
-#, fuzzy, kde-format
-#| msgid ""
-#| "Using deprecated modeline 'remove-trailing-space'. Please replace with "
-#| "'remove-trailing-spaces modified;', see http://docs.kde.org/stable/en/"
-#| "applications/kate/config-variables.html#variable-remove-trailing-spaces"
+#: document/katedocument.cpp:4788
+#, kde-format
 msgid ""
 "Using deprecated modeline 'remove-trailing-space'. Please replace with "
 "'remove-trailing-spaces modified;', see https://docs.kde.org/?"
@@ -2218,16 +2167,12 @@ msgid ""
 "remove-trailing-spaces"
 msgstr ""
 "Elavult parancs használata: modeline „remove-trailing-space”. Kérjük "
-"helyettesítse ezzel: 'remove-trailing-spaces modified;', lásd http://docs."
-"kde.org/stable/en/applications/kate/config-variables.html#variable-remove-"
-"trailing-spaces"
+"helyettesítse ezzel: 'remove-trailing-spaces modified;', lásd https://docs."
+"kde.org/?application=katepart&branch=stable5&path=config-variables."
+"html#variable-remove-trailing-spaces"
 
-#: document/katedocument.cpp:4771
-#, fuzzy, kde-format
-#| msgid ""
-#| "Using deprecated modeline 'replace-trailing-space-save'. Please replace "
-#| "with 'remove-trailing-spaces all;', see http://docs.kde.org/stable/en/"
-#| "applications/kate/config-variables.html#variable-remove-trailing-spaces"
+#: document/katedocument.cpp:4794
+#, kde-format
 msgid ""
 "Using deprecated modeline 'replace-trailing-space-save'. Please replace with "
 "'remove-trailing-spaces all;', see https://docs.kde.org/?"
@@ -2235,26 +2180,26 @@ msgid ""
 "remove-trailing-spaces"
 msgstr ""
 "Elavult parancs használata: modeline „replace-trailing-space-save”. Kérjük "
-"helyettesítse ezzel: „remove-trailing-spaces all;”, lásd http://docs.kde.org/"
-"stable/en/applications/kate/config-variables.html#variable-remove-trailing-"
-"spaces"
+"helyettesítse ezzel: „remove-trailing-spaces all;”, lásd https://docs.kde."
+"org/?application=katepart&branch=stable5&path=config-variables.html#variable-"
+"remove-trailing-spaces"
 
-#: document/katedocument.cpp:5082
+#: document/katedocument.cpp:5096
 #, kde-format
 msgid "The file '%1' was modified by another program."
 msgstr "A(z) „%1” fájlt megváltoztatta egy másik program a lemezen."
 
-#: document/katedocument.cpp:5085
+#: document/katedocument.cpp:5099
 #, kde-format
 msgid "The file '%1' was created by another program."
 msgstr "A(z) „%1” fájlt létrehozta egy másik program a lemezen."
 
-#: document/katedocument.cpp:5088
+#: document/katedocument.cpp:5102
 #, kde-format
 msgid "The file '%1' was deleted by another program."
 msgstr "Egy másik program törölte ezt a fájlt: „%1”."
 
-#: document/katedocument.cpp:5381
+#: document/katedocument.cpp:5395
 #, kde-format
 msgid ""
 "The document \"%1\" has been modified.\n"
@@ -2263,17 +2208,17 @@ msgstr ""
 "Megváltozott egy dokumentum: \"%1\".\n"
 "El szeretné menteni a módosításokat?"
 
-#: document/katedocument.cpp:5384
+#: document/katedocument.cpp:5398
 #, kde-format
 msgid "Close Document"
 msgstr "A dokumentum bezárása"
 
-#: document/katedocument.cpp:5493
+#: document/katedocument.cpp:5507
 #, kde-format
 msgid "The file <a href=\"%1\">%2</a> is still loading."
 msgstr "A(z) <a href=\"%1\">%2</a> fájl betöltése még folyamatban."
 
-#: document/katedocument.cpp:5498
+#: document/katedocument.cpp:5512
 #, kde-format
 msgid "&Abort Loading"
 msgstr "Betöltés &megszakítása"
@@ -2333,7 +2278,7 @@ msgstr "vi-mód"
 msgid "recording"
 msgstr "felvétel"
 
-#: inputmode/kateviinputmodefactory.cpp:38 utils/kateglobal.cpp:104
+#: inputmode/kateviinputmodefactory.cpp:38 utils/kateglobal.cpp:95
 #: vimode/config/configtab.cpp:233
 #, kde-format
 msgid "Vi Input Mode"
@@ -2381,11 +2326,10 @@ msgid "Modes && Filetypes"
 msgstr "Módok és fájltípusok"
 
 #: mode/katemodemenulist.cpp:133
-#, fuzzy, kde-format
-#| msgid "Search mode"
+#, kde-format
 msgctxt "Placeholder in search bar"
 msgid "Search..."
-msgstr "Keresési mód"
+msgstr "Keresés…"
 
 #: mode/katemodemenulist.cpp:135
 #, kde-format
@@ -2394,26 +2338,26 @@ msgid ""
 "Search for syntax highlighting modes by language name or file extension (for "
 "example, C++ or .cpp)"
 msgstr ""
+"Szintaxiskiemelési módok keresése a nyelv neve vagy fájlkiterjesztés szerint "
+"(például C++ vagy .cpp)"
 
 #: mode/katemodemenulist.cpp:556
 #, kde-format
 msgctxt "A search yielded no results"
 msgid "No items matching your search"
-msgstr ""
+msgstr "Nincs találat a keresésre"
 
 #: mode/katemodemenulist.cpp:1083
-#, fuzzy, kde-format
-#| msgid "Best matches"
+#, kde-format
 msgctxt ""
 "Title (in singular) of the best result in an item search. Please, that the "
 "translation doesn't have more than 34 characters, since the menu where it's "
 "displayed is small and fixed."
 msgid "Best Search Match"
-msgstr "Legjobban illeszkedők"
+msgstr "Legjobban illeszkedő"
 
 #: mode/katemodemenulist.cpp:1088
-#, fuzzy, kde-format
-#| msgid "Best matches"
+#, kde-format
 msgctxt ""
 "Title (in plural) of the best results in an item search. Please, that the "
 "translation doesn't have more than 34 characters, since the menu where it's "
@@ -2613,10 +2557,9 @@ msgid "L&ayout"
 msgstr "Elren&dezés"
 
 #: printing/printconfigwidgets.cpp:491
-#, fuzzy, kde-format
-#| msgid "Colors"
+#, kde-format
 msgid "&Color theme:"
-msgstr "Színek"
+msgstr "S&zíntéma:"
 
 #: printing/printconfigwidgets.cpp:498
 #, kde-format
@@ -2649,23 +2592,18 @@ msgid "Co&lor:"
 msgstr "Szí&n:"
 
 #: printing/printconfigwidgets.cpp:547
-#, fuzzy, kde-format
-#| msgid "Select the color scheme to use for the print."
+#, kde-format
 msgid "Select the color theme to use for the print."
-msgstr "Válasszon egy színösszeállítást a nyomtatáshoz."
+msgstr "Válasszon egy színtémát a nyomtatáshoz."
 
 #: printing/printconfigwidgets.cpp:549
-#, fuzzy, kde-format
-#| msgid ""
-#| "<p>If enabled, the background color of the editor will be used.</"
-#| "p><p>This may be useful if your color scheme is designed for a dark "
-#| "background.</p>"
+#, kde-format
 msgid ""
 "<p>If enabled, the background color of the editor will be used.</p><p>This "
 "may be useful if your color theme is designed for a dark background.</p>"
 msgstr ""
 "<p>Ha be van jelölve, akkor a szerkesztő háttérszínét használja a program.</"
-"p><p>Ez jól jöhet, ha a színösszeállítást sötét háttérhez tervezték.</p>"
+"p><p>Ez jól jöhet, ha a színtémát sötét háttérhez tervezték.</p>"
 
 #: printing/printconfigwidgets.cpp:552
 #, kde-format
@@ -3146,14 +3084,7 @@ msgstr ""
 "a következőt is:<br><code>filter 'line.length > 0'</code>"
 
 #: script/data/commands/utils.js:389
-#, fuzzy, kde-format
-#| msgid ""
-#| "Given a JavaScript function as argument, call that for the list of "
-#| "(selected) lines and replace the line with the return value of the "
-#| "callback.<br>Example (see also <code>ltrim</code>):<br><code>map "
-#| "'function(line){return line.replace(/^\\s+/, \"\");}'</code><br>To save "
-#| "you some typing, you can also do this to achieve the same:<br><code>map "
-#| "'line.replace(/^\\s+/, \"\")'</code>"
+#, kde-format
 msgid ""
 "Given a JavaScript function as argument, call that for the list of "
 "(selected) lines and replace the line with the return value of the callback."
@@ -3223,9 +3154,7 @@ msgid "Haskell"
 msgstr "Haskell"
 
 #: script/data/indentation/julia.js:2
-#, fuzzy, kde-format
-#| msgctxt "Language"
-#| msgid "Julia"
+#, kde-format
 msgctxt "Autoindent mode"
 msgid "Julia"
 msgstr "Julia"
@@ -3247,12 +3176,6 @@ msgstr "LilyPond"
 msgctxt "Autoindent mode"
 msgid "LISP"
 msgstr "LISP"
-
-#: script/data/indentation/lua.js:2
-#, kde-format
-msgctxt "Autoindent mode"
-msgid "Lua"
-msgstr "Lua"
 
 #: script/data/indentation/pascal.js:2
 #, kde-format
@@ -3333,7 +3256,7 @@ msgstr "Nem sikerült betölteni ezt a szkriptet: %1\n"
 msgid "Error loading script %1"
 msgstr "Nem sikerült betölteni egy szkriptet: %1"
 
-#: script/katescriptmanager.cpp:307
+#: script/katescriptmanager.cpp:315
 #, kde-format
 msgid "Reload all JavaScript files (indenters, command line scripts, etc)."
 msgstr ""
@@ -3395,196 +3318,192 @@ msgstr "A fájl teteje elérve. Folytatja az aljától?"
 msgid "Continue search?"
 msgstr "Folytatja a keresést?"
 
-#: search/katesearchbar.cpp:905
-#, fuzzy, kde-format
-#| msgid "Search Highlight"
+#: search/katesearchbar.cpp:917
+#, kde-format
 msgid "SearchHighLight"
 msgstr "Keresés kiemelése"
 
-#: search/katesearchbar.cpp:1144
+#: search/katesearchbar.cpp:1156
 #, kde-format
 msgid "Beginning of line"
 msgstr "Sor elejére"
 
-#: search/katesearchbar.cpp:1145
+#: search/katesearchbar.cpp:1157
 #, kde-format
 msgid "End of line"
 msgstr "Sor vége"
 
-#: search/katesearchbar.cpp:1147
-#, fuzzy, kde-format
-#| msgid "Any single character (excluding line breaks)"
+#: search/katesearchbar.cpp:1159
+#, kde-format
 msgid "Match any character excluding new line (by default)"
-msgstr "Egyetlen karakter (kivéve a sorvég jeleket)"
+msgstr "Bármely karakter, kivéve az új sor jel (alapértelmezés)"
 
-#: search/katesearchbar.cpp:1148
+#: search/katesearchbar.cpp:1160
 #, kde-format
 msgid "One or more occurrences"
 msgstr "Egy vagy több előfordulás"
 
-#: search/katesearchbar.cpp:1149
+#: search/katesearchbar.cpp:1161
 #, kde-format
 msgid "Zero or more occurrences"
 msgstr "Nulla vagy több előfordulás"
 
-#: search/katesearchbar.cpp:1150
+#: search/katesearchbar.cpp:1162
 #, kde-format
 msgid "Zero or one occurrences"
 msgstr "Nulla vagy egy előfordulás"
 
-#: search/katesearchbar.cpp:1153
+#: search/katesearchbar.cpp:1165
 #, kde-format
 msgid "<a> through <b> occurrences"
 msgstr "<a> és <b> előfordulás között"
 
-#: search/katesearchbar.cpp:1159
+#: search/katesearchbar.cpp:1171
 #, kde-format
 msgid "Group, capturing"
 msgstr "Csoport vagy együttes"
 
-#: search/katesearchbar.cpp:1160
+#: search/katesearchbar.cpp:1172
 #, kde-format
 msgid "Or"
 msgstr "Vagy"
 
-#: search/katesearchbar.cpp:1161
+#: search/katesearchbar.cpp:1173
 #, kde-format
 msgid "Set of characters"
 msgstr "Karakterek"
 
-#: search/katesearchbar.cpp:1162
+#: search/katesearchbar.cpp:1174
 #, kde-format
 msgid "Negative set of characters"
 msgstr "Kivétel karakterek"
 
-#: search/katesearchbar.cpp:1166
+#: search/katesearchbar.cpp:1178
 #, kde-format
 msgid "Whole match reference"
 msgstr "Teljes illeszkedés"
 
-#: search/katesearchbar.cpp:1177
+#: search/katesearchbar.cpp:1189
 #, kde-format
 msgid "Reference"
 msgstr "Hivatkozás"
 
-#: search/katesearchbar.cpp:1184
+#: search/katesearchbar.cpp:1196
 #, kde-format
 msgid "Line break"
 msgstr "Sortörés"
 
-#: search/katesearchbar.cpp:1185
+#: search/katesearchbar.cpp:1197
 #, kde-format
 msgid "Tab"
 msgstr "Tab"
 
-#: search/katesearchbar.cpp:1188
+#: search/katesearchbar.cpp:1200
 #, kde-format
 msgid "Word boundary"
 msgstr "Szóhatár"
 
-#: search/katesearchbar.cpp:1189
+#: search/katesearchbar.cpp:1201
 #, kde-format
 msgid "Not word boundary"
 msgstr "Nem szóhatár"
 
-#: search/katesearchbar.cpp:1190
+#: search/katesearchbar.cpp:1202
 #, kde-format
 msgid "Digit"
 msgstr "Számjegy"
 
-#: search/katesearchbar.cpp:1191
+#: search/katesearchbar.cpp:1203
 #, kde-format
 msgid "Non-digit"
 msgstr "Nem számjegy"
 
-#: search/katesearchbar.cpp:1192
+#: search/katesearchbar.cpp:1204
 #, kde-format
 msgid "Whitespace (excluding line breaks)"
 msgstr "Üres karakter (kivéve a sorvég jeleket)"
 
-#: search/katesearchbar.cpp:1193
-#, fuzzy, kde-format
-#| msgid "Spaces"
+#: search/katesearchbar.cpp:1205
+#, kde-format
 msgid "Non-whitespace"
-msgstr "Szóközök"
+msgstr "Nem üres karakter"
 
-#: search/katesearchbar.cpp:1194
+#: search/katesearchbar.cpp:1206
 #, kde-format
 msgid "Word character (alphanumerics plus '_')"
 msgstr "Szóalkotó karakter (betű, szám vagy „_”)"
 
-#: search/katesearchbar.cpp:1195
+#: search/katesearchbar.cpp:1207
 #, kde-format
 msgid "Non-word character"
 msgstr "Szóelválasztó karakter"
 
-#: search/katesearchbar.cpp:1198
+#: search/katesearchbar.cpp:1210
 #, kde-format
 msgid "Octal character 000 to 377 (2^8-1)"
 msgstr "Oktális karakter 000 .. 377 (2^8-1)"
 
-#: search/katesearchbar.cpp:1199
+#: search/katesearchbar.cpp:1211
 #, kde-format
 msgid "Hex character 0000 to FFFF (2^16-1)"
 msgstr "Hexadecimális karakter 0000 .. FFFF (2^16-1)"
 
-#: search/katesearchbar.cpp:1200
+#: search/katesearchbar.cpp:1212
 #, kde-format
 msgid "Backslash"
 msgstr "Backslash"
 
-#: search/katesearchbar.cpp:1204
+#: search/katesearchbar.cpp:1216
 #, kde-format
 msgid "Group, non-capturing"
 msgstr "Csoport, de nem együttes"
 
-#: search/katesearchbar.cpp:1205
-#, fuzzy, kde-format
-#| msgid "Negative lookahead"
+#: search/katesearchbar.cpp:1217
+#, kde-format
 msgid "Positive Lookahead"
-msgstr "Visszafelé néző karakter"
+msgstr "Előrefelé néző karakter"
 
-#: search/katesearchbar.cpp:1206
+#: search/katesearchbar.cpp:1218
 #, kde-format
 msgid "Negative lookahead"
 msgstr "Visszafelé néző karakter"
 
-#: search/katesearchbar.cpp:1210
+#: search/katesearchbar.cpp:1222
 #, kde-format
 msgid "Fixed-length positive lookbehind"
-msgstr ""
+msgstr "Fix hosszúságú előrefelé néző karakter"
 
-#: search/katesearchbar.cpp:1211
+#: search/katesearchbar.cpp:1223
 #, kde-format
 msgid "Fixed-length negative lookbehind"
-msgstr ""
+msgstr "Fix hosszúságú visszafelé néző karakter"
 
-#: search/katesearchbar.cpp:1216
+#: search/katesearchbar.cpp:1228
 #, kde-format
 msgid "Begin lowercase conversion"
 msgstr "Kisbetűkre alakítás indítása"
 
-#: search/katesearchbar.cpp:1217
+#: search/katesearchbar.cpp:1229
 #, kde-format
 msgid "Begin uppercase conversion"
 msgstr "Nagybetűkre alakítás megkezdése"
 
-#: search/katesearchbar.cpp:1218
+#: search/katesearchbar.cpp:1230
 #, kde-format
 msgid "End case conversion"
 msgstr "Alakítás befejezése"
 
-#: search/katesearchbar.cpp:1219
+#: search/katesearchbar.cpp:1231
 #, kde-format
 msgid "Lowercase first character conversion"
 msgstr "Első karakterek kisbetűre alakítása"
 
-#: search/katesearchbar.cpp:1220
+#: search/katesearchbar.cpp:1232
 #, kde-format
 msgid "Uppercase first character conversion"
 msgstr "Első karakterek nagybetűre alakítása"
 
-#: search/katesearchbar.cpp:1221
+#: search/katesearchbar.cpp:1233
 #, kde-format
 msgid "Replacement counter (for Replace All)"
 msgstr "Csereszámláló („Mindet cserélje” esetén)"
@@ -3617,10 +3536,9 @@ msgstr "Ugrás az előző találatra"
 
 #. i18n: ectx: property (toolTip), widget (QToolButton, matchCase)
 #: search/searchbarincremental.ui:121 search/searchbarpower.ui:136
-#, fuzzy, kde-format
-#| msgid "Case sensitive"
+#, kde-format
 msgid "Match case sensitive"
-msgstr "Nagybetűérzékeny"
+msgstr "Kis- és nagybetű érzékeny"
 
 #. i18n: ectx: property (toolTip), widget (QToolButton, mutate)
 #: search/searchbarincremental.ui:161
@@ -3632,7 +3550,7 @@ msgstr "Kibővített keresősávra váltás"
 #: search/searchbarpower.ui:50
 #, kde-format
 msgid "Fin&d:"
-msgstr ""
+msgstr "&Keresés:"
 
 #. i18n: ectx: property (text), widget (QLabel, label_3)
 #: search/searchbarpower.ui:63
@@ -3678,11 +3596,9 @@ msgstr "Reguláris kifejezés"
 
 #. i18n: ectx: property (toolTip), widget (QToolButton, selectionOnly)
 #: search/searchbarpower.ui:153
-#, fuzzy, kde-format
-#| msgctxt "short translation please"
-#| msgid "Set the text selection color."
+#, kde-format
 msgid "Search in the selection only"
-msgstr "Szövegkijelölő szín beállítása."
+msgstr "Keresés csak a kijelölésben"
 
 #. i18n: ectx: property (toolTip), widget (QPushButton, replaceNext)
 #: search/searchbarpower.ui:211
@@ -3995,16 +3911,13 @@ msgid "Add to Dictionary"
 msgstr "Felvétel a szótárba"
 
 #: swapfile/kateswapdiffcreator.cpp:88
-#, fuzzy, kde-format
-#| msgid ""
-#| "The diff command failed. Please make sure that diff(1) is installed and "
-#| "in your PATH."
+#, kde-format
 msgid ""
 "The diff command could not be started. Please make sure that diff(1) is "
 "installed and in your PATH."
 msgstr ""
-"A diff parancs végrehajtása nem sikerült. Ellenőrizze, hogy a diff(1) "
-"parancs telepítve van-e és szerepel-e az elérési útban."
+"A diff parancs nem indítható el. Ellenőrizze, hogy a diff(1) parancs "
+"telepítve van-e és szerepel-e az elérési útban (PATH)."
 
 #: swapfile/kateswapfile.cpp:631
 #, kde-format
@@ -4027,15 +3940,12 @@ msgid "Discard"
 msgstr "Eldobás"
 
 #: syntax/katecolortreewidget.cpp:34 syntax/katecolortreewidget.cpp:61
-#, fuzzy, kde-format
-#| msgid "Use default color from the KDE color scheme"
+#, kde-format
 msgid "Use default color from the color theme"
-msgstr "A KDE színséma alapértelmezett színeinek használata"
+msgstr "A színtéma alapértelmezett színeinek használata"
 
 #: syntax/katehighlightmenu.cpp:38
-#, fuzzy, kde-format
-#| msgctxt "Autoindent mode"
-#| msgid "None"
+#, kde-format
 msgid "None"
 msgstr "Nincs"
 
@@ -4346,10 +4256,9 @@ msgid "Error"
 msgstr "Hiba"
 
 #: syntax/katethemeconfig.cpp:142
-#, fuzzy, kde-format
-#| msgid "Use Default"
+#, kde-format
 msgid "Use Default Colors"
-msgstr "Az alapértelmezés használata"
+msgstr "Alapértelmezett színek használata"
 
 #: syntax/katethemeconfig.cpp:162
 #, kde-format
@@ -4573,7 +4482,7 @@ msgstr ""
 msgid "Marker Colors"
 msgstr "Jelölőszínek"
 
-#: syntax/katethemeconfig.cpp:304 view/kateviewhelpers.cpp:1473
+#: syntax/katethemeconfig.cpp:304 view/kateviewhelpers.cpp:1474
 #, kde-format
 msgid "Bookmark"
 msgstr "Könyvjelző"
@@ -4643,13 +4552,7 @@ msgid "Not Editable Placeholder"
 msgstr "Nem szerkeszthető helykitöltő"
 
 #: syntax/katethemeconfig.cpp:481
-#, fuzzy, kde-format
-#| msgid ""
-#| "<p>This list displays the default styles for the current schema and "
-#| "offers the means to edit them. The style name reflects the current style "
-#| "settings.</p><p>To edit the colors, click the colored squares, or select "
-#| "the color to edit from the popup menu.</p><p>You can unset the Background "
-#| "and Selected Background colors from the popup menu when appropriate.</p>"
+#, kde-format
 msgid ""
 "<p>This list displays the default styles for the current color theme and "
 "offers the means to edit them. The style name reflects the current style "
@@ -4657,8 +4560,8 @@ msgid ""
 "color to edit from the popup menu.</p><p>You can unset the Background and "
 "Selected Background colors from the popup menu when appropriate.</p>"
 msgstr ""
-"<p>Ebben a listában a jelenlegi szintaxiskiemelési mód alapértelmezett "
-"stílusai láthatók, és mód van azok szerkesztésére. A stílusnév a jelenlegi "
+"<p>Ebben a listában a jelenlegi színtéma mód alapértelmezett stílusai "
+"láthatók, és mód van azok szerkesztésére. A stílusnév a jelenlegi "
 "stílusbeállításokat tükrözi.</p><p>Szerkesztéshez kattintson a színes "
 "téglalapokra vagy válassza ki a színt a felbukkanó menüből.</p><p>Vissza "
 "lehet állítani a Háttér és a Kijelölt háttér színeit a felbukkanó menüből "
@@ -4720,17 +4623,14 @@ msgstr ""
 "felbukkanó menüből (ha szükség van rá).</p>"
 
 #: syntax/katethemeconfig.cpp:1001
-#, fuzzy, kde-format
-#| msgctxt "Language"
-#| msgid "Scheme"
+#, kde-format
 msgid "&Theme:"
-msgstr "Scheme"
+msgstr "&Téma:"
 
 #: syntax/katethemeconfig.cpp:1010
-#, fuzzy, kde-format
-#| msgid "Save &Copy As..."
+#, kde-format
 msgid "&Copy..."
-msgstr "&Másolat mentése másként…"
+msgstr "Más&olás…"
 
 #: syntax/katethemeconfig.cpp:1018
 #, kde-format
@@ -4745,7 +4645,7 @@ msgstr "Importálás…"
 #: syntax/katethemeconfig.cpp:1029
 #, kde-format
 msgid "Bundled read-only theme. To modify the theme, please copy it."
-msgstr ""
+msgstr "Csomagolt, csak olvasható téma. A téma módosításához másolja le azt."
 
 #: syntax/katethemeconfig.cpp:1040
 #, kde-format
@@ -4763,94 +4663,81 @@ msgid "Highlighting Text Styles"
 msgstr "Kiemelt szövegstílusok"
 
 #: syntax/katethemeconfig.cpp:1054
-#, fuzzy, kde-format
-#| msgid "&Default schema for %1:"
+#, kde-format
 msgid "&Default theme for %1:"
-msgstr "Ala&pértelmezett összeállítás (%1):"
+msgstr "A(z) %1 ala&pértelmezett témája:"
 
 #: syntax/katethemeconfig.cpp:1072
-#, fuzzy, kde-format
-#| msgid "Exporting color schema: %1"
+#, kde-format
 msgid "Exporting color theme: %1"
-msgstr "Színséma exportálása: %1"
+msgstr "Színtéma exportálása: %1"
 
 #: syntax/katethemeconfig.cpp:1074 syntax/katethemeconfig.cpp:1095
-#, fuzzy, kde-format
-#| msgid "Colors"
+#, kde-format
 msgid "Color theme"
-msgstr "Színek"
+msgstr "Színtéma"
 
 #: syntax/katethemeconfig.cpp:1095
-#, fuzzy, kde-format
-#| msgid "Importing Color Schema"
+#, kde-format
 msgid "Importing Color Theme"
-msgstr "Színséma importálása"
+msgstr "Színtéma importálása"
 
 #: syntax/katethemeconfig.cpp:1109
-#, fuzzy, kde-format
-#| msgid "Do you really want to delete the snippet \"%1\"?"
+#, kde-format
 msgid ""
 "Importing will overwrite the existing theme file \"%1\". This can not be "
 "undone."
-msgstr "Valóban törölni szeretné a(z) „%1” töredéket?"
+msgstr ""
+"Az importálás felülírja a meglévő „%1” témafájlt. Ez nem vonható vissza."
 
 #: syntax/katethemeconfig.cpp:1111
-#, fuzzy, kde-format
-#| msgid "Close Nevertheless"
+#, kde-format
 msgid "Import Nevertheless"
-msgstr "Bezárás"
+msgstr "Importálás mindenképp"
 
 #: syntax/katethemeconfig.cpp:1193
-#, fuzzy, kde-format
-#| msgid "Automatic Spell Checking"
+#, kde-format
 msgid "Automatic Selection"
-msgstr "Automatikus helyesírás-ellenőrzés"
+msgstr "Automatikus kijelölés"
 
 #: syntax/katethemeconfig.cpp:1257
-#, fuzzy, kde-format
-#| msgid "Do you really want to delete the snippet \"%1\"?"
+#, kde-format
 msgid "Do you really want to delete the theme \"%1\"? This can not be undone."
-msgstr "Valóban törölni szeretné a(z) „%1” töredéket?"
+msgstr ""
+"Biztosan törölni szeretné a(z) „%1” témát? A művelet nem vonható vissza."
 
 #: syntax/katethemeconfig.cpp:1259
-#, fuzzy, kde-format
-#| msgid "Close Nevertheless"
+#, kde-format
 msgid "Delete Nevertheless"
-msgstr "Bezárás"
+msgstr "Törlés mindenképp"
 
 #: syntax/katethemeconfig.cpp:1301
-#, fuzzy, kde-format
-#| msgid "Colors"
+#, kde-format
 msgid "Copy theme"
-msgstr "Színek"
+msgstr "Téma másolása"
 
 #: syntax/katethemeconfig.cpp:1302
 #, kde-format
 msgid "Name for copy of color theme \"%1\":"
-msgstr ""
+msgstr "A(z) „%1” színtéma másolatának neve:"
 
 #: syntax/katethemeconfig.cpp:1313
-#, fuzzy, kde-format
-#| msgid ""
-#| "<p>The schema %1 already exists.</p><p>Please choose a different schema "
-#| "name.</p>"
+#, kde-format
 msgid ""
 "<p>The theme \"%1\" already exists.</p><p>Please choose a different theme "
 "name.</p>"
 msgstr ""
-"<p>A(z) %1 séma már létezik.</p><p>Válasszon másik nevet a sémának.</p>"
+"<p>A(z) „%1” téma már létezik.</p><p>Válasszon másik nevet a témának.</p>"
 
 #: syntax/katethemeconfig.cpp:1314
-#, fuzzy, kde-format
-#| msgid "Colors"
+#, kde-format
 msgid "Copy Theme"
-msgstr "Színek"
+msgstr "Téma másolása"
 
 #: syntax/katethemeconfig.cpp:1367 syntax/katethemeconfig.cpp:1372
-#, fuzzy, kde-format
-#| msgid "Colors"
+#, kde-format
 msgid "Color Themes"
-msgstr "Színek"
+msgstr "Színtémák"
 
 #: utils/kateautoindent.cpp:87
 #, kde-format
@@ -5293,391 +5180,390 @@ msgstr ""
 "„PM” értékkel.</td></tr><tr><td>ap</td><td>am/pm megjelenítés használata. Az "
 "ap lesz helyettesítve „am” vagy „pm” értékkel.</td></tr></table></p>"
 
-#: utils/kateglobal.cpp:68
+#: utils/kateglobal.cpp:64
 #, kde-format
 msgid "Kate Part"
 msgstr "Kate objektum"
 
-#: utils/kateglobal.cpp:70
+#: utils/kateglobal.cpp:66
 #, kde-format
 msgid "Embeddable editor component"
 msgstr "Beágyazható szövegszerkesztő-komponens"
 
-#: utils/kateglobal.cpp:72
-#, fuzzy, kde-format
-#| msgid "(c) 2000-2005 The Kate Authors"
+#: utils/kateglobal.cpp:68
+#, kde-format
 msgid "(c) 2000-2021 The Kate Authors"
-msgstr "(c) A Kate szerzői, 2000-2005."
+msgstr "(c) A Kate szerzői, 2000-2021."
 
-#: utils/kateglobal.cpp:97
+#: utils/kateglobal.cpp:88
 #, kde-format
 msgid "Christoph Cullmann"
 msgstr "Christoph Cullmann"
 
-#: utils/kateglobal.cpp:97
+#: utils/kateglobal.cpp:88
 #, kde-format
 msgid "Maintainer"
 msgstr "Karbantartó"
 
-#: utils/kateglobal.cpp:98
+#: utils/kateglobal.cpp:89
 #, kde-format
 msgid "Dominik Haumann"
 msgstr "Dominik Haumann"
 
-#: utils/kateglobal.cpp:98 utils/kateglobal.cpp:99 utils/kateglobal.cpp:101
-#: utils/kateglobal.cpp:109 utils/kateglobal.cpp:112 utils/kateglobal.cpp:117
+#: utils/kateglobal.cpp:89 utils/kateglobal.cpp:90 utils/kateglobal.cpp:92
+#: utils/kateglobal.cpp:100 utils/kateglobal.cpp:103 utils/kateglobal.cpp:108
 #, kde-format
 msgid "Core Developer"
 msgstr "Kiemelt fejlesztő"
 
-#: utils/kateglobal.cpp:99
+#: utils/kateglobal.cpp:90
 #, kde-format
 msgid "Milian Wolff"
 msgstr "Milian Wolff"
 
-#: utils/kateglobal.cpp:100
+#: utils/kateglobal.cpp:91
 #, kde-format
 msgid "Joseph Wenninger"
 msgstr "Joseph Wenninger"
 
-#: utils/kateglobal.cpp:104
+#: utils/kateglobal.cpp:95
 #, kde-format
 msgid "Erlend Hamberg"
 msgstr "Erlend Hamberg"
 
-#: utils/kateglobal.cpp:105
+#: utils/kateglobal.cpp:96
 #, kde-format
 msgid "Bernhard Beschow"
 msgstr "Bernhard Beschow"
 
-#: utils/kateglobal.cpp:106 utils/kateglobal.cpp:124
+#: utils/kateglobal.cpp:97 utils/kateglobal.cpp:115
 #, kde-format
 msgid "Developer"
 msgstr "Fejlesztő"
 
-#: utils/kateglobal.cpp:109
+#: utils/kateglobal.cpp:100
 #, kde-format
 msgid "Anders Lund"
 msgstr "Anders Lund"
 
-#: utils/kateglobal.cpp:110
+#: utils/kateglobal.cpp:101
 #, kde-format
 msgid "Michel Ludwig"
 msgstr "Michel Ludwig"
 
-#: utils/kateglobal.cpp:110
+#: utils/kateglobal.cpp:101
 #, kde-format
 msgid "On-the-fly spell checking"
 msgstr "Automatikus helyesírás-ellenőrzés"
 
-#: utils/kateglobal.cpp:111
+#: utils/kateglobal.cpp:102
 #, kde-format
 msgid "Pascal Létourneau"
 msgstr "Pascal Létourneau"
 
-#: utils/kateglobal.cpp:111
+#: utils/kateglobal.cpp:102
 #, kde-format
 msgid "Large scale bug fixing"
 msgstr "Sok-sok hibajavítás"
 
-#: utils/kateglobal.cpp:112
+#: utils/kateglobal.cpp:103
 #, kde-format
 msgid "Hamish Rodda"
 msgstr "Hamish Rodda"
 
-#: utils/kateglobal.cpp:113
+#: utils/kateglobal.cpp:104
 #, kde-format
 msgid "Waldo Bastian"
 msgstr "Waldo Bastian"
 
-#: utils/kateglobal.cpp:113
+#: utils/kateglobal.cpp:104
 #, kde-format
 msgid "The cool buffersystem"
 msgstr "A nagyszerű pufferelési rendszer"
 
-#: utils/kateglobal.cpp:114
+#: utils/kateglobal.cpp:105
 #, kde-format
 msgid "Charles Samuels"
 msgstr "Charles Samuels"
 
-#: utils/kateglobal.cpp:114
+#: utils/kateglobal.cpp:105
 #, kde-format
 msgid "The Editing Commands"
 msgstr "Szerkesztési parancsok"
 
-#: utils/kateglobal.cpp:115
+#: utils/kateglobal.cpp:106
 #, kde-format
 msgid "Matt Newell"
 msgstr "Matt Newell"
 
-#: utils/kateglobal.cpp:115
+#: utils/kateglobal.cpp:106
 #, kde-format
 msgid "Testing, ..."
 msgstr "Tesztelés stb."
 
-#: utils/kateglobal.cpp:116
+#: utils/kateglobal.cpp:107
 #, kde-format
 msgid "Michael Bartl"
 msgstr "Michael Bartl"
 
-#: utils/kateglobal.cpp:116
+#: utils/kateglobal.cpp:107
 #, kde-format
 msgid "Former Core Developer"
 msgstr "Korábbi vezető fejlesztő"
 
-#: utils/kateglobal.cpp:117
+#: utils/kateglobal.cpp:108
 #, kde-format
 msgid "Michael McCallum"
 msgstr "Michael McCallum"
 
-#: utils/kateglobal.cpp:118
+#: utils/kateglobal.cpp:109
 #, kde-format
 msgid "Michael Koch"
 msgstr "Michael Koch"
 
-#: utils/kateglobal.cpp:118
+#: utils/kateglobal.cpp:109
 #, kde-format
 msgid "KWrite port to KParts"
 msgstr "A KWrite újraírása objektumok felhasználásával"
 
-#: utils/kateglobal.cpp:119
+#: utils/kateglobal.cpp:110
 #, kde-format
 msgid "Christian Gebauer"
 msgstr "Christian Gebauer"
 
-#: utils/kateglobal.cpp:120
+#: utils/kateglobal.cpp:111
 #, kde-format
 msgid "Simon Hausmann"
 msgstr "Simon Hausmann"
 
-#: utils/kateglobal.cpp:121
+#: utils/kateglobal.cpp:112
 #, kde-format
 msgid "Glen Parker"
 msgstr "Glen Parker"
 
-#: utils/kateglobal.cpp:121
+#: utils/kateglobal.cpp:112
 #, kde-format
 msgid "KWrite Undo History, Kspell integration"
 msgstr "KWrite visszavonási napló, KSpell-integráció"
 
-#: utils/kateglobal.cpp:122
+#: utils/kateglobal.cpp:113
 #, kde-format
 msgid "Scott Manson"
 msgstr "Scott Manson"
 
-#: utils/kateglobal.cpp:122
+#: utils/kateglobal.cpp:113
 #, kde-format
 msgid "KWrite XML Syntax highlighting support"
 msgstr "XML-szintaxiskiemelés a KWrite-ban"
 
-#: utils/kateglobal.cpp:123
+#: utils/kateglobal.cpp:114
 #, kde-format
 msgid "John Firebaugh"
 msgstr "John Firebaugh"
 
-#: utils/kateglobal.cpp:123
+#: utils/kateglobal.cpp:114
 #, kde-format
 msgid "Patches and more"
 msgstr "Javítások stb."
 
-#: utils/kateglobal.cpp:124
+#: utils/kateglobal.cpp:115
 #, kde-format
 msgid "Andreas Kling"
 msgstr "Andreas Kling"
 
-#: utils/kateglobal.cpp:125
+#: utils/kateglobal.cpp:116
 #, kde-format
 msgid "Mirko Stocker"
 msgstr "Mirko Stocker"
 
-#: utils/kateglobal.cpp:125
+#: utils/kateglobal.cpp:116
 #, kde-format
 msgid "Various bugfixes"
 msgstr "Hibajavítások"
 
-#: utils/kateglobal.cpp:126
+#: utils/kateglobal.cpp:117
 #, kde-format
 msgid "Matthew Woehlke"
 msgstr "Matthew Woehlke"
 
-#: utils/kateglobal.cpp:126
+#: utils/kateglobal.cpp:117
 #, kde-format
 msgid "Selection, KColorScheme integration"
 msgstr "Kijelölés, KColorScheme-integráció"
 
-#: utils/kateglobal.cpp:127
+#: utils/kateglobal.cpp:118
 #, kde-format
 msgid "Sebastian Pipping"
 msgstr "Sebastian Pipping"
 
-#: utils/kateglobal.cpp:128
+#: utils/kateglobal.cpp:119
 #, kde-format
 msgid "Search bar back- and front-end"
 msgstr "Keresősáv-motor és kezelőfelület"
 
-#: utils/kateglobal.cpp:131
+#: utils/kateglobal.cpp:122
 #, kde-format
 msgid "Jochen Wilhelmy"
 msgstr "Jochen Wilhelmy"
 
-#: utils/kateglobal.cpp:131
+#: utils/kateglobal.cpp:122
 #, kde-format
 msgid "Original KWrite Author"
 msgstr "A KWrite eredeti szerzője"
 
-#: utils/kateglobal.cpp:132
+#: utils/kateglobal.cpp:123
 #, kde-format
 msgid "Gerald Senarclens de Grancy"
 msgstr "Gerald Senarclens de Grancy"
 
-#: utils/kateglobal.cpp:133
+#: utils/kateglobal.cpp:124
 #, kde-format
 msgid "QA and Scripting"
 msgstr "QA és szkriptelés"
 
-#: utils/kateglobal.cpp:137
+#: utils/kateglobal.cpp:128
 #, kde-format
 msgid "Matteo Merli"
 msgstr "Matteo Merli"
 
-#: utils/kateglobal.cpp:137
+#: utils/kateglobal.cpp:128
 #, kde-format
 msgid "Highlighting for RPM Spec-Files, Perl, Diff and more"
 msgstr "Az RPM-leíró, Perl, Diff stb. fájlok szintaxiskiemelése"
 
-#: utils/kateglobal.cpp:138
+#: utils/kateglobal.cpp:129
 #, kde-format
 msgid "Rocky Scaletta"
 msgstr "Rocky Scaletta"
 
-#: utils/kateglobal.cpp:138
+#: utils/kateglobal.cpp:129
 #, kde-format
 msgid "Highlighting for VHDL"
 msgstr "VHDL-szintaxiskiemelés"
 
-#: utils/kateglobal.cpp:139
+#: utils/kateglobal.cpp:130
 #, kde-format
 msgid "Yury Lebedev"
 msgstr "Yury Lebedev"
 
-#: utils/kateglobal.cpp:139
+#: utils/kateglobal.cpp:130
 #, kde-format
 msgid "Highlighting for SQL"
 msgstr "SQL-szintaxiskiemelés"
 
-#: utils/kateglobal.cpp:140
+#: utils/kateglobal.cpp:131
 #, kde-format
 msgid "Chris Ross"
 msgstr "Chris Ross"
 
-#: utils/kateglobal.cpp:140
+#: utils/kateglobal.cpp:131
 #, kde-format
 msgid "Highlighting for Ferite"
 msgstr "Ferite-szintaxiskiemelés"
 
-#: utils/kateglobal.cpp:141
+#: utils/kateglobal.cpp:132
 #, kde-format
 msgid "Nick Roux"
 msgstr "Nick Roux"
 
-#: utils/kateglobal.cpp:141
+#: utils/kateglobal.cpp:132
 #, kde-format
 msgid "Highlighting for ILERPG"
 msgstr "ILERPG-szintaxiskiemelés"
 
-#: utils/kateglobal.cpp:142
+#: utils/kateglobal.cpp:133
 #, kde-format
 msgid "Carsten Niehaus"
 msgstr "Carsten Niehaus"
 
-#: utils/kateglobal.cpp:142
+#: utils/kateglobal.cpp:133
 #, kde-format
 msgid "Highlighting for LaTeX"
 msgstr "LaTeX-szintaxiskiemelés"
 
-#: utils/kateglobal.cpp:143
+#: utils/kateglobal.cpp:134
 #, kde-format
 msgid "Per Wigren"
 msgstr "Per Wigren"
 
-#: utils/kateglobal.cpp:143
+#: utils/kateglobal.cpp:134
 #, kde-format
 msgid "Highlighting for Makefiles, Python"
 msgstr "A Makefile-ok és a Python szintaxiskiemelése"
 
-#: utils/kateglobal.cpp:144
+#: utils/kateglobal.cpp:135
 #, kde-format
 msgid "Jan Fritz"
 msgstr "Jan Fritz"
 
-#: utils/kateglobal.cpp:144
+#: utils/kateglobal.cpp:135
 #, kde-format
 msgid "Highlighting for Python"
 msgstr "Python-szintaxiskiemelés"
 
-#: utils/kateglobal.cpp:145
+#: utils/kateglobal.cpp:136
 #, kde-format
 msgid "Daniel Naber"
 msgstr "Daniel Naber"
 
-#: utils/kateglobal.cpp:146
+#: utils/kateglobal.cpp:137
 #, kde-format
 msgid "Roland Pabel"
 msgstr "Roland Pabel"
 
-#: utils/kateglobal.cpp:146
+#: utils/kateglobal.cpp:137
 #, kde-format
 msgid "Highlighting for Scheme"
 msgstr "Scheme-szintaxiskiemelés"
 
-#: utils/kateglobal.cpp:147
+#: utils/kateglobal.cpp:138
 #, kde-format
 msgid "Cristi Dumitrescu"
 msgstr "Cristi Dumitrescu"
 
-#: utils/kateglobal.cpp:147
+#: utils/kateglobal.cpp:138
 #, kde-format
 msgid "PHP Keyword/Datatype list"
 msgstr "PHP kulcsszó- és adattípuslista"
 
-#: utils/kateglobal.cpp:148
+#: utils/kateglobal.cpp:139
 #, kde-format
 msgid "Carsten Pfeiffer"
 msgstr "Carsten Pfeiffer"
 
-#: utils/kateglobal.cpp:148
+#: utils/kateglobal.cpp:139
 #, kde-format
 msgid "Very nice help"
 msgstr "Sokat segített"
 
-#: utils/kateglobal.cpp:149
+#: utils/kateglobal.cpp:140
 #, kde-format
 msgid "Bruno Massa"
 msgstr "Bruno Massa"
 
-#: utils/kateglobal.cpp:149
+#: utils/kateglobal.cpp:140
 #, kde-format
 msgid "Highlighting for Lua"
 msgstr "Lua-szintaxiskiemelés"
 
-#: utils/kateglobal.cpp:151
+#: utils/kateglobal.cpp:142
 #, kde-format
 msgid "All people who have contributed and I have forgotten to mention"
 msgstr "Mindenki, aki segített valamiben, de nincs név szerint megemlítve"
 
-#: utils/kateglobal.cpp:153
+#: utils/kateglobal.cpp:144
 #, kde-format
 msgctxt "NAME OF TRANSLATORS"
 msgid "Your names"
 msgstr "Szántó Tamás"
 
-#: utils/kateglobal.cpp:153
+#: utils/kateglobal.cpp:144
 #, kde-format
 msgctxt "EMAIL OF TRANSLATORS"
 msgid "Your emails"
 msgstr "tszanto@interware.hu"
 
-#: utils/kateglobal.cpp:272
+#: utils/kateglobal.cpp:258
 #, kde-format
 msgid "Configure"
 msgstr "Beállítások"
@@ -5706,73 +5592,63 @@ msgstr[1] "%1 sor"
 #: utils/katevariableexpansionhelpers.cpp:129
 #, kde-format
 msgid "<value>"
-msgstr ""
+msgstr "<érték>"
 
 #: utils/katevariableexpansionhelpers.cpp:213
-#, fuzzy, kde-format
-#| msgid "Insert Tab"
+#, kde-format
 msgid "Insert variable"
-msgstr "Tabulátor beszúrása"
+msgstr "Változó beszúrása"
 
 #: utils/katevariableexpansionhelpers.cpp:221
-#, fuzzy, kde-format
-#| msgid "Filtering"
+#, kde-format
 msgid "Filter"
-msgstr "Szűrés"
+msgstr "Szűrő"
 
 #: utils/katevariableexpansionhelpers.cpp:240
 #: utils/katevariableexpansionhelpers.cpp:261
 #, kde-format
 msgid "Please select a variable."
-msgstr ""
+msgstr "Válasszon egy változót."
 
 #: utils/katevariableexpansionhelpers.cpp:254
-#, fuzzy, kde-format
-#| msgid "Missing argument. Usage: %1 <value>"
+#, kde-format
 msgid "Current value: %1<value>"
-msgstr "Legalább egy argumentum hiányzik. A használati mód: %1 <érték>"
+msgstr "Jelenlegi érték: %1<value>"
 
 #: utils/katevariableexpansionhelpers.cpp:258
-#, fuzzy, kde-format
-#| msgid "Current line:"
+#, kde-format
 msgid "Current value: %1"
-msgstr "Az aktuális sor:"
+msgstr "jelenlegi érték: %1"
 
 #: utils/katevariableexpansionmanager.cpp:33
-#, fuzzy, kde-format
-#| msgid "Select the entire text of the current document."
+#, kde-format
 msgid "File base name without path and suffix of the current document."
-msgstr "Az aktuális dokumentum teljes szövegének kijelölése."
+msgstr "Az aktuális dokumentum bázisneve elérési út és utótag nélkül."
 
 #: utils/katevariableexpansionmanager.cpp:41
-#, fuzzy, kde-format
-#| msgid "Select the entire text of the current document."
+#, kde-format
 msgid "File extension of the current document."
-msgstr "Az aktuális dokumentum teljes szövegének kijelölése."
+msgstr "Az aktuális dokumentum fájlkiterjesztése."
 
 #: utils/katevariableexpansionmanager.cpp:49
-#, fuzzy, kde-format
-#| msgid "Select the entire text of the current document."
+#, kde-format
 msgid "File name without path of the current document."
-msgstr "Az aktuális dokumentum teljes szövegének kijelölése."
+msgstr "Az aktuális dokumentum fájlneve az elérési út nélkül."
 
 #: utils/katevariableexpansionmanager.cpp:57
-#, fuzzy, kde-format
-#| msgid "Save a copy of the current document to disk."
+#, kde-format
 msgid "Full path of the current document including the file name."
-msgstr "A jelenlegi dokumentum másolatának mentése a lemezre."
+msgstr "Az aktuális dokumentum teljes elérési útja a fájlnévvel együtt."
 
 #: utils/katevariableexpansionmanager.cpp:65
-#, fuzzy, kde-format
-#| msgid "Print the current document."
+#, kde-format
 msgid "Contents of the current document."
-msgstr "Kinyomtatja az aktuális dokumentumot."
+msgstr "Az aktuális dokumentum tartalomjegyzéke."
 
 #: utils/katevariableexpansionmanager.cpp:72
-#, fuzzy, kde-format
-#| msgid "Save a copy of the current document to disk."
+#, kde-format
 msgid "Full path of the current document excluding the file name."
-msgstr "A jelenlegi dokumentum másolatának mentése a lemezre."
+msgstr "Az aktuális dokumentum teljes elérési útja a fájlnév kivételével."
 
 #: utils/katevariableexpansionmanager.cpp:80
 #, kde-format
@@ -5780,6 +5656,8 @@ msgid ""
 "Full document path including file name, with native path separator "
 "(backslash on Windows)."
 msgstr ""
+"A dokumentum teljes elérési útja a fájlnévvel együtt, natív útvonal-"
+"elválasztó karakterekkel (Windowson fordított perjel)."
 
 #: utils/katevariableexpansionmanager.cpp:88
 #, kde-format
@@ -5787,12 +5665,16 @@ msgid ""
 "Full document path excluding file name, with native path separator "
 "(backslash on Windows)."
 msgstr ""
+"A dokumentum teljes elérési útja a fájlnév kivételével, natív útvonal-"
+"elválasztó karakterekkel (Windowson fordított perjel)."
 
 #: utils/katevariableexpansionmanager.cpp:96
 #, kde-format
 msgid ""
 "Line number of the text cursor position in current document (starts with 0)."
 msgstr ""
+"A szövegkurzor pozíciójának sorszáma az aktuális dokumentumban (0-val "
+"kezdődik)."
 
 #: utils/katevariableexpansionmanager.cpp:103
 #, kde-format
@@ -5800,112 +5682,103 @@ msgid ""
 "Column number of the text cursor position in current document (starts with "
 "0)."
 msgstr ""
+"A szövegkurzor pozíciójának oszlopszáma az aktuális dokumentumban (0-val "
+"kezdődik)."
 
 #: utils/katevariableexpansionmanager.cpp:110
 #, kde-format
 msgid "X component in global screen coordinates of the cursor position."
-msgstr ""
+msgstr "A kurzorpozíció X komponense globális képernyőkoordinátákban."
 
 #: utils/katevariableexpansionmanager.cpp:117
 #, kde-format
 msgid "Y component in global screen coordinates of the cursor position."
-msgstr ""
+msgstr "A kurzorpozíció Y komponense globális képernyőkoordinátákban."
 
 #: utils/katevariableexpansionmanager.cpp:124
-#, fuzzy, kde-format
-#| msgid "Select the entire text of the current document."
+#, kde-format
 msgid "Text selection of the current document."
-msgstr "Az aktuális dokumentum teljes szövegének kijelölése."
+msgstr "Az aktuális dokumentum szövegkijelölése."
 
 #: utils/katevariableexpansionmanager.cpp:131
-#, fuzzy, kde-format
-#| msgid "Select the entire text of the current document."
+#, kde-format
 msgid "Start line of selected text of the current document."
-msgstr "Az aktuális dokumentum teljes szövegének kijelölése."
+msgstr "Az aktuális dokumentumban kijelölt szöveg első sora."
 
 #: utils/katevariableexpansionmanager.cpp:138
-#, fuzzy, kde-format
-#| msgid "Select the entire text of the current document."
+#, kde-format
 msgid "Start column of selected text of the current document."
-msgstr "Az aktuális dokumentum teljes szövegének kijelölése."
+msgstr "Az aktuális dokumentumban kijelölt szöveg első oszlopa."
 
 #: utils/katevariableexpansionmanager.cpp:145
-#, fuzzy, kde-format
-#| msgid "Select the entire text of the current document."
+#, kde-format
 msgid "End line of selected text of the current document."
-msgstr "Az aktuális dokumentum teljes szövegének kijelölése."
+msgstr "Az aktuális dokumentumban kijelölt szöveg utolsó sora."
 
 #: utils/katevariableexpansionmanager.cpp:152
-#, fuzzy, kde-format
-#| msgid "Select the entire text of the current document."
+#, kde-format
 msgid "End column of selected text of the current document."
-msgstr "Az aktuális dokumentum teljes szövegének kijelölése."
+msgstr "Az aktuális dokumentumban kijelölt szöveg utolsó oszlopa."
 
 #: utils/katevariableexpansionmanager.cpp:159
-#, fuzzy, kde-format
-#| msgid "Remove all bookmarks of the current document."
+#, kde-format
 msgid "Number of rows of the current document."
-msgstr "Az aktuális dokumentumhoz tartozó összes könyvjelző törlése."
+msgstr "Az aktuális dokumentum sorainak száma."
 
 #: utils/katevariableexpansionmanager.cpp:166
-#, fuzzy, kde-format
-#| msgctxt "@item:intable Text context"
-#| msgid "Comment Variable"
+#, kde-format
 msgid "Read a document variable."
-msgstr "Kommentváltozó"
+msgstr "Dokumentumváltozó olvasása."
 
 #: utils/katevariableexpansionmanager.cpp:174
 #, kde-format
 msgid "The current date in current locale format."
-msgstr ""
+msgstr "Az aktuális dátum a jelenlegi területi beállítás szerint."
 
 #: utils/katevariableexpansionmanager.cpp:181
 #, kde-format
 msgid "The current date (ISO)."
-msgstr ""
+msgstr "A jelenlegi dátum (ISO)."
 
 #: utils/katevariableexpansionmanager.cpp:188
-#, fuzzy, kde-format
-#| msgid "Current Date (short format)"
+#, kde-format
 msgid "The current date (QDate formatstring)."
-msgstr "Aktuális dátum (rövid formátum)"
+msgstr "Az aktuális dátum (QDate formátumsztring)."
 
 #: utils/katevariableexpansionmanager.cpp:196
 #, kde-format
 msgid "The current time in current locale format."
-msgstr ""
+msgstr "Az aktuális idő a jelenlegi területi beállítás szerint."
 
 #: utils/katevariableexpansionmanager.cpp:203
 #, kde-format
 msgid "The current time (ISO)."
-msgstr ""
+msgstr "A jelenlegi idő (ISO)."
 
 #: utils/katevariableexpansionmanager.cpp:210
 #, kde-format
 msgid "The current time (QTime formatstring)."
-msgstr ""
+msgstr "A jelenlegi idő (QTime formátumsztring)."
 
 #: utils/katevariableexpansionmanager.cpp:218
 #, kde-format
 msgid "Access to environment variables."
-msgstr ""
+msgstr "Hozzáférés környezeti változókhoz."
 
 #: utils/katevariableexpansionmanager.cpp:226
-#, fuzzy, kde-format
-#| msgctxt "Script command name"
-#| msgid "Evaluate a simple math expression"
+#, kde-format
 msgid "Evaluate simple JavaScript statements."
-msgstr "Egyszerű matematikai kifejezés kiértékelése"
+msgstr "Egyszerű JavaScript utasítások kiértékelése."
 
 #: utils/katevariableexpansionmanager.cpp:236
 #, kde-format
 msgid "Encode text to make it URL compatible."
-msgstr ""
+msgstr "Szöveg kódolása URL kompatibilissé."
 
 #: utils/katevariableexpansionmanager.cpp:244
 #, kde-format
 msgid "Generate a new UUID."
-msgstr ""
+msgstr "Új UUID generálása."
 
 #: variableeditor/katehelpbutton.cpp:19
 #, kde-format
@@ -5935,12 +5808,10 @@ msgid "modified"
 msgstr "módosítva"
 
 #: variableeditor/variableeditor.cpp:307
-#, fuzzy, kde-format
-#| msgctxt "value for variale remove-trailing-spaces"
-#| msgid "all"
+#, kde-format
 msgctxt "value for variable remove-trailing-spaces"
 msgid "all"
-msgstr "minden"
+msgstr "mind"
 
 #: variableeditor/variablelineedit.cpp:42
 #, kde-format
@@ -5948,11 +5819,10 @@ msgid "Show list of valid variables."
 msgstr "Érvényes változók listájának megjelenítése."
 
 #: variableeditor/variablelineedit.cpp:115
-#, fuzzy, kde-format
-#| msgid "Flash matching brackets"
+#, kde-format
 msgctxt "short translation please"
 msgid "Enable automatic insertion of brackets."
-msgstr "Zárójelpárok villogtatása"
+msgstr "Zárójelek automatikus beszúrásának bekapcsolása."
 
 #: variableeditor/variablelineedit.cpp:121
 #, kde-format
@@ -5980,12 +5850,10 @@ msgid "Enable block selection mode."
 msgstr "Blokkos kijelölés bekapcsolása."
 
 #: variableeditor/variablelineedit.cpp:144
-#, fuzzy, kde-format
-#| msgctxt "short translation please"
-#| msgid "Enable the byte order marker when saving unicode files."
+#, kde-format
 msgctxt "short translation please"
 msgid "Enable the byte order mark (BOM) when saving Unicode files."
-msgstr "Bájtsorrendjelölő bekapcsolása Unicode fájlok mentésekor."
+msgstr "Bájtsorrendjelölő (BOM) bekapcsolása Unicode fájlok mentésekor."
 
 #: variableeditor/variablelineedit.cpp:149
 #, kde-format
@@ -6024,12 +5892,10 @@ msgid "Enable folding markers in the editor border."
 msgstr "Bekapcsolja a szegélyjelzőket a szerkesztőben."
 
 #: variableeditor/variablelineedit.cpp:182
-#, fuzzy, kde-format
-#| msgctxt "short translation please"
-#| msgid "Enable folding markers in the editor border."
+#, kde-format
 msgctxt "short translation please"
 msgid "Enable folding preview in the editor border."
-msgstr "Bekapcsolja a szegélyjelzőket a szerkesztőben."
+msgstr "Bekapcsolja a szegélyelőnézetet a szerkesztőben."
 
 #: variableeditor/variablelineedit.cpp:188
 #, kde-format
@@ -6128,18 +5994,16 @@ msgid "Remove trailing spaces when saving the document."
 msgstr "Sorvégi szóközök eltávolítása a dokumentum mentésekor."
 
 #: variableeditor/variablelineedit.cpp:279
-#, fuzzy, kde-format
-#| msgid "Show scrollbar mini-map"
+#, kde-format
 msgctxt "short translation please"
 msgid "Show scrollbar minimap."
-msgstr "Gördítősáv minitérkép megjelenítése"
+msgstr "Gördítősáv minitérkép megjelenítése."
 
 #: variableeditor/variablelineedit.cpp:284
-#, fuzzy, kde-format
-#| msgid "Show &scrollbar marks"
+#, kde-format
 msgctxt "short translation please"
 msgid "Show scrollbar preview."
-msgstr "&Gördítősávjelzők megjelenítése"
+msgstr "Gőrdítősáv előnézetének megjelenítése."
 
 #: variableeditor/variablelineedit.cpp:295
 #, kde-format
@@ -6202,23 +6066,19 @@ msgid "Enable word wrap while typing text."
 msgstr "Gépelés közben szótördelés bekapcsolása."
 
 #: view/katestatusbar.cpp:84
-#, fuzzy, kde-format
-#| msgid "Current cursor position. Doubleclick to go to specific line."
+#, kde-format
 msgid "Current cursor position. Click to go to a specific line."
-msgstr ""
-"Jelenlegi kurzorpozíció. Dupla kattintással ugorhat egy megadott sorra."
+msgstr "Jelenlegi kurzorpozíció. Kattintással ugorhat egy megadott sorra."
 
 #: view/katestatusbar.cpp:100
-#, fuzzy, kde-format
-#| msgid "Insert mode and VI input mode indicator"
+#, kde-format
 msgid "Insert mode and VI input mode indicator. Click to change the mode."
-msgstr "Beszúró mód és VI beviteli mód jelző"
+msgstr "Beszúró mód és VI beviteli mód jelző. Kattintson a módváltáshoz."
 
 #: view/katestatusbar.cpp:108
-#, fuzzy, kde-format
-#| msgid "Change Dictionary..."
+#, kde-format
 msgid "Change dictionary"
-msgstr "Szótárválasztás..."
+msgstr "Szótárválasztás"
 
 #: view/katestatusbar.cpp:134 view/katestatusbar.cpp:479
 #, kde-format
@@ -6256,10 +6116,9 @@ msgid "Encoding"
 msgstr "Kódolás"
 
 #: view/katestatusbar.cpp:174
-#, fuzzy, kde-format
-#| msgid "&Mode"
+#, kde-format
 msgid "Mode"
-msgstr "Mó&d"
+msgstr "Mód"
 
 #: view/katestatusbar.cpp:176 view/kateview.cpp:643
 #, kde-format
@@ -6276,10 +6135,9 @@ msgid "Syntax highlighting"
 msgstr "Szintaxiskiemelés"
 
 #: view/katestatusbar.cpp:272
-#, fuzzy, kde-format
-#| msgid " BLOCK "
+#, kde-format
 msgid "[BLOCK] %1"
-msgstr " BLK "
+msgstr "[BLOKK] %1"
 
 #: view/katestatusbar.cpp:285
 #, kde-format
@@ -6309,10 +6167,9 @@ msgstr ""
 "Az ikon jelentése: a dokumentum módosult, vagy egy másik program törölte"
 
 #: view/katestatusbar.cpp:385
-#, fuzzy, kde-format
-#| msgid "Meaning of current icon: Document was modified since it was loaded"
+#, kde-format
 msgid "Meaning of current icon: Document is in read-only mode"
-msgstr "Az ikon jelentése: a dokumentum módosult a betöltése óta"
+msgstr "Az ikon jelentése: a dokumentum csak olvasható"
 
 #: view/katestatusbar.cpp:398
 #, kde-format
@@ -6357,8 +6214,7 @@ msgid "Please specify the wanted indentation width:"
 msgstr "Adja meg a kívánt behúzási szélességet:"
 
 #: view/katestatusbar.cpp:557
-#, fuzzy, kde-format
-#| msgid "Words %1/%2, Chars %3/%4"
+#, kde-format
 msgctxt ""
 "%1 and %3 are the selected words/chars count, %2 and %4 are the total words/"
 "chars count."
@@ -6368,7 +6224,7 @@ msgstr "%1 / %2 szó, %3 / %4 karakter"
 #: view/katestatusbar.cpp:575
 #, kde-format
 msgid "Zoom: %1%"
-msgstr ""
+msgstr "Nagyítás: %1%"
 
 #: view/kateview.cpp:448
 #, kde-format
@@ -6392,28 +6248,24 @@ msgid "Clipboard &History"
 msgstr "Vágólap &előzmények"
 
 #: view/kateview.cpp:464
-#, fuzzy, kde-format
-#| msgid "Language Selection"
+#, kde-format
 msgid "Paste Selection"
-msgstr "Nyelvválasztás"
+msgstr "A kijelölés beillesztése"
 
 #: view/kateview.cpp:466
-#, fuzzy, kde-format
-#| msgid "Paste previously copied or cut clipboard contents"
+#, kde-format
 msgid "Paste previously mouse selection contents"
-msgstr "A vágólapon található szövegrész beillesztése"
+msgstr "Az egérrel korábban kijelölt tartalom beillesztése"
 
 #: view/kateview.cpp:470
-#, fuzzy, kde-format
-#| msgid "Paste previously copied or cut clipboard contents"
+#, kde-format
 msgid "Swap with clipboard contents"
-msgstr "A vágólapon található szövegrész beillesztése"
+msgstr "Csere a vágólap tartalmára"
 
 #: view/kateview.cpp:471
-#, fuzzy, kde-format
-#| msgid "Cut the selected text and move it to the clipboard"
+#, kde-format
 msgid "Swap the selected text with the clipboard contents"
-msgstr "A kijelölt szövegrész kivágása a vágólapra"
+msgstr "A kijelölt szöveg cseréje a vágólap tartalmával"
 
 #: view/kateview.cpp:475
 #, kde-format
@@ -6447,6 +6299,10 @@ msgid ""
 "paragraph, to fit the 'Wrap words at' setting in the configuration dialog."
 "<br /><br />This is a static word wrap, meaning the document is changed."
 msgstr ""
+"Használja ezt az aktuális sor tördeléséhez, vagy a kijelölt sorok "
+"újraformázásához bekezdésként, hogy illeszkedjenek a „Tördelési oszlop” "
+"beállításhoz.<br /><br />Ez egy statikus szótördelés, azaz megváltoztatja a "
+"dokumentumot."
 
 #: view/kateview.cpp:497
 #, kde-format
@@ -6695,10 +6551,9 @@ msgstr ""
 "milyen legyen."
 
 #: view/kateview.cpp:651
-#, fuzzy, kde-format
-#| msgid "Colors"
+#, kde-format
 msgid "&Color Theme"
-msgstr "Színek"
+msgstr "S&zíntéma"
 
 #: view/kateview.cpp:656
 #, kde-format
@@ -6742,13 +6597,12 @@ msgstr "Lecsökkenti a megjelenítési betűméretet."
 #: view/kateview.cpp:685
 #, kde-format
 msgid "Reset Font Size"
-msgstr ""
+msgstr "Betűméret visszaállítása"
 
 #: view/kateview.cpp:687
-#, fuzzy, kde-format
-#| msgid "This increases the display font size."
+#, kde-format
 msgid "This resets the display font size."
-msgstr "Megnöveli a megjelenítési betűméretet."
+msgstr "Visszaállítja a megjelenítési betűméretet."
 
 #: view/kateview.cpp:690
 #, kde-format
@@ -6765,8 +6619,7 @@ msgstr ""
 "között."
 
 #: view/kateview.cpp:697
-#, fuzzy, kde-format
-#| msgid "Switch to Next Input Mode"
+#, kde-format
 msgid "Switch to next Input Mode"
 msgstr "Váltás a következő beviteli módra"
 
@@ -6795,17 +6648,15 @@ msgid "&Dynamic Word Wrap"
 msgstr "&Dinamikus sortördelés"
 
 #: view/kateview.cpp:713
-#, fuzzy, kde-format
-#| msgid ""
-#| "If this option is checked, the text lines will be wrapped at the view "
-#| "border on the screen."
+#, kde-format
 msgid ""
 "If this option is checked, the text lines will be wrapped at the view border "
 "on the screen.<br /><br />This is only a view option, meaning the document "
 "will not changed."
 msgstr ""
 "Ha ez az opció be van jelölve, akkor a szöveg a nézet széléhez érve "
-"automatikusan új sorban folytatódik."
+"automatikusan új sorban folytatódik.<br /><br />Ez csak egy nézetopció, a "
+"dokumentum nem változik meg."
 
 #: view/kateview.cpp:717
 #, kde-format
@@ -6833,17 +6684,19 @@ msgstr "A sorszámok &után"
 msgid "&Always On"
 msgstr "Mindi&g bekapcsolva"
 
+#: view/kateview.cpp:725
+#, kde-format
+msgid "Static Word Wrap"
+msgstr "Statikus tördelés"
+
 #: view/kateview.cpp:727
-#, fuzzy, kde-format
-#| msgid ""
-#| "If this option is checked, the text lines will be wrapped at the view "
-#| "border on the screen."
+#, kde-format
 msgid ""
 "If this option is checked, the text lines will be wrapped at the column "
 "defined in the editing properties."
 msgstr ""
-"Ha ez az opció be van jelölve, akkor a szöveg a nézet széléhez érve "
-"automatikusan új sorban folytatódik."
+"Ha ez az opció be van jelölve, akkor a szöveg a szerkesztési beállításokban "
+"definiált oszlopban tördelődik."
 
 #: view/kateview.cpp:734
 #, kde-format
@@ -7275,10 +7128,9 @@ msgid "Transpose Characters"
 msgstr "A karakterek transzponálása"
 
 #: view/kateview.cpp:1119
-#, fuzzy, kde-format
-#| msgid "Transpose Characters"
+#, kde-format
 msgid "Transpose Words"
-msgstr "A karakterek transzponálása"
+msgstr "A szavak transzponálása"
 
 #: view/kateview.cpp:1124
 #, kde-format
@@ -7325,16 +7177,16 @@ msgstr ""
 "karakterekkel együtt."
 
 #: view/kateview.cpp:1170
-#, fuzzy, kde-format
-#| msgid "Insert Smart Newline"
+#, kde-format
 msgid "Insert a non-indented Newline"
-msgstr "Intelligens újsor beszúrása"
+msgstr "Nem behúzott új sor beszúrása"
 
 #: view/kateview.cpp:1171
 #, kde-format
 msgid ""
 "Insert a new line without indentation, regardless of indentation settings."
 msgstr ""
+"Új sor beszúrása behúzás nélkül, a behúzási beállításoktól függetlenül."
 
 #: view/kateview.cpp:1180
 #, kde-format
@@ -7373,16 +7225,14 @@ msgid "Unfold Toplevel Nodes"
 msgstr "A legfelső szintű bejegyzések kibontása"
 
 #: view/kateview.cpp:1226
-#, fuzzy, kde-format
-#| msgid "Fold Current Node"
+#, kde-format
 msgid "Toggle Current Node"
-msgstr "Aktuális bejegyzés összecsukása"
+msgstr "Jelenlegi bejegyzés be-/kikapcsolása"
 
 #: view/kateview.cpp:1230
-#, fuzzy, kde-format
-#| msgid "Toggle Comment"
+#, kde-format
 msgid "Toggle Contained Nodes"
-msgstr "Megjegyzés átváltása"
+msgstr "Tartalmazott bejegyzések be-/kikapcsolása"
 
 #: view/kateview.cpp:1388
 #, kde-format
@@ -7390,29 +7240,28 @@ msgid "(R/O) %1"
 msgstr "%1 (Í/O)"
 
 #: view/kateview.cpp:1899
-#, fuzzy, kde-format
-#| msgid "Search mode"
+#, kde-format
 msgid "Search wrapped"
-msgstr "Keresési mód"
+msgstr "Körkörös keresés"
 
-#: view/kateview.cpp:3804
+#: view/kateview.cpp:3810
 #, kde-format
 msgid "Export File as HTML"
 msgstr "Exportálás HTML formátumban"
 
-#: view/kateviewhelpers.cpp:301 view/kateviewhelpers.cpp:344
-#: view/kateviewhelpers.cpp:980
+#: view/kateviewhelpers.cpp:302 view/kateviewhelpers.cpp:345
+#: view/kateviewhelpers.cpp:981
 #, kde-format
 msgctxt "from line - to line"
 msgid "<center>%1<br/>&#x2014;<br/>%2</center>"
 msgstr "<center>%1<br/>&#x2014;<br/>%2</center>"
 
-#: view/kateviewhelpers.cpp:1149
+#: view/kateviewhelpers.cpp:1150
 #, kde-format
 msgid "Available Commands"
 msgstr "A rendelkezésre álló parancsok"
 
-#: view/kateviewhelpers.cpp:1150
+#: view/kateviewhelpers.cpp:1151
 #, kde-format
 msgid ""
 "<p>For help on individual commands, do <code>'help &lt;command&gt;'</code></"
@@ -7421,17 +7270,17 @@ msgstr ""
 "<p>Az egyes parancsokhoz segítség kérhető így: <code>„help &lt;parancs&gt;”</"
 "code></p>"
 
-#: view/kateviewhelpers.cpp:1157
+#: view/kateviewhelpers.cpp:1158
 #, kde-format
 msgid "No help for '%1'"
 msgstr "Nincs segítség ehhez: „%1”"
 
-#: view/kateviewhelpers.cpp:1160
+#: view/kateviewhelpers.cpp:1161
 #, kde-format
 msgid "No such command <b>%1</b>"
 msgstr "Nincs ilyen parancs: <b>%1</b>"
 
-#: view/kateviewhelpers.cpp:1166
+#: view/kateviewhelpers.cpp:1167
 #, kde-format
 msgid ""
 "<p>This is the Katepart <b>command line</b>.<br />Syntax: <code><b>command "
@@ -7445,37 +7294,37 @@ msgstr ""
 "parancsokról a <code><b>help &lt;parancs&gt;</b></code> utasítással kérhető "
 "leírás.</p>"
 
-#: view/kateviewhelpers.cpp:1254 vimode/emulatedcommandbar/commandmode.cpp:210
+#: view/kateviewhelpers.cpp:1255 vimode/emulatedcommandbar/commandmode.cpp:210
 #, kde-format
 msgid "No such command: \"%1\""
 msgstr "Nincs ilyen parancs: \"%1\""
 
-#: view/kateviewhelpers.cpp:1257 vimode/emulatedcommandbar/commandmode.cpp:192
+#: view/kateviewhelpers.cpp:1258 vimode/emulatedcommandbar/commandmode.cpp:192
 #, kde-format
 msgid "Error: No range allowed for command \"%1\"."
 msgstr "Hiba: Nem adható meg tartomány ennél a parancsnál: \"%1\"."
 
-#: view/kateviewhelpers.cpp:1267 vimode/emulatedcommandbar/commandmode.cpp:196
+#: view/kateviewhelpers.cpp:1268 vimode/emulatedcommandbar/commandmode.cpp:196
 #, kde-format
 msgid "Success: "
 msgstr "Siker: "
 
-#: view/kateviewhelpers.cpp:1281 vimode/emulatedcommandbar/commandmode.cpp:205
+#: view/kateviewhelpers.cpp:1282 vimode/emulatedcommandbar/commandmode.cpp:205
 #, kde-format
 msgid "Command \"%1\" failed."
 msgstr "A(z) \"%1\" parancs nem sikerült."
 
-#: view/kateviewhelpers.cpp:2504 view/kateviewhelpers.cpp:2505
+#: view/kateviewhelpers.cpp:2544 view/kateviewhelpers.cpp:2545
 #, kde-format
 msgid "Mark Type %1"
 msgstr "Jelölési típus: %1"
 
-#: view/kateviewhelpers.cpp:2528
+#: view/kateviewhelpers.cpp:2568
 #, kde-format
 msgid "Set Default Mark Type"
 msgstr "Az alapértelmezett jeltípus beállítása"
 
-#: view/kateviewhelpers.cpp:2662
+#: view/kateviewhelpers.cpp:2702
 #, kde-format
 msgid "Disable Annotation Bar"
 msgstr "A megjegyzéssáv letiltása"

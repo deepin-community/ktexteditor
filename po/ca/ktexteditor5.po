@@ -6,14 +6,14 @@
 # Sebastià Pla i Sanz <sps@sastia.com>, 1999, 2000, 2001, 2004, 2005, 2006, 2007.
 # Antoni Bella Pérez <antonibella5@yahoo.com>, 2002, 2003, 2004, 2012, 2013, 2014, 2015, 2016, 2018, 2019, 2020, 2021.
 # Albert Astals Cid <aacid@kde.org>, 2004, 2005.
-# Josep Ma. Ferrer <txemaq@gmail.com>, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021.
+# Josep M. Ferrer <txemaq@gmail.com>, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021.
 # Robert Millan <rmh@aybabtu.com>, 2009.
 msgid ""
 msgstr ""
 "Project-Id-Version: ktexteditor\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
-"POT-Creation-Date: 2021-08-29 00:15+0000\n"
-"PO-Revision-Date: 2021-08-29 11:25+0200\n"
+"POT-Creation-Date: 2022-01-01 00:40+0000\n"
+"PO-Revision-Date: 2021-11-11 20:40+0100\n"
 "Last-Translator: Josep M. Ferrer <txemaq@gmail.com>\n"
 "Language-Team: Catalan <kde-i18n-ca@kde.org>\n"
 "Language: ca\n"
@@ -27,7 +27,7 @@ msgstr ""
 #: completion/katecompletionmodel.cpp:135
 #, kde-format
 msgid "Argument-hints"
-msgstr "Consells per als arguments"
+msgstr "Consells dels arguments"
 
 #: completion/katecompletionmodel.cpp:136
 #, kde-format
@@ -117,7 +117,7 @@ msgstr "Cerca les variants"
 #: data/katepart5ui.rc:46
 #, kde-format
 msgid "Go To"
-msgstr "Vés a"
+msgstr "Ves a"
 
 #. i18n: ectx: Menu (view)
 #: data/katepart5ui.rc:57
@@ -137,10 +137,8 @@ msgstr "Zoom"
 msgid "Word Wrap"
 msgstr "Ajust de les paraules"
 
-#. i18n: ectx: property (title), widget (QGroupBox, gbBorders)
 #. i18n: ectx: Menu (view_menu_borders)
-#: data/katepart5ui.rc:75 dialogs/bordersappearanceconfigwidget.ui:17
-#: dialogs/katedialogs.cpp:678
+#: data/katepart5ui.rc:75 dialogs/katedialogs.cpp:679
 #, kde-format
 msgid "Borders"
 msgstr "Vores"
@@ -176,28 +174,34 @@ msgid "&Settings"
 msgstr "A&rranjament"
 
 #. i18n: ectx: ToolBar (mainToolBar)
-#: data/katepart5ui.rc:166
+#: data/katepart5ui.rc:167
 #, kde-format
 msgid "Main Toolbar"
 msgstr "Barra d'eines principal"
 
+#. i18n: ectx: property (text), widget (QLabel, label)
+#: dialogs/bordersappearanceconfigwidget.ui:25
+#, kde-format
+msgid "Code block folding:"
+msgstr "Plegat de bloc de codi:"
+
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkShowFoldingMarkers)
-#: dialogs/bordersappearanceconfigwidget.ui:23
+#: dialogs/bordersappearanceconfigwidget.ui:32
 #, kde-format
 msgid ""
 "If this option is checked, every new view will display marks for folding."
 msgstr ""
-"Si aquesta opció està activada, cada vista nova mostrarà les marques del "
+"Si aquesta opció està activada, cada vista nova mostrarà les marques de "
 "plegat de codi."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkShowFoldingMarkers)
-#: dialogs/bordersappearanceconfigwidget.ui:26
+#: dialogs/bordersappearanceconfigwidget.ui:35
 #, kde-format
-msgid "Show &folding markers"
-msgstr "Mostra els marcadors &plegables"
+msgid "Show arrows to collapse code blocks"
+msgstr "Mostra les fletxes per reduir els blocs de codi"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkShowFoldingPreview)
-#: dialogs/bordersappearanceconfigwidget.ui:51
+#: dialogs/bordersappearanceconfigwidget.ui:42
 #, kde-format
 msgid ""
 "If checked, hovering over a folded region shows a preview of the folded text "
@@ -207,13 +211,19 @@ msgstr ""
 "mostrarà una vista prèvia del text plegat en una finestra emergent."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkShowFoldingPreview)
-#: dialogs/bordersappearanceconfigwidget.ui:54
+#: dialogs/bordersappearanceconfigwidget.ui:45
 #, kde-format
-msgid "Show preview of folded code"
-msgstr "Mostra una vista prèvia del codi plegat"
+msgid "Show preview of folded blocks on hover"
+msgstr "Mostra una vista prèvia dels blocs plegats en passar per sobre"
+
+#. i18n: ectx: property (text), widget (QLabel, label_2)
+#: dialogs/bordersappearanceconfigwidget.ui:68
+#, kde-format
+msgid "Left side:"
+msgstr "Costat esquerre:"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkIconBorder)
-#: dialogs/bordersappearanceconfigwidget.ui:63
+#: dialogs/bordersappearanceconfigwidget.ui:75
 #, kde-format
 msgid ""
 "<p>If this option is checked, every new view will display an icon border on "
@@ -221,49 +231,57 @@ msgid ""
 "</p>"
 msgstr ""
 "<p>Si aquesta opció està activada, cada vista nova mostrarà una vora per a "
-"les icones a la banda esquerra.</p><p>Per exemple, la vora per a les icones "
+"les icones al costat esquerre.</p><p>Per exemple, la vora per a les icones "
 "mostra els punts.</p>"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkIconBorder)
-#: dialogs/bordersappearanceconfigwidget.ui:66
+#. i18n: ectx: property (text), widget (QCheckBox, chkScrollbarMarks)
+#: dialogs/bordersappearanceconfigwidget.ui:78
+#: dialogs/bordersappearanceconfigwidget.ui:131
 #, kde-format
-msgid "Show &icon border"
-msgstr "Mostra la vora per a les &icones"
+msgid "Show marks"
+msgstr "Mostra les marques"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkLineNumbers)
-#: dialogs/bordersappearanceconfigwidget.ui:73
+#: dialogs/bordersappearanceconfigwidget.ui:85
 #, kde-format
 msgid ""
 "If this option is checked, every new view will display line numbers on the "
 "left hand side."
 msgstr ""
 "Si aquesta opció està activada, cada vista nova mostrarà els números de les "
-"línies a la banda esquerra."
+"línies al costat esquerre."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkLineNumbers)
-#: dialogs/bordersappearanceconfigwidget.ui:76
+#: dialogs/bordersappearanceconfigwidget.ui:88
 #, kde-format
 msgid "Show &line numbers"
 msgstr "Mostra els números de les &línies"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkShowLineModification)
-#: dialogs/bordersappearanceconfigwidget.ui:83
+#: dialogs/bordersappearanceconfigwidget.ui:95
 #, kde-format
 msgid ""
 "If this option is checked, a small indicator for modified and saved lines is "
 "shown on the left hand side."
 msgstr ""
 "Si aquesta opció està activada, es mostrarà un indicador petit per a les "
-"línies modificades i les línies desades a la banda esquerra."
+"línies modificades i les línies desades al costat esquerre."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkShowLineModification)
-#: dialogs/bordersappearanceconfigwidget.ui:86
+#: dialogs/bordersappearanceconfigwidget.ui:98
 #, kde-format
-msgid "Show line modification markers"
-msgstr "Mostra els marcadors de modificació de línia"
+msgid "Highlight changed and unsaved lines"
+msgstr "Ressalta les línies canviades i sense desar"
+
+#. i18n: ectx: property (text), widget (QLabel, label_3)
+#: dialogs/bordersappearanceconfigwidget.ui:121
+#, kde-format
+msgid "Scrollbars"
+msgstr "Barres de desplaçament"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkScrollbarMarks)
-#: dialogs/bordersappearanceconfigwidget.ui:93
+#: dialogs/bordersappearanceconfigwidget.ui:128
 #, kde-format
 msgid ""
 "<p>If this option is checked, every new view will show marks on the vertical "
@@ -273,14 +291,8 @@ msgstr ""
 "barra de desplaçament vertical.</p><p>Per exemple, aquestes marques mostren "
 "els punts.</p>"
 
-#. i18n: ectx: property (text), widget (QCheckBox, chkScrollbarMarks)
-#: dialogs/bordersappearanceconfigwidget.ui:96
-#, kde-format
-msgid "Show &scrollbar marks"
-msgstr "Mostra les marques de la &barra de desplaçament"
-
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkScrollbarPreview)
-#: dialogs/bordersappearanceconfigwidget.ui:103
+#: dialogs/bordersappearanceconfigwidget.ui:138
 #, kde-format
 msgid ""
 "<p>If this option is checked, hovering over the vertical scrollbar will show "
@@ -290,13 +302,19 @@ msgstr ""
 "desplaçament es mostrarà una vista prèvia del text.</p>"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkScrollbarPreview)
-#: dialogs/bordersappearanceconfigwidget.ui:106
+#: dialogs/bordersappearanceconfigwidget.ui:141
 #, kde-format
-msgid "Show text &preview on scrollbar"
-msgstr "Mostra una vista &prèvia del text en la barra de desplaçament"
+msgid "Show preview when hovering over scrollbar"
+msgstr "Mostra una vista prèvia en passar per sobre la barra de desplaçament"
+
+#. i18n: ectx: property (text), widget (QLabel, label_4)
+#: dialogs/bordersappearanceconfigwidget.ui:164
+#, kde-format
+msgid "Minimap:"
+msgstr "Mapa en miniatura:"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkScrollbarMiniMap)
-#: dialogs/bordersappearanceconfigwidget.ui:113
+#: dialogs/bordersappearanceconfigwidget.ui:171
 #, kde-format
 msgid ""
 "If this option is checked, every new view will show a mini map on the "
@@ -306,13 +324,13 @@ msgstr ""
 "miniatura a la barra de desplaçament vertical."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkScrollbarMiniMap)
-#: dialogs/bordersappearanceconfigwidget.ui:116
+#: dialogs/bordersappearanceconfigwidget.ui:174
 #, kde-format
-msgid "Show scrollbar mini-map"
-msgstr "Mostra un mapa en miniatura a la barra de desplaçament"
+msgid "Show minimap"
+msgstr "Mostra un mapa en miniatura"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkScrollbarMiniMapAll)
-#: dialogs/bordersappearanceconfigwidget.ui:132
+#: dialogs/bordersappearanceconfigwidget.ui:184
 #, kde-format
 msgid ""
 "If this option is checked, every new view will show a mini map of the whole "
@@ -322,56 +340,43 @@ msgstr ""
 "miniatura de tot el document a la barra de desplaçament vertical."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkScrollbarMiniMapAll)
-#: dialogs/bordersappearanceconfigwidget.ui:135
+#: dialogs/bordersappearanceconfigwidget.ui:187
 #, kde-format
 msgid "Map the whole document"
 msgstr "Mapa de tot el document"
 
 #. i18n: ectx: property (text), widget (QLabel, labelMiniMapWidth)
-#: dialogs/bordersappearanceconfigwidget.ui:145
+#: dialogs/bordersappearanceconfigwidget.ui:213
 #, kde-format
 msgid "Minim&ap width:"
 msgstr "&Amplada del mapa en miniatura:"
 
-#. i18n: ectx: property (text), widget (QLabel, lblShowScrollbars)
-#: dialogs/bordersappearanceconfigwidget.ui:205
-#, kde-format
-msgid "Scro&llbars visibility:"
-msgstr "Visibilitat de les barres de desp&laçament:"
-
 #. i18n: ectx: property (text), item, widget (QComboBox, cmbShowScrollbars)
-#: dialogs/bordersappearanceconfigwidget.ui:216 dialogs/katedialogs.cpp:682
+#: dialogs/bordersappearanceconfigwidget.ui:224 dialogs/katedialogs.cpp:683
 #, kde-format
 msgid "Always On"
 msgstr "Sempre actives"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, cmbShowScrollbars)
-#: dialogs/bordersappearanceconfigwidget.ui:221
+#: dialogs/bordersappearanceconfigwidget.ui:229
 #, kde-format
 msgid "Show When Needed"
 msgstr "Mostra-les quan calgui"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, cmbShowScrollbars)
-#: dialogs/bordersappearanceconfigwidget.ui:226
+#: dialogs/bordersappearanceconfigwidget.ui:234
 #, kde-format
 msgid "Always Off"
 msgstr "Sempre desactivades"
 
-#. i18n: ectx: property (whatsThis), widget (QGroupBox, gbSortBookmarks)
-#: dialogs/bordersappearanceconfigwidget.ui:246
+#. i18n: ectx: property (text), widget (QLabel, lblShowScrollbars)
+#: dialogs/bordersappearanceconfigwidget.ui:242
 #, kde-format
-msgid ""
-"Choose how the bookmarks should be ordered in the <b>Bookmarks</b> menu."
-msgstr "Trieu com s'han d'ordenar els punts en el menú <b>Punts</b>."
-
-#. i18n: ectx: property (title), widget (QGroupBox, gbSortBookmarks)
-#: dialogs/bordersappearanceconfigwidget.ui:249
-#, kde-format
-msgid "Sort Bookmarks Menu"
-msgstr "Ordena el menú dels punts"
+msgid "Scro&llbars visibility:"
+msgstr "Visibilitat de les barres de desp&laçament:"
 
 #. i18n: ectx: property (whatsThis), widget (QRadioButton, rbSortBookmarksByCreation)
-#: dialogs/bordersappearanceconfigwidget.ui:255
+#: dialogs/bordersappearanceconfigwidget.ui:252
 #, kde-format
 msgid ""
 "Each new bookmark will be added to the bottom, independently from where it "
@@ -381,27 +386,33 @@ msgstr ""
 "document."
 
 #. i18n: ectx: property (text), widget (QRadioButton, rbSortBookmarksByCreation)
-#: dialogs/bordersappearanceconfigwidget.ui:258
+#: dialogs/bordersappearanceconfigwidget.ui:255
 #, kde-format
-msgid "B&y creation"
-msgstr "Per c&reació"
+msgid "By date created"
+msgstr "Per data de creació"
 
 #. i18n: ectx: property (whatsThis), widget (QRadioButton, rbSortBookmarksByPosition)
-#: dialogs/bordersappearanceconfigwidget.ui:265
+#: dialogs/bordersappearanceconfigwidget.ui:262
 #, kde-format
 msgid "The bookmarks will be ordered by the line numbers they are placed at."
 msgstr "Els punts s'ordenaran pel número de línia en la qual estan situats."
 
 #. i18n: ectx: property (text), widget (QRadioButton, rbSortBookmarksByPosition)
-#: dialogs/bordersappearanceconfigwidget.ui:268
+#: dialogs/bordersappearanceconfigwidget.ui:265
 #, kde-format
-msgid "By posi&tion"
-msgstr "Per &posició"
+msgid "By line number"
+msgstr "Per número de línia"
+
+#. i18n: ectx: property (text), widget (QLabel, label_5)
+#: dialogs/bordersappearanceconfigwidget.ui:272
+#, kde-format
+msgid "Sort bookmarks menu:"
+msgstr "Ordena el menú dels punts:"
 
 #. i18n: ectx: property (title), widget (QGroupBox, gbGeneral)
 #. i18n: ectx: property (title), widget (QGroupBox, gbViInputMode)
-#: dialogs/completionconfigtab.ui:20 dialogs/katedialogs.cpp:545
-#: dialogs/katedialogs.cpp:674 dialogs/katedialogs.cpp:905
+#: dialogs/completionconfigtab.ui:20 dialogs/katedialogs.cpp:546
+#: dialogs/katedialogs.cpp:675 dialogs/katedialogs.cpp:908
 #: vimode/config/configwidget.ui:29
 #, kde-format
 msgid "General"
@@ -461,14 +472,14 @@ msgstr ""
 "La compleció de paraules clau proporciona suggeriments basats en les "
 "paraules clau que existeixen en el llenguatge del document."
 
-#. i18n: ectx: property (title), widget (QGroupBox, gbStaticWordWrap)
-#: dialogs/editconfigwidget.ui:17 view/kateview.cpp:725
+#. i18n: ectx: property (text), widget (QLabel, label)
+#: dialogs/editconfigwidget.ui:22
 #, kde-format
-msgid "Static Word Wrap"
-msgstr "Ajust estàtic de les paraules"
+msgid "Word wrap:"
+msgstr "Ajust de les paraules:"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkStaticWordWrap)
-#: dialogs/editconfigwidget.ui:23
+#: dialogs/editconfigwidget.ui:29
 #, kde-format
 msgid ""
 "<p>Automatically start a new line of text when the current line exceeds the "
@@ -488,13 +499,13 @@ msgstr ""
 "<b>Aparença</b>.</p>"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkStaticWordWrap)
-#: dialogs/editconfigwidget.ui:26
+#: dialogs/editconfigwidget.ui:32
 #, kde-format
-msgid "Enable static &word wrap"
-msgstr "Activa l'ajust estàtic de les &paraules"
+msgid "Wrap &words at a fixed column"
+msgstr "A&justa les paraules a una columna fixada"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkShowStaticWordWrapMarker)
-#: dialogs/editconfigwidget.ui:33
+#: dialogs/editconfigwidget.ui:39
 #, kde-format
 msgid ""
 "<p>If this option is checked, a vertical line will be drawn at the word wrap "
@@ -505,19 +516,19 @@ msgstr ""
 "d'<strong>Edició</strong>.</p>"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkShowStaticWordWrapMarker)
-#: dialogs/editconfigwidget.ui:36
+#: dialogs/editconfigwidget.ui:42
 #, kde-format
-msgid "Show static word wra&p marker"
-msgstr "Mostra els marcadors per a l'ajust estàtic de les &paraules"
+msgid "&Draw vertical line at the word wrap column"
+msgstr "&Dibuixa una línia vertical a la columna d'ajust de les paraules"
 
 #. i18n: ectx: property (text), widget (QLabel, lblWordWrap)
-#: dialogs/editconfigwidget.ui:57
+#: dialogs/editconfigwidget.ui:49
 #, kde-format
 msgid "Wra&p words at:"
 msgstr "A&justa les paraules a:"
 
 #. i18n: ectx: property (whatsThis), widget (KPluralHandlingSpinBox, sbWordWrap)
-#: dialogs/editconfigwidget.ui:67
+#: dialogs/editconfigwidget.ui:59
 #, kde-format
 msgid ""
 "If the Word Wrap option is selected this entry determines the length (in "
@@ -527,32 +538,26 @@ msgstr ""
 "determinarà la longitud (en caràcters) en la que l'editor iniciarà "
 "automàticament una línia nova."
 
-#. i18n: ectx: property (title), widget (QGroupBox, gbInputMode)
-#: dialogs/editconfigwidget.ui:101
-#, kde-format
-msgid "Input Mode"
-msgstr "Mode d'entrada"
-
 #. i18n: ectx: property (text), widget (QLabel, lblInputMode)
-#: dialogs/editconfigwidget.ui:107
+#: dialogs/editconfigwidget.ui:91
 #, kde-format
 msgid "Default input mode:"
 msgstr "Mode d'entrada predeterminat:"
 
-#. i18n: ectx: property (title), widget (QGroupBox, gbAutoBrackets)
-#: dialogs/editconfigwidget.ui:133
+#. i18n: ectx: property (text), widget (QLabel, label_2)
+#: dialogs/editconfigwidget.ui:117
 #, kde-format
-msgid "Auto Brackets"
-msgstr "Parèntesis automàtics"
+msgid "Brackets:"
+msgstr "Claus:"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkAutoBrackets)
-#: dialogs/editconfigwidget.ui:139
+#: dialogs/editconfigwidget.ui:124
 #, kde-format
-msgid "Enable automatic brackets"
-msgstr "Activa els parèntesis automàtics"
+msgid "Automatically close brackets when opening bracket is typed"
+msgstr "Tanca automàticament les claus quan es teclegi una clau d'obertura"
 
 #. i18n: ectx: property (whatsThis), widget (QLabel, lbEncloseSelection)
-#: dialogs/editconfigwidget.ui:154
+#: dialogs/editconfigwidget.ui:137
 #, kde-format
 msgid ""
 "When some text is selected these chars will be added on both its sides in a "
@@ -562,34 +567,44 @@ msgstr ""
 "de manera semblant a com ho fa «Parèntesis automàtics»"
 
 #. i18n: ectx: property (text), widget (QLabel, lbEncloseSelection)
-#: dialogs/editconfigwidget.ui:157
+#: dialogs/editconfigwidget.ui:140
 #, kde-format
-msgid "Chars to enclose selection:"
-msgstr "Caràcters per a delimitar la selecció:"
+msgid "Enclosing characters:"
+msgstr "Caràcters de tancament:"
 
-#. i18n: ectx: property (title), widget (QGroupBox, gbCopyAndPaste)
-#: dialogs/editconfigwidget.ui:195
+#. i18n: ectx: property (text), widget (QLabel, label_4)
+#: dialogs/editconfigwidget.ui:160
 #, kde-format
-msgid "Copy and Paste"
-msgstr "Copiar i enganxar"
+msgid "Copy and paste:"
+msgstr "Copiar i enganxar:"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkTextDragAndDrop)
-#: dialogs/editconfigwidget.ui:201
+#: dialogs/editconfigwidget.ui:167
 #, kde-format
-msgid "Move selected text by drag and drop"
-msgstr "Mou el text seleccionat arrossegant i deixant anar"
+msgid "Move selected text when dragged"
+msgstr "Mou el text seleccionat en arrossegar"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkSmartCopyCut)
-#: dialogs/editconfigwidget.ui:208
+#: dialogs/editconfigwidget.ui:174
 #, kde-format
-msgid "Copy/Cut the current line if no selection"
-msgstr "Copia/retalla la línia actual si no hi ha cap selecció"
+msgid "Copy/cut the current line if invoked without any text selected"
+msgstr "Copia/retalla la línia actual si s'invoca sense cap text seleccionat"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkMousePasteAtCursorPosition)
-#: dialogs/editconfigwidget.ui:215
+#: dialogs/editconfigwidget.ui:181
 #, kde-format
-msgid "Paste by mouse at cursor position"
-msgstr "Enganxa amb el ratolí a la posició del cursor"
+msgid "Don't move the text cursor when pasting by mouse"
+msgstr "No moure el cursor de text en enganxar amb el ratolí"
+
+#. i18n: ectx: property (text), widget (QLabel, lblBracketHelp)
+#: dialogs/editconfigwidget.ui:194
+#, kde-format
+msgid ""
+"When you type these characters while text is selected, they will surround "
+"the selected text instead of replacing it."
+msgstr ""
+"Quan es teclegin aquests caràcters mentre hi hagi text seleccionat, "
+"envoltaran el text seleccionat en lloc de reemplaçar-lo."
 
 #. i18n: ectx: property (text), widget (QLabel, lblFiletype)
 #: dialogs/filetypeconfigwidget.ui:14
@@ -1006,7 +1021,7 @@ msgstr "Verificació ortogràfica"
 msgid "Text Navigation"
 msgstr "Navegació pel text"
 
-#: dialogs/katedialogs.cpp:519
+#: dialogs/katedialogs.cpp:520
 #, kde-format
 msgctxt "Wrap words at (value is at 20 or larger)"
 msgid " character"
@@ -1014,174 +1029,187 @@ msgid_plural " characters"
 msgstr[0] " caràcter"
 msgstr[1] " caràcters"
 
-#: dialogs/katedialogs.cpp:524
+#: dialogs/katedialogs.cpp:525
 #, kde-format
 msgid "Feature is not active"
 msgstr "La característica no és activa"
 
-#: dialogs/katedialogs.cpp:526
+#: dialogs/katedialogs.cpp:527
 #, kde-format
 msgid "Disable Feature"
 msgstr "Desactiva la funcionalitat"
 
-#: dialogs/katedialogs.cpp:528
+#: dialogs/katedialogs.cpp:529
 #, kde-format
 msgid "May be handy with Markdown"
 msgstr "Pot ser útil amb el Markdown"
 
-#: dialogs/katedialogs.cpp:530
+#: dialogs/katedialogs.cpp:531
 #, kde-format
 msgid "Mirror characters, similar but not exactly like auto brackets"
 msgstr ""
 "Caràcters en mirall, semblant però no igual que els Parèntesis automàtics"
 
-#: dialogs/katedialogs.cpp:532
+#: dialogs/katedialogs.cpp:533
 #, kde-format
 msgid "Non letter character"
 msgstr "Caràcter de no lletra"
 
-#: dialogs/katedialogs.cpp:646
+#: dialogs/katedialogs.cpp:647
 #, kde-format
 msgid "Editing"
 msgstr "Edició"
 
-#: dialogs/katedialogs.cpp:651
+#: dialogs/katedialogs.cpp:652
 #, kde-format
 msgid "Editing Options"
 msgstr "Opcions de l'edició"
 
-#: dialogs/katedialogs.cpp:680
+#: dialogs/katedialogs.cpp:681
 #, kde-format
 msgid "Off"
 msgstr "Inactiu"
 
-#: dialogs/katedialogs.cpp:681
+#: dialogs/katedialogs.cpp:682
 #, kde-format
 msgid "Follow Line Numbers"
 msgstr "Segueix els números de línia"
 
-#: dialogs/katedialogs.cpp:838 dialogs/katedialogs.cpp:843
+#: dialogs/katedialogs.cpp:839 dialogs/katedialogs.cpp:844
 #, kde-format
 msgid "Appearance"
 msgstr "Aparença"
 
-#: dialogs/katedialogs.cpp:906
+#: dialogs/katedialogs.cpp:877
+#, kde-format
+msgid ""
+"%1 backs up unsaved files to \"swap files.\" Swap files allow %1 to recover "
+"your work in the case of a system crash. Disabling swap files may cause data "
+"loss in case of a system crash."
+msgstr ""
+"El %1 farà còpies de seguretat dels fitxers sense desar a «swap "
+"files» (fitxer d'intercanvi). Els fitxers d'intercanvi permeten que el %1 "
+"recuperi el treball en cas d'una fallada del sistema. La desactivació dels "
+"fitxers d'intercanvi pot provocar la pèrdua de dades en cas d'una fallada "
+"del sistema."
+
+#: dialogs/katedialogs.cpp:909
 #, kde-format
 msgid "Advanced"
 msgstr "Avançat"
 
-#: dialogs/katedialogs.cpp:971
+#: dialogs/katedialogs.cpp:974
 #, kde-format
 msgid ""
 "You did not provide a backup suffix or prefix. Using default suffix: '~'"
 msgstr ""
-"No heu proporcionat cap sufix o prefix per a les còpies de seguretat. Per "
+"No heu proporcionat cap sufix o prefix de les còpies de seguretat. Per "
 "omissió s'usarà: «~»"
 
-#: dialogs/katedialogs.cpp:971
+#: dialogs/katedialogs.cpp:974
 #, kde-format
 msgid "No Backup Suffix or Prefix"
-msgstr "Sense sufix o prefix per a la còpia de seguretat"
+msgstr "Sense sufix o prefix de la còpia de seguretat"
 
-#: dialogs/katedialogs.cpp:1093
+#: dialogs/katedialogs.cpp:1096
 #, kde-format
 msgid "Open/Save"
 msgstr "Obre i desa"
 
-#: dialogs/katedialogs.cpp:1098
+#: dialogs/katedialogs.cpp:1101
 #, kde-format
 msgid "File Opening & Saving"
 msgstr "Obrir i desar fitxers"
 
-#: dialogs/katedialogs.cpp:1121
+#: dialogs/katedialogs.cpp:1124
 #, kde-format
 msgid "&Line:"
 msgstr "&Línia:"
 
-#: dialogs/katedialogs.cpp:1122
+#: dialogs/katedialogs.cpp:1125
 #, kde-format
 msgid "Go to line number from clipboard"
-msgstr "Va a la número de línia del porta-retalls"
+msgstr "Va al número de línia del porta-retalls"
 
-#: dialogs/katedialogs.cpp:1133
+#: dialogs/katedialogs.cpp:1136
 #, kde-format
 msgid "Go to"
-msgstr "Vés a"
+msgstr "Ves a"
 
-#: dialogs/katedialogs.cpp:1209
+#: dialogs/katedialogs.cpp:1212
 #, kde-format
 msgid "No valid line number found in clipboard"
 msgstr "No s'ha trobat cap número vàlid de línia al porta-retalls"
 
-#: dialogs/katedialogs.cpp:1273
+#: dialogs/katedialogs.cpp:1276
 #, kde-format
 msgid "Dictionary:"
 msgstr "Diccionari:"
 
-#: dialogs/katedialogs.cpp:1325
+#: dialogs/katedialogs.cpp:1328
 #, kde-format
 msgid "Enable Auto Reload"
 msgstr "Activa la recàrrega automàtica"
 
-#: dialogs/katedialogs.cpp:1327
+#: dialogs/katedialogs.cpp:1330
 #, kde-format
 msgid "Will never again warn about on disk changes but always reload."
 msgstr ""
 "Mai més es tornarà a avisar dels canvis al disc, i sempre es recarregarà."
 
-#: dialogs/katedialogs.cpp:1332
+#: dialogs/katedialogs.cpp:1335
 #, kde-format
 msgid "View &Difference"
 msgstr "Visualitza la &diferència"
 
-#: dialogs/katedialogs.cpp:1334
+#: dialogs/katedialogs.cpp:1337
 #, kde-format
 msgid "Shows a diff of the changes"
 msgstr "Mostra un «diff» dels canvis"
 
-#: dialogs/katedialogs.cpp:1339
+#: dialogs/katedialogs.cpp:1342
 #, kde-format
 msgid "&Reload"
 msgstr "&Recarrega"
 
-#: dialogs/katedialogs.cpp:1341
+#: dialogs/katedialogs.cpp:1344
 #, kde-format
 msgid "Reload the file from disk. Unsaved changes will be lost."
 msgstr "Recarrega el fitxer des del disc. Els canvis no desats es perdran."
 
-#: dialogs/katedialogs.cpp:1345
+#: dialogs/katedialogs.cpp:1348
 #, kde-format
 msgctxt "@action:button closes the opened file"
 msgid "&Close File"
 msgstr "Tan&ca el fitxer"
 
-#: dialogs/katedialogs.cpp:1347
+#: dialogs/katedialogs.cpp:1350
 #, kde-format
 msgid "Close the file, discarding its content."
 msgstr "Tanca el fitxer, descartant el seu contingut."
 
-#: dialogs/katedialogs.cpp:1351
+#: dialogs/katedialogs.cpp:1354
 #, kde-format
 msgid "&Save As..."
 msgstr "De&sa com a..."
 
-#: dialogs/katedialogs.cpp:1353
+#: dialogs/katedialogs.cpp:1356
 #, kde-format
 msgid "Lets you select a location and save the file again."
 msgstr "Us permet seleccionar una localització i tornar a desar el fitxer."
 
 #. i18n: ectx: property (text), widget (QPushButton, m_skipBtn)
-#: dialogs/katedialogs.cpp:1358 spellcheck/spellcheckbar.ui:143
+#: dialogs/katedialogs.cpp:1361 spellcheck/spellcheckbar.ui:143
 #, kde-format
 msgid "&Ignore"
 msgstr "&Ignora"
 
-#: dialogs/katedialogs.cpp:1359
+#: dialogs/katedialogs.cpp:1362
 #, kde-format
 msgid "Ignores the changes on disk without any action."
 msgstr "Ignora els canvis en el disc sense cap acció."
 
-#: dialogs/katedialogs.cpp:1425 swapfile/kateswapdiffcreator.cpp:122
+#: dialogs/katedialogs.cpp:1428 swapfile/kateswapdiffcreator.cpp:122
 #, kde-format
 msgid ""
 "The diff command failed. Please make sure that diff(1) is installed and in "
@@ -1190,18 +1218,18 @@ msgstr ""
 "Ha fallat l'ordre «diff». Assegureu-vos que el diff(1) està instal·lat i a "
 "la PATH."
 
-#: dialogs/katedialogs.cpp:1427 swapfile/kateswapdiffcreator.cpp:90
+#: dialogs/katedialogs.cpp:1430 swapfile/kateswapdiffcreator.cpp:90
 #: swapfile/kateswapdiffcreator.cpp:124
 #, kde-format
 msgid "Error Creating Diff"
 msgstr "Hi ha hagut un error en crear el «diff»"
 
-#: dialogs/katedialogs.cpp:1434 swapfile/kateswapdiffcreator.cpp:131
+#: dialogs/katedialogs.cpp:1437 swapfile/kateswapdiffcreator.cpp:131
 #, kde-format
 msgid "The files are identical."
 msgstr "Els fitxers són idèntics."
 
-#: dialogs/katedialogs.cpp:1434 swapfile/kateswapdiffcreator.cpp:131
+#: dialogs/katedialogs.cpp:1437 swapfile/kateswapdiffcreator.cpp:131
 #, kde-format
 msgid "Diff Output"
 msgstr "Sortida del «diff»"
@@ -1239,7 +1267,7 @@ msgid ""
 "position of the cursor relative to the top of the view."
 msgstr ""
 "Selecciona quan les tecles d'avançar o retrocedir pàgina haurien d'alterar "
-"la posició vertical del cursor en relació a la part superior de la vista."
+"la posició vertical del cursor en relació amb la part superior de la vista."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkPagingMovesCursor)
 #: dialogs/navigationconfigwidget.ui:48
@@ -1277,9 +1305,11 @@ msgstr ""
 "Defineix el nombre de línies a mantenir visibles per sobre i per sota del "
 "cursor, sempre que sigui possible."
 
+#. i18n: ectx: property (text), item, widget (QComboBox, cmbSwapFileMode)
 #. i18n: ectx: property (specialValueText), widget (QSpinBox, spbSwapFileSync)
 #. i18n: ectx: property (specialValueText), widget (QSpinBox, sbAutoCenterCursor)
-#: dialogs/navigationconfigwidget.ui:92 dialogs/opensaveconfigadvwidget.ui:163
+#: dialogs/navigationconfigwidget.ui:92 dialogs/opensaveconfigadvwidget.ui:112
+#: dialogs/opensaveconfigadvwidget.ui:160
 #, kde-format
 msgid "Disabled"
 msgstr "Desactivat"
@@ -1339,26 +1369,8 @@ msgid "Backspace key removes character’s base with its diacritics"
 msgstr ""
 "La tecla Retrocés elimina la base dels caràcters amb els seus diacrítics"
 
-#. i18n: ectx: property (whatsThis), widget (QGroupBox, gbBackup)
-#: dialogs/opensaveconfigadvwidget.ui:20
-#, kde-format
-msgid ""
-"<p>Backing up on save will cause Kate to copy the disk file to '&lt;"
-"prefix&gt;&lt;filename&gt;&lt;suffix&gt;' before saving changes.<p>The "
-"suffix defaults to <strong>~</strong> and prefix is empty by default."
-msgstr ""
-"<p>La còpia de seguretat en desar farà que el Kate copiï el fitxer del disc "
-"a «&lt;prefix&gt;&lt;nom_fitxer&gt;&lt;sufix&gt;» abans de desar els canvis."
-"<p>Per omissió, el sufix és <strong>~</strong> i el prefix està buit."
-
-#. i18n: ectx: property (title), widget (QGroupBox, gbBackup)
-#: dialogs/opensaveconfigadvwidget.ui:23
-#, kde-format
-msgid "Backup on Save"
-msgstr "Còpia de seguretat en desar"
-
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkBackupLocalFiles)
-#: dialogs/opensaveconfigadvwidget.ui:32
+#: dialogs/opensaveconfigadvwidget.ui:34
 #, kde-format
 msgid ""
 "If this option is enabled, backups for local files will be created when "
@@ -1368,13 +1380,13 @@ msgstr ""
 "fitxers locals."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkBackupLocalFiles)
-#: dialogs/opensaveconfigadvwidget.ui:35
+#: dialogs/opensaveconfigadvwidget.ui:37
 #, kde-format
 msgid "&Local files"
 msgstr "Fitxers &locals"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkBackupRemoteFiles)
-#: dialogs/opensaveconfigadvwidget.ui:42
+#: dialogs/opensaveconfigadvwidget.ui:44
 #, kde-format
 msgid ""
 "If this option is enabled, backups for remote files will be created when "
@@ -1384,100 +1396,86 @@ msgstr ""
 "fitxers remots."
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkBackupRemoteFiles)
-#: dialogs/opensaveconfigadvwidget.ui:45
+#: dialogs/opensaveconfigadvwidget.ui:47
 #, kde-format
 msgid "&Remote files"
 msgstr "Fitxers &remots"
 
-#. i18n: ectx: property (text), widget (QLabel, label_5)
-#: dialogs/opensaveconfigadvwidget.ui:52
+#. i18n: ectx: property (text), widget (QLabel, label)
+#: dialogs/opensaveconfigadvwidget.ui:54
 #, kde-format
-msgid "&Prefix:"
-msgstr "&Prefix:"
+msgid "Write a backup file on save for:"
+msgstr "Introduïu un fitxer a on desar les còpies de seguretat:"
 
 #. i18n: ectx: property (whatsThis), widget (QLineEdit, edtBackupPrefix)
-#: dialogs/opensaveconfigadvwidget.ui:62
+#: dialogs/opensaveconfigadvwidget.ui:61
 #, kde-format
 msgid "Enter the prefix to prepend to the backup file names."
 msgstr ""
 "Introduïu el prefix que precedirà al nom dels fitxers de còpia de seguretat."
 
-#. i18n: ectx: property (text), widget (QLabel, label_6)
-#: dialogs/opensaveconfigadvwidget.ui:69
+#. i18n: ectx: property (text), widget (QLabel, label_5)
+#: dialogs/opensaveconfigadvwidget.ui:68
 #, kde-format
-msgid "&Suffix:"
-msgstr "&Sufix:"
+msgid "Prefix for backup files:"
+msgstr "Prefix dels fitxers de còpia de seguretat:"
 
 #. i18n: ectx: property (whatsThis), widget (QLineEdit, edtBackupSuffix)
-#: dialogs/opensaveconfigadvwidget.ui:79
+#: dialogs/opensaveconfigadvwidget.ui:78
 #, kde-format
 msgid "Enter the suffix to append to the backup file names."
 msgstr "Introduïu el sufix a afegir al nom dels fitxers de còpia de seguretat."
 
-#. i18n: ectx: property (title), widget (QGroupBox, gpSwapFileOptions)
-#: dialogs/opensaveconfigadvwidget.ui:95
+#. i18n: ectx: property (text), widget (QLabel, label_6)
+#: dialogs/opensaveconfigadvwidget.ui:85
 #, kde-format
-msgid "Swap File Options"
-msgstr "Opcions del fitxer d'intercanvi"
-
-#. i18n: ectx: property (text), widget (QLabel, lblSwapFileMode)
-#: dialogs/opensaveconfigadvwidget.ui:101
-#, kde-format
-msgid "Swap file:"
-msgstr "Fitxer d'intercanvi:"
-
-#. i18n: ectx: property (text), item, widget (QComboBox, cmbSwapFileMode)
-#: dialogs/opensaveconfigadvwidget.ui:112
-#, kde-format
-msgid "Disable"
-msgstr "Desactiva"
+msgid "Suffix for backup files:"
+msgstr "Sufix dels fitxers de còpia de seguretat:"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, cmbSwapFileMode)
 #: dialogs/opensaveconfigadvwidget.ui:117
 #, kde-format
-msgid "Enable"
-msgstr "Activa"
+msgid "Enabled, Store In Default Directory"
+msgstr "Activat, emmagatzematge en el directori predeterminat"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, cmbSwapFileMode)
 #: dialogs/opensaveconfigadvwidget.ui:122
 #, kde-format
-msgid "Alternative Directory"
-msgstr "Directori alternatiu"
+msgid "Enabled, Store In Custom Directory"
+msgstr "Activat, emmagatzematge en un directori personalitzat"
 
-#. i18n: ectx: property (text), widget (QLabel, lblSwapDirectory)
+#. i18n: ectx: property (text), widget (QLabel, lblSwapFileMode)
 #: dialogs/opensaveconfigadvwidget.ui:130
 #, kde-format
-msgid "Directory:"
-msgstr "Directori:"
+msgid "Swap file mode:"
+msgstr "Mode del fitxer d'intercanvi:"
 
-#. i18n: ectx: property (placeholderText), widget (KUrlRequester, kurlSwapDirectory)
-#: dialogs/opensaveconfigadvwidget.ui:146
+#. i18n: ectx: property (text), widget (QLabel, lblSwapDirectory)
+#: dialogs/opensaveconfigadvwidget.ui:150
 #, kde-format
-msgid "Directory for swp files"
-msgstr "Directori per als fitxers d'intercanvi"
-
-#. i18n: ectx: property (text), widget (QLabel, lblSwapFileSync)
-#: dialogs/opensaveconfigadvwidget.ui:153
-#, kde-format
-msgid "Sync every:"
-msgstr "Sincronitza cada:"
+msgid "Store swap files in:"
+msgstr "Emmagatzema els fitxers d'intercanvi a:"
 
 #. i18n: ectx: property (suffix), widget (QSpinBox, spbSwapFileSync)
-#: dialogs/opensaveconfigadvwidget.ui:166
+#: dialogs/opensaveconfigadvwidget.ui:163
 #, kde-format
 msgid "s"
 msgstr "s"
 
-#. i18n: ectx: property (text), widget (QLabel, label_2)
-#: dialogs/opensaveconfigadvwidget.ui:185
+#. i18n: ectx: property (text), widget (QLabel, lblSwapFileSync)
+#: dialogs/opensaveconfigadvwidget.ui:182
+#, kde-format
+msgid "Save swap files every:"
+msgstr "Desa els fitxers d'intercanvi cada:"
+
+#. i18n: ectx: property (text), widget (QLabel, lblExplanatory)
+#: dialogs/opensaveconfigadvwidget.ui:198
 #, kde-format
 msgid ""
-"Be aware, that disabling the swap file synchronization may lead to data loss "
-"in case of a system crash."
+"This string is located in katedialogs.cpp in KateSaveConfigTab's constructor."
 msgstr ""
-"Aneu amb compte, la desactivació de la sincronització del fitxer de la "
-"memòria d'intercanvi pot comportar la pèrdua de dades en el cas d'una "
-"fallada del sistema."
+"Aquesta cadena està localitzada a «katedialogs.cpp» en el constructor de "
+"KateSaveConfigTab."
 
 #. i18n: ectx: property (title), widget (QGroupBox, gbFileFormat)
 #: dialogs/opensaveconfigwidget.ui:12
@@ -1786,7 +1784,7 @@ msgstr "Mostra una vista prèvia del parèntesi obert concordant"
 #: dialogs/textareaappearanceconfigwidget.ui:191
 #, kde-format
 msgid "Flash matching brackets"
-msgstr "Flaix per als parèntesis concordants"
+msgstr "Flaix dels parèntesis concordants"
 
 #. i18n: ectx: property (whatsThis), widget (QCheckBox, chkAnimateBracketMatching)
 #: dialogs/textareaappearanceconfigwidget.ui:194
@@ -1833,7 +1831,7 @@ msgid "Show/hide word count in status bar"
 msgstr "Mostra/oculta el comptador de paraules a la barra d'estat"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkShowWordCount)
-#: dialogs/textareaappearanceconfigwidget.ui:240
+#: dialogs/textareaappearanceconfigwidget.ui:240 view/katestatusbar.cpp:228
 #, kde-format
 msgid "Show word count"
 msgstr "Mostra el comptador de paraules"
@@ -1845,7 +1843,7 @@ msgid "Show/hide line count in status bar"
 msgstr "Mostra/oculta el comptador de línies a la barra d'estat"
 
 #. i18n: ectx: property (text), widget (QCheckBox, chkShowLineCount)
-#: dialogs/textareaappearanceconfigwidget.ui:250
+#: dialogs/textareaappearanceconfigwidget.ui:250 view/katestatusbar.cpp:225
 #, kde-format
 msgid "Show line count"
 msgstr "Mostra el comptador de línies"
@@ -1917,7 +1915,7 @@ msgstr ""
 "<p>Activa l'inici de l'ajust dinàmic de les línies per a alinear-les "
 "verticalment al nivell de sagnat de la primera línia. Això pot ajudar a fer "
 "més llegible el codi i els marcadors.</p><p>Addicionalment, això us permet "
-"indicar una amplada màxima de la pantalla, en percentatge, pel que les "
+"indicar una amplada màxima de la pantalla, en percentatge, pel qual les "
 "línies ajustades dinàmicament no s'alinearan verticalment. Per exemple, al "
 "50%, les línies que tinguin un nivell de sagnat superior al 50% de l'amplada "
 "de la pantalla no se'ls aplicarà l'ajust vertical a les subsegüents línies "
@@ -1952,17 +1950,17 @@ msgstr "Fitxer nou"
 msgid "The file %1 does not exist."
 msgstr "El fitxer %1 no existeix."
 
-#: document/katedocument.cpp:249
+#: document/katedocument.cpp:248
 #, kde-format
 msgid "Auto Reload Document"
 msgstr "Recàrrega automàtica del document"
 
-#: document/katedocument.cpp:250
+#: document/katedocument.cpp:249
 #, kde-format
 msgid "Automatic reload the document when it was changed on disk"
 msgstr "Recàrrega automàtica del document quan es canviï al disc"
 
-#: document/katedocument.cpp:2265
+#: document/katedocument.cpp:2275
 #, kde-format
 msgid ""
 "The file %1 could not be loaded, as it was not possible to read from it.<br /"
@@ -1971,23 +1969,23 @@ msgstr ""
 "No s'ha pogut carregar el fitxer %1, atès que no s'ha pogut llegir.<br /"
 ">Comproveu si teniu accés de lectura a aquest fitxer."
 
-#: document/katedocument.cpp:2270
+#: document/katedocument.cpp:2280
 #, kde-format
 msgctxt "translators: you can also translate 'Try Again' with 'Reload'"
 msgid "Try Again"
 msgstr "Torneu-ho a provar"
 
-#: document/katedocument.cpp:2274 document/katedocument.cpp:5987
+#: document/katedocument.cpp:2284 document/katedocument.cpp:6001
 #, kde-format
 msgid "&Close"
 msgstr "Tan&ca"
 
-#: document/katedocument.cpp:2275 document/katedocument.cpp:5988
+#: document/katedocument.cpp:2285 document/katedocument.cpp:6002
 #, kde-format
 msgid "Close message"
 msgstr "Tanca el missatge"
 
-#: document/katedocument.cpp:2286
+#: document/katedocument.cpp:2296
 #, kde-format
 msgid ""
 "The file %1 could not be loaded, as it was not possible to read from it.\n"
@@ -1998,7 +1996,7 @@ msgstr ""
 "\n"
 "Comproveu si teniu accés de lectura a aquest fitxer."
 
-#: document/katedocument.cpp:2400
+#: document/katedocument.cpp:2410
 #, kde-format
 msgid ""
 "The file %1 was opened with %2 encoding but contained invalid characters."
@@ -2006,13 +2004,13 @@ msgid ""
 ">Either reopen the file with the correct encoding chosen or enable the read-"
 "write mode again in the tools menu to be able to edit it."
 msgstr ""
-"El fitxer %1 s'ha obert amb la codificació %2 però conté caràcters no vàlids."
-"<br />S'ha determinat el mode de només lectura, ja que en desar es podria "
-"destruir el seu contingut.<br />Podeu tornar a obrir el fitxer amb la "
+"El fitxer %1 s'ha obert amb la codificació %2, però conté caràcters no "
+"vàlids.<br />S'ha determinat el mode de només lectura, ja que en desar es "
+"podria destruir el seu contingut.<br />Podeu tornar a obrir el fitxer amb la "
 "codificació correcta o podeu tornar a activar el mode de lectura i "
 "escriptura en el menú d'eines per a poder-lo editar."
 
-#: document/katedocument.cpp:2412
+#: document/katedocument.cpp:2422
 #, kde-format
 msgid ""
 "The file %1 was opened with %2 encoding but contained invalid characters. It "
@@ -2020,13 +2018,13 @@ msgid ""
 "the file with the correct encoding chosen or enable the read-write mode "
 "again in the tools menu to be able to edit it."
 msgstr ""
-"El fitxer %1 s'ha obert amb la codificació %2 però conté caràcters no "
+"El fitxer %1 s'ha obert amb la codificació %2, però conté caràcters no "
 "vàlids. S'ha determinat el mode de només lectura, ja que en desar es podria "
 "destruir el seu contingut. Podeu tornar a obrir el fitxer amb la codificació "
 "correcta o podeu tornar a activar el mode de lectura i escriptura en el menú "
 "d'eines per a poder-lo editar."
 
-#: document/katedocument.cpp:2425
+#: document/katedocument.cpp:2435
 #, kde-format
 msgid ""
 "The file %1 was opened and contained lines longer than the configured Line "
@@ -2034,22 +2032,22 @@ msgid ""
 "characters long<br/>Those lines were wrapped and the document is set to read-"
 "only mode, as saving will modify its content."
 msgstr ""
-"El fitxer %1 s'ha obert però conté línies més llargues que el límit per a la "
-"longitud de la línia (%2 caràcters).<br />La més llarga d'aquestes línies té "
-"%3 caràcters.<br />Aquestes línies s'ajustaran i el document s'emplaçarà al "
-"mode de només lectura, ja que en desar-lo es modificaria el seu contingut."
+"El fitxer %1 s'ha obert, però conté línies més llargues que el límit per a "
+"la longitud de la línia (%2 caràcters).<br />La més llarga d'aquestes línies "
+"té %3 caràcters.<br />Aquestes línies s'ajustaran i el document s'emplaçarà "
+"al mode de només lectura, ja que en desar-lo es modificaria el seu contingut."
 
-#: document/katedocument.cpp:2432
+#: document/katedocument.cpp:2442
 #, kde-format
 msgid "Temporarily raise limit and reload file"
 msgstr "Eleva el límit temporalment i torna a carregar el fitxer"
 
-#: document/katedocument.cpp:2435
+#: document/katedocument.cpp:2445
 #, kde-format
 msgid "Close"
 msgstr "Tanca"
 
-#: document/katedocument.cpp:2442
+#: document/katedocument.cpp:2452
 #, kde-format
 msgid ""
 "The file %1 was opened and contained lines longer than the configured Line "
@@ -2057,12 +2055,12 @@ msgid ""
 "characters long<br/>Those lines were wrapped and the document is set to read-"
 "only mode, as saving will modify its content."
 msgstr ""
-"El fitxer %1 s'ha obert però conté línies més llargues que el límit per a la "
-"longitud de la línia (%2 caràcters).<br />La més llarga d'aquestes línies té "
-"%3 caràcters.<br />Aquestes línies s'ajustaran i el document s'emplaçarà al "
-"mode de només lectura, ja que en desar-lo es modificaria el seu contingut."
+"El fitxer %1 s'ha obert, però conté línies més llargues que el límit per a "
+"la longitud de la línia (%2 caràcters).<br />La més llarga d'aquestes línies "
+"té %3 caràcters.<br />Aquestes línies s'ajustaran i el document s'emplaçarà "
+"al mode de només lectura, ja que en desar-lo es modificaria el seu contingut."
 
-#: document/katedocument.cpp:2469
+#: document/katedocument.cpp:2479
 #, kde-format
 msgid ""
 "Do you really want to save this unmodified file? You could overwrite changed "
@@ -2071,18 +2069,18 @@ msgstr ""
 "Realment voleu desar aquest fitxer sense modificar? Podríeu estar "
 "sobreescrivint les dades canviades en el fitxer que resideix al disc."
 
-#: document/katedocument.cpp:2470
+#: document/katedocument.cpp:2480
 #, kde-format
 msgid "Trying to Save Unmodified File"
 msgstr "Intenta desar un fitxer sense modificar"
 
-#: document/katedocument.cpp:2471 document/katedocument.cpp:2482
-#: document/katedocument.cpp:2498
+#: document/katedocument.cpp:2481 document/katedocument.cpp:2492
+#: document/katedocument.cpp:2508
 #, kde-format
 msgid "Save Nevertheless"
 msgstr "Desa tanmateix"
 
-#: document/katedocument.cpp:2480
+#: document/katedocument.cpp:2490
 #, kde-format
 msgid ""
 "Do you really want to save this file? Both your open file and the file on "
@@ -2091,14 +2089,14 @@ msgstr ""
 "Realment voleu desar aquest fitxer? Tant el fitxer obert com el que és al "
 "disc han rebut canvis. Amb això es podrien perdre algunes dades."
 
-#: document/katedocument.cpp:2481 document/katedocument.cpp:2497
-#: document/katedocument.cpp:2789 syntax/katethemeconfig.cpp:1110
+#: document/katedocument.cpp:2491 document/katedocument.cpp:2507
+#: document/katedocument.cpp:2799 syntax/katethemeconfig.cpp:1110
 #: syntax/katethemeconfig.cpp:1258
 #, kde-format
 msgid "Possible Data Loss"
 msgstr "Possible pèrdua de dades"
 
-#: document/katedocument.cpp:2495
+#: document/katedocument.cpp:2505
 #, kde-format
 msgid ""
 "The selected encoding cannot encode every Unicode character in this "
@@ -2107,7 +2105,7 @@ msgstr ""
 "La codificació seleccionada no pot codificar cadascun dels caràcters Unicode "
 "d'aquest document. De veres voleu desar-lo? Podrien perdre's algunes dades."
 
-#: document/katedocument.cpp:2540
+#: document/katedocument.cpp:2550
 #, kde-format
 msgid ""
 "The document could not be saved, as it was not possible to write to %1.\n"
@@ -2122,7 +2120,7 @@ msgstr ""
 "El fitxer original es pot perdre o malmetre. No sortiu de l'aplicació fins "
 "que el fitxer s'hagi escrit amb èxit."
 
-#: document/katedocument.cpp:2661
+#: document/katedocument.cpp:2671
 #, kde-format
 msgid ""
 "For file %1 no backup copy could be created before saving. If an error "
@@ -2135,50 +2133,50 @@ msgstr ""
 "fitxer. Una raó pot ser que el suport d'escriptura sigui ple o el directori "
 "del fitxer sigui de només lectura."
 
-#: document/katedocument.cpp:2665
+#: document/katedocument.cpp:2675
 #, kde-format
 msgid "Failed to create backup copy."
 msgstr "Ha fallat en crear la còpia de seguretat."
 
-#: document/katedocument.cpp:2666
+#: document/katedocument.cpp:2676
 #, kde-format
 msgid "Try to Save Nevertheless"
 msgstr "Desa tanmateix"
 
-#: document/katedocument.cpp:2788
+#: document/katedocument.cpp:2798
 #, kde-format
 msgid "Do you really want to continue to close this file? Data loss may occur."
 msgstr ""
 "Desitgeu realment continuar i tancar aquest fitxer? Es podrien perdre les "
 "dades."
 
-#: document/katedocument.cpp:2790
+#: document/katedocument.cpp:2800
 #, kde-format
 msgid "Close Nevertheless"
 msgstr "Tanca tanmateix"
 
-#: document/katedocument.cpp:4261
+#: document/katedocument.cpp:4281
 #, kde-format
 msgid "Untitled"
 msgstr "Sense títol"
 
-#: document/katedocument.cpp:4307 document/katedocument.cpp:4494
-#: document/katedocument.cpp:4504 document/katedocument.cpp:5205
+#: document/katedocument.cpp:4327 document/katedocument.cpp:4517
+#: document/katedocument.cpp:4527 document/katedocument.cpp:5219
 #, kde-format
 msgid "Save File"
 msgstr "Desa el fitxer"
 
-#: document/katedocument.cpp:4310
+#: document/katedocument.cpp:4330
 #, kde-format
 msgid "Save failed"
 msgstr "Ha fallat el desament"
 
-#: document/katedocument.cpp:4515
+#: document/katedocument.cpp:4538
 #, kde-format
 msgid "Save Copy of File"
 msgstr "Desa una còpia del fitxer"
 
-#: document/katedocument.cpp:4527
+#: document/katedocument.cpp:4550
 #, kde-format
 msgid ""
 "The document could not be saved, as it was not possible to write to %1.\n"
@@ -2191,7 +2189,7 @@ msgstr ""
 "Comproveu que teniu accés d'escriptura a aquest fitxer o que hi ha prou "
 "espai disponible."
 
-#: document/katedocument.cpp:4765
+#: document/katedocument.cpp:4788
 #, kde-format
 msgid ""
 "Using deprecated modeline 'remove-trailing-space'. Please replace with "
@@ -2204,7 +2202,7 @@ msgstr ""
 "org/?application=katepart&language=ca&branch=stable5&path=config-variables."
 "html#variable-remove-trailing-spaces"
 
-#: document/katedocument.cpp:4771
+#: document/katedocument.cpp:4794
 #, kde-format
 msgid ""
 "Using deprecated modeline 'replace-trailing-space-save'. Please replace with "
@@ -2217,22 +2215,22 @@ msgstr ""
 "application=katepart&language=ca&branch=stable5&path=config-variables."
 "html#variable-remove-trailing-spaces"
 
-#: document/katedocument.cpp:5082
+#: document/katedocument.cpp:5096
 #, kde-format
 msgid "The file '%1' was modified by another program."
 msgstr "El fitxer «%1» l'ha modificat un altre programa."
 
-#: document/katedocument.cpp:5085
+#: document/katedocument.cpp:5099
 #, kde-format
 msgid "The file '%1' was created by another program."
 msgstr "El fitxer «%1» l'ha creat un altre programa."
 
-#: document/katedocument.cpp:5088
+#: document/katedocument.cpp:5102
 #, kde-format
 msgid "The file '%1' was deleted by another program."
 msgstr "El fitxer «%1» l'ha suprimit un altre programa."
 
-#: document/katedocument.cpp:5381
+#: document/katedocument.cpp:5395
 #, kde-format
 msgid ""
 "The document \"%1\" has been modified.\n"
@@ -2241,17 +2239,17 @@ msgstr ""
 "El document «%1» ha estat modificat.\n"
 "Voleu desar els canvis o descartar-los?"
 
-#: document/katedocument.cpp:5384
+#: document/katedocument.cpp:5398
 #, kde-format
 msgid "Close Document"
 msgstr "Tanca el document"
 
-#: document/katedocument.cpp:5493
+#: document/katedocument.cpp:5507
 #, kde-format
 msgid "The file <a href=\"%1\">%2</a> is still loading."
 msgstr "El fitxer <a href=\"%1\">%2</a> encara s'està carregant."
 
-#: document/katedocument.cpp:5498
+#: document/katedocument.cpp:5512
 #, kde-format
 msgid "&Abort Loading"
 msgstr "In&terromp la càrrega"
@@ -2311,7 +2309,7 @@ msgstr "Mode del Vi"
 msgid "recording"
 msgstr "enregistrament"
 
-#: inputmode/kateviinputmodefactory.cpp:38 utils/kateglobal.cpp:104
+#: inputmode/kateviinputmodefactory.cpp:38 utils/kateglobal.cpp:95
 #: vimode/config/configtab.cpp:233
 #, kde-format
 msgid "Vi Input Mode"
@@ -2335,7 +2333,7 @@ msgstr "Propietats de %1"
 #: mode/katemodeconfigpage.cpp:178
 #, kde-format
 msgid "New Filetype"
-msgstr "Nou tipus de fitxer"
+msgstr "Tipus de fitxer nou"
 
 #: mode/katemodeconfigpage.cpp:293
 #, kde-format
@@ -2449,7 +2447,7 @@ msgstr "Im&primeix el peu"
 #: printing/printconfigwidgets.cpp:120
 #, kde-format
 msgid "Header/footer font:"
-msgstr "Tipus de lletra per a la capçalera/peu:"
+msgstr "Tipus de lletra de la capçalera/peu:"
 
 #: printing/printconfigwidgets.cpp:125
 #, kde-format
@@ -2736,13 +2734,13 @@ msgstr "Commuta els comentaris"
 #, kde-format
 msgctxt "Script command name"
 msgid "Go to next edit point"
-msgstr "Vés al punt d'edició següent"
+msgstr "Ves al punt d'edició següent"
 
 #: script/data/commands/emmet.js:38
 #, kde-format
 msgctxt "Script command name"
 msgid "Go to previous edit point"
-msgstr "Vés al punt d'edició anterior"
+msgstr "Ves al punt d'edició anterior"
 
 #: script/data/commands/emmet.js:42
 #, kde-format
@@ -3210,12 +3208,6 @@ msgctxt "Autoindent mode"
 msgid "LISP"
 msgstr "LISP"
 
-#: script/data/indentation/lua.js:2
-#, kde-format
-msgctxt "Autoindent mode"
-msgid "Lua"
-msgstr "Lua"
-
 #: script/data/indentation/pascal.js:2
 #, kde-format
 msgctxt "Autoindent mode"
@@ -3295,7 +3287,7 @@ msgstr "Error en carregar l'script %1\n"
 msgid "Error loading script %1"
 msgstr "Error en carregar l'script %1"
 
-#: script/katescriptmanager.cpp:307
+#: script/katescriptmanager.cpp:315
 #, kde-format
 msgid "Reload all JavaScript files (indenters, command line scripts, etc)."
 msgstr ""
@@ -3358,193 +3350,193 @@ msgstr "S'ha arribat al començament del fitxer. Continuo des del final?"
 msgid "Continue search?"
 msgstr "Continuo la cerca?"
 
-#: search/katesearchbar.cpp:905
+#: search/katesearchbar.cpp:917
 #, kde-format
 msgid "SearchHighLight"
 msgstr "RessaltatDeCerca"
 
-#: search/katesearchbar.cpp:1144
+#: search/katesearchbar.cpp:1156
 #, kde-format
 msgid "Beginning of line"
 msgstr "Començament de la línia"
 
-#: search/katesearchbar.cpp:1145
+#: search/katesearchbar.cpp:1157
 #, kde-format
 msgid "End of line"
 msgstr "Final de línia"
 
-#: search/katesearchbar.cpp:1147
+#: search/katesearchbar.cpp:1159
 #, kde-format
 msgid "Match any character excluding new line (by default)"
 msgstr ""
 "Coincideix amb qualsevol caràcter excloent la línia nova (predeterminat)"
 
-#: search/katesearchbar.cpp:1148
+#: search/katesearchbar.cpp:1160
 #, kde-format
 msgid "One or more occurrences"
 msgstr "Una o més ocurrències"
 
-#: search/katesearchbar.cpp:1149
+#: search/katesearchbar.cpp:1161
 #, kde-format
 msgid "Zero or more occurrences"
 msgstr "Zero o més ocurrències"
 
-#: search/katesearchbar.cpp:1150
+#: search/katesearchbar.cpp:1162
 #, kde-format
 msgid "Zero or one occurrences"
 msgstr "Zero o una ocurrència"
 
-#: search/katesearchbar.cpp:1153
+#: search/katesearchbar.cpp:1165
 #, kde-format
 msgid "<a> through <b> occurrences"
 msgstr "<a> exactament <b> les ocurrències"
 
-#: search/katesearchbar.cpp:1159
+#: search/katesearchbar.cpp:1171
 #, kde-format
 msgid "Group, capturing"
 msgstr "Grup, amb captura"
 
-#: search/katesearchbar.cpp:1160
+#: search/katesearchbar.cpp:1172
 #, kde-format
 msgid "Or"
 msgstr "O"
 
-#: search/katesearchbar.cpp:1161
+#: search/katesearchbar.cpp:1173
 #, kde-format
 msgid "Set of characters"
 msgstr "Joc de caràcters"
 
-#: search/katesearchbar.cpp:1162
+#: search/katesearchbar.cpp:1174
 #, kde-format
 msgid "Negative set of characters"
 msgstr "Joc de caràcters negatiu"
 
-#: search/katesearchbar.cpp:1166
+#: search/katesearchbar.cpp:1178
 #, kde-format
 msgid "Whole match reference"
 msgstr "Referència de coincidència completa"
 
-#: search/katesearchbar.cpp:1177
+#: search/katesearchbar.cpp:1189
 #, kde-format
 msgid "Reference"
 msgstr "Referència"
 
-#: search/katesearchbar.cpp:1184
+#: search/katesearchbar.cpp:1196
 #, kde-format
 msgid "Line break"
 msgstr "Salt de línia"
 
-#: search/katesearchbar.cpp:1185
+#: search/katesearchbar.cpp:1197
 #, kde-format
 msgid "Tab"
 msgstr "Tabulació"
 
-#: search/katesearchbar.cpp:1188
+#: search/katesearchbar.cpp:1200
 #, kde-format
 msgid "Word boundary"
 msgstr "Límit de paraula"
 
-#: search/katesearchbar.cpp:1189
+#: search/katesearchbar.cpp:1201
 #, kde-format
 msgid "Not word boundary"
 msgstr "Sense límit de paraula"
 
-#: search/katesearchbar.cpp:1190
+#: search/katesearchbar.cpp:1202
 #, kde-format
 msgid "Digit"
 msgstr "Dígit"
 
-#: search/katesearchbar.cpp:1191
+#: search/katesearchbar.cpp:1203
 #, kde-format
 msgid "Non-digit"
 msgstr "No-dígit"
 
-#: search/katesearchbar.cpp:1192
+#: search/katesearchbar.cpp:1204
 #, kde-format
 msgid "Whitespace (excluding line breaks)"
 msgstr "Espai en blanc (excloent els salts de línia)"
 
-#: search/katesearchbar.cpp:1193
+#: search/katesearchbar.cpp:1205
 #, kde-format
 msgid "Non-whitespace"
 msgstr "No espai en blanc"
 
-#: search/katesearchbar.cpp:1194
+#: search/katesearchbar.cpp:1206
 #, kde-format
 msgid "Word character (alphanumerics plus '_')"
 msgstr "Caràcter de paraula (alfanumèrics més «_»)"
 
-#: search/katesearchbar.cpp:1195
+#: search/katesearchbar.cpp:1207
 #, kde-format
 msgid "Non-word character"
 msgstr "Caràcter de no-paraula"
 
-#: search/katesearchbar.cpp:1198
+#: search/katesearchbar.cpp:1210
 #, kde-format
 msgid "Octal character 000 to 377 (2^8-1)"
 msgstr "Caràcter octal 000 a 377 (2^8-1)"
 
-#: search/katesearchbar.cpp:1199
+#: search/katesearchbar.cpp:1211
 #, kde-format
 msgid "Hex character 0000 to FFFF (2^16-1)"
 msgstr "Caràcter hexadecimal 0000 a FFFF (2^16-1)"
 
-#: search/katesearchbar.cpp:1200
+#: search/katesearchbar.cpp:1212
 #, kde-format
 msgid "Backslash"
 msgstr "Barra inversa"
 
-#: search/katesearchbar.cpp:1204
+#: search/katesearchbar.cpp:1216
 #, kde-format
 msgid "Group, non-capturing"
 msgstr "Grup, sense captura"
 
-#: search/katesearchbar.cpp:1205
+#: search/katesearchbar.cpp:1217
 #, kde-format
 msgid "Positive Lookahead"
 msgstr "Cerca endavant positiva"
 
-#: search/katesearchbar.cpp:1206
+#: search/katesearchbar.cpp:1218
 #, kde-format
 msgid "Negative lookahead"
 msgstr "Cerca endavant negativa"
 
-#: search/katesearchbar.cpp:1210
+#: search/katesearchbar.cpp:1222
 #, kde-format
 msgid "Fixed-length positive lookbehind"
 msgstr "Cerca enrere positiva de longitud fixa"
 
-#: search/katesearchbar.cpp:1211
+#: search/katesearchbar.cpp:1223
 #, kde-format
 msgid "Fixed-length negative lookbehind"
 msgstr "Cerca enrere negativa de longitud fixa"
 
-#: search/katesearchbar.cpp:1216
+#: search/katesearchbar.cpp:1228
 #, kde-format
 msgid "Begin lowercase conversion"
 msgstr "Comença la conversió a minúscules"
 
-#: search/katesearchbar.cpp:1217
+#: search/katesearchbar.cpp:1229
 #, kde-format
 msgid "Begin uppercase conversion"
 msgstr "Comença la conversió a majúscules"
 
-#: search/katesearchbar.cpp:1218
+#: search/katesearchbar.cpp:1230
 #, kde-format
 msgid "End case conversion"
 msgstr "Finalitza la conversió entre majúscules i minúscules"
 
-#: search/katesearchbar.cpp:1219
+#: search/katesearchbar.cpp:1231
 #, kde-format
 msgid "Lowercase first character conversion"
 msgstr "Converteix el primer caràcter a minúscules"
 
-#: search/katesearchbar.cpp:1220
+#: search/katesearchbar.cpp:1232
 #, kde-format
 msgid "Uppercase first character conversion"
 msgstr "Converteix el primer caràcter a majúscules"
 
-#: search/katesearchbar.cpp:1221
+#: search/katesearchbar.cpp:1233
 #, kde-format
 msgid "Replacement counter (for Replace All)"
 msgstr "Comptador de les substitucions (per a Substitueix-ho tot)"
@@ -3850,7 +3842,7 @@ msgstr ""
 "<p>Cliqueu aquí per a deixar aquesta ocurrència de la paraula desconeguda "
 "tal com està.</p>\n"
 "<p>Aquesta acció és útil quan una paraula és un nom, un acrònim, una paraula "
-"estrangera o qualsevol altra paraula desconeguda que voleu usar però no "
+"estrangera o qualsevol altra paraula desconeguda que voleu usar, però no "
 "voleu afegir al diccionari.</p>\n"
 "</qt>"
 
@@ -3896,7 +3888,7 @@ msgstr ""
 "<p>Cliqueu aquí per a deixar totes les ocurrències de la paraula desconeguda "
 "tal com estan.</p>\n"
 "<p>Aquesta acció és útil quan una paraula és un nom, un acrònim, una paraula "
-"estrangera o qualsevol altra paraula desconeguda que voleu usar però no "
+"estrangera o qualsevol altra paraula desconeguda que voleu usar, però no "
 "voleu afegir al diccionari.</p>\n"
 "</qt>"
 
@@ -4315,7 +4307,7 @@ msgstr "Àrea de text"
 #: syntax/katethemeconfig.cpp:166
 #, kde-format
 msgid "<p>Sets the background color of the editing area.</p>"
-msgstr "<p>Defineix el color de fons per a l'àrea d'edició.</p>"
+msgstr "<p>Defineix el color de fons de l'àrea d'edició.</p>"
 
 #: syntax/katethemeconfig.cpp:171
 #, kde-format
@@ -4344,8 +4336,8 @@ msgid ""
 "<p>Sets the background color of the currently active line, which means the "
 "line where your cursor is positioned.</p>"
 msgstr ""
-"<p>Defineix el color de fons per a la línia actualment activa, el qual vol "
-"dir la línia on està posicionat el cursor.</p>"
+"<p>Defineix el color de fons de la línia actualment activa, és a dir, la "
+"línia a on està situat el cursor.</p>"
 
 #: syntax/katethemeconfig.cpp:187
 #, kde-format
@@ -4355,7 +4347,7 @@ msgstr "Ressaltat de la cerca"
 #: syntax/katethemeconfig.cpp:189
 #, kde-format
 msgid "<p>Sets the background color of search results.</p>"
-msgstr "<p>Defineix el color de fons per al resultat de la cerca.</p>"
+msgstr "<p>Defineix el color de fons del resultat de la cerca.</p>"
 
 #: syntax/katethemeconfig.cpp:194
 #, kde-format
@@ -4365,7 +4357,7 @@ msgstr "Ressaltat de la substitució"
 #: syntax/katethemeconfig.cpp:196
 #, kde-format
 msgid "<p>Sets the background color of replaced text.</p>"
-msgstr "<p>Defineix el color de fons per al text substituït.</p>"
+msgstr "<p>Defineix el color de fons del text substituït.</p>"
 
 #: syntax/katethemeconfig.cpp:203
 #, kde-format
@@ -4380,7 +4372,7 @@ msgstr "Àrea de fons"
 #: syntax/katethemeconfig.cpp:208
 #, kde-format
 msgid "<p>Sets the background color of the icon border.</p>"
-msgstr "<p>Defineix el color de fons per a la vora de les icones.</p>"
+msgstr "<p>Defineix el color de fons de la vora de les icones.</p>"
 
 #: syntax/katethemeconfig.cpp:213
 #, kde-format
@@ -4449,7 +4441,7 @@ msgstr "Plegat de codi"
 #: syntax/katethemeconfig.cpp:246
 #, kde-format
 msgid "<p>Sets the color of the code folding bar.</p>"
-msgstr "<p>Defineix el color per a la barra del plegat de codi.</p>"
+msgstr "<p>Defineix el color de la barra del plegat de codi.</p>"
 
 #: syntax/katethemeconfig.cpp:251
 #, kde-format
@@ -4512,7 +4504,7 @@ msgstr "Sagnat"
 #: syntax/katethemeconfig.cpp:286
 #, kde-format
 msgid "<p>Sets the color of the vertical indentation lines.</p>"
-msgstr "<p>Defineix el color per a les línies de sagnat verticals.</p>"
+msgstr "<p>Defineix el color de les línies de sagnat verticals.</p>"
 
 #: syntax/katethemeconfig.cpp:291
 #, kde-format
@@ -4525,16 +4517,16 @@ msgid ""
 "<p>Sets the bracket matching color. This means, if you place the cursor e.g. "
 "at a <b>(</b>, the matching <b>)</b> will be highlighted with this color.</p>"
 msgstr ""
-"<p>Defineix el color per als parèntesis concordants. Això vol dir que si "
-"poseu el cursor, p. ex. a un <b>(</b>, el corresponent <b>)</b> es "
-"ressaltarà amb aquest color.</p>"
+"<p>Defineix el color dels parèntesis concordants. Això vol dir que si poseu "
+"el cursor, p. ex. a un <b>(</b>, el corresponent <b>)</b> es ressaltarà amb "
+"aquest color.</p>"
 
 #: syntax/katethemeconfig.cpp:302
 #, kde-format
 msgid "Marker Colors"
 msgstr "Colors dels marcadors"
 
-#: syntax/katethemeconfig.cpp:304 view/kateviewhelpers.cpp:1473
+#: syntax/katethemeconfig.cpp:304 view/kateviewhelpers.cpp:1474
 #, kde-format
 msgid "Bookmark"
 msgstr "Punt"
@@ -4575,7 +4567,7 @@ msgid ""
 "<p>Sets the background color of mark type.</p><p><b>Note</b>: The marker "
 "color is displayed lightly because of transparency.</p>"
 msgstr ""
-"<p>Defineix el color de fons per al tipus de marcador.</p><p><b>Nota</b>: El "
+"<p>Defineix el color de fons del tipus de marcador.</p><p><b>Nota</b>: El "
 "color del marcador apareixerà més clar a causa de la transparència.</p>"
 
 #: syntax/katethemeconfig.cpp:324
@@ -4924,8 +4916,8 @@ msgid ""
 msgstr ""
 "<p>set-indent-pasted-text <b>enable</b></p><p>Si està activada, el sagnat "
 "del text enganxat del porta-retalls s'ajustarà utilitzant l'indentador "
-"actual.</p><p>Els valors possibles de cert: 1 on true<br/>Valors possibles "
-"de fals: 0 off false</p>"
+"actual.</p><p>Els valors possibles de cert: 1, on, true<br/>Valors possibles "
+"de fals: 0, off, false</p>"
 
 #: utils/katecmds.cpp:91
 #, kde-format
@@ -5231,390 +5223,390 @@ msgstr ""
 "o «PM».</td></tr><tr><td>ap</td><td>Usa la visualització am/pm. ap se "
 "substituirà per «am» o «pm».</td></tr></table></p>"
 
-#: utils/kateglobal.cpp:68
+#: utils/kateglobal.cpp:64
 #, kde-format
 msgid "Kate Part"
 msgstr "Part del Kate"
 
-#: utils/kateglobal.cpp:70
+#: utils/kateglobal.cpp:66
 #, kde-format
 msgid "Embeddable editor component"
 msgstr "Component d'edició incrustable"
 
-#: utils/kateglobal.cpp:72
+#: utils/kateglobal.cpp:68
 #, kde-format
 msgid "(c) 2000-2021 The Kate Authors"
 msgstr "(c) 2000-2021 The Kate Authors"
 
-#: utils/kateglobal.cpp:97
+#: utils/kateglobal.cpp:88
 #, kde-format
 msgid "Christoph Cullmann"
 msgstr "Christoph Cullmann"
 
-#: utils/kateglobal.cpp:97
+#: utils/kateglobal.cpp:88
 #, kde-format
 msgid "Maintainer"
 msgstr "Mantenidor"
 
-#: utils/kateglobal.cpp:98
+#: utils/kateglobal.cpp:89
 #, kde-format
 msgid "Dominik Haumann"
 msgstr "Dominik Haumann"
 
-#: utils/kateglobal.cpp:98 utils/kateglobal.cpp:99 utils/kateglobal.cpp:101
-#: utils/kateglobal.cpp:109 utils/kateglobal.cpp:112 utils/kateglobal.cpp:117
+#: utils/kateglobal.cpp:89 utils/kateglobal.cpp:90 utils/kateglobal.cpp:92
+#: utils/kateglobal.cpp:100 utils/kateglobal.cpp:103 utils/kateglobal.cpp:108
 #, kde-format
 msgid "Core Developer"
 msgstr "Desenvolupador principal"
 
-#: utils/kateglobal.cpp:99
+#: utils/kateglobal.cpp:90
 #, kde-format
 msgid "Milian Wolff"
 msgstr "Milian Wolff"
 
-#: utils/kateglobal.cpp:100
+#: utils/kateglobal.cpp:91
 #, kde-format
 msgid "Joseph Wenninger"
 msgstr "Joseph Wenninger"
 
-#: utils/kateglobal.cpp:104
+#: utils/kateglobal.cpp:95
 #, kde-format
 msgid "Erlend Hamberg"
 msgstr "Erlend Hamberg"
 
-#: utils/kateglobal.cpp:105
+#: utils/kateglobal.cpp:96
 #, kde-format
 msgid "Bernhard Beschow"
 msgstr "Bernhard Beschow"
 
-#: utils/kateglobal.cpp:106 utils/kateglobal.cpp:124
+#: utils/kateglobal.cpp:97 utils/kateglobal.cpp:115
 #, kde-format
 msgid "Developer"
 msgstr "Desenvolupador"
 
-#: utils/kateglobal.cpp:109
+#: utils/kateglobal.cpp:100
 #, kde-format
 msgid "Anders Lund"
 msgstr "Anders Lund"
 
-#: utils/kateglobal.cpp:110
+#: utils/kateglobal.cpp:101
 #, kde-format
 msgid "Michel Ludwig"
 msgstr "Michel Ludwig"
 
-#: utils/kateglobal.cpp:110
+#: utils/kateglobal.cpp:101
 #, kde-format
 msgid "On-the-fly spell checking"
 msgstr "Verificació ortogràfica al vol"
 
-#: utils/kateglobal.cpp:111
+#: utils/kateglobal.cpp:102
 #, kde-format
 msgid "Pascal Létourneau"
 msgstr "Pascal Létourneau"
 
-#: utils/kateglobal.cpp:111
+#: utils/kateglobal.cpp:102
 #, kde-format
 msgid "Large scale bug fixing"
 msgstr "Correcció dels errors a gran escala"
 
-#: utils/kateglobal.cpp:112
+#: utils/kateglobal.cpp:103
 #, kde-format
 msgid "Hamish Rodda"
 msgstr "Hamish Rodda"
 
-#: utils/kateglobal.cpp:113
+#: utils/kateglobal.cpp:104
 #, kde-format
 msgid "Waldo Bastian"
 msgstr "Waldo Bastian"
 
-#: utils/kateglobal.cpp:113
+#: utils/kateglobal.cpp:104
 #, kde-format
 msgid "The cool buffersystem"
 msgstr "El fantàstic sistema de memòria intermèdia"
 
-#: utils/kateglobal.cpp:114
+#: utils/kateglobal.cpp:105
 #, kde-format
 msgid "Charles Samuels"
 msgstr "Charles Samuels"
 
-#: utils/kateglobal.cpp:114
+#: utils/kateglobal.cpp:105
 #, kde-format
 msgid "The Editing Commands"
 msgstr "Les ordres d'edició"
 
-#: utils/kateglobal.cpp:115
+#: utils/kateglobal.cpp:106
 #, kde-format
 msgid "Matt Newell"
 msgstr "Matt Newell"
 
-#: utils/kateglobal.cpp:115
+#: utils/kateglobal.cpp:106
 #, kde-format
 msgid "Testing, ..."
 msgstr "Proves..."
 
-#: utils/kateglobal.cpp:116
+#: utils/kateglobal.cpp:107
 #, kde-format
 msgid "Michael Bartl"
 msgstr "Michael Bartl"
 
-#: utils/kateglobal.cpp:116
+#: utils/kateglobal.cpp:107
 #, kde-format
 msgid "Former Core Developer"
 msgstr "Antic desenvolupador principal"
 
-#: utils/kateglobal.cpp:117
+#: utils/kateglobal.cpp:108
 #, kde-format
 msgid "Michael McCallum"
 msgstr "Michael McCallum"
 
-#: utils/kateglobal.cpp:118
+#: utils/kateglobal.cpp:109
 #, kde-format
 msgid "Michael Koch"
 msgstr "Michael Koch"
 
-#: utils/kateglobal.cpp:118
+#: utils/kateglobal.cpp:109
 #, kde-format
 msgid "KWrite port to KParts"
 msgstr "Port del KWrite a KParts"
 
-#: utils/kateglobal.cpp:119
+#: utils/kateglobal.cpp:110
 #, kde-format
 msgid "Christian Gebauer"
 msgstr "Christian Gebauer"
 
-#: utils/kateglobal.cpp:120
+#: utils/kateglobal.cpp:111
 #, kde-format
 msgid "Simon Hausmann"
 msgstr "Simon Hausmann"
 
-#: utils/kateglobal.cpp:121
+#: utils/kateglobal.cpp:112
 #, kde-format
 msgid "Glen Parker"
 msgstr "Glen Parker"
 
-#: utils/kateglobal.cpp:121
+#: utils/kateglobal.cpp:112
 #, kde-format
 msgid "KWrite Undo History, Kspell integration"
 msgstr "Historial desfés del KWrite, integració amb el Kspell"
 
-#: utils/kateglobal.cpp:122
+#: utils/kateglobal.cpp:113
 #, kde-format
 msgid "Scott Manson"
 msgstr "Scott Manson"
 
-#: utils/kateglobal.cpp:122
+#: utils/kateglobal.cpp:113
 #, kde-format
 msgid "KWrite XML Syntax highlighting support"
 msgstr "Implementació del ressaltat de la sintaxi XML al KWrite"
 
-#: utils/kateglobal.cpp:123
+#: utils/kateglobal.cpp:114
 #, kde-format
 msgid "John Firebaugh"
 msgstr "John Firebaugh"
 
-#: utils/kateglobal.cpp:123
+#: utils/kateglobal.cpp:114
 #, kde-format
 msgid "Patches and more"
 msgstr "Pedaços i més"
 
-#: utils/kateglobal.cpp:124
+#: utils/kateglobal.cpp:115
 #, kde-format
 msgid "Andreas Kling"
 msgstr "Andreas Kling"
 
-#: utils/kateglobal.cpp:125
+#: utils/kateglobal.cpp:116
 #, kde-format
 msgid "Mirko Stocker"
 msgstr "Mirko Stocker"
 
-#: utils/kateglobal.cpp:125
+#: utils/kateglobal.cpp:116
 #, kde-format
 msgid "Various bugfixes"
 msgstr "Diverses correccions d'errors"
 
-#: utils/kateglobal.cpp:126
+#: utils/kateglobal.cpp:117
 #, kde-format
 msgid "Matthew Woehlke"
 msgstr "Matthew Woehlke"
 
-#: utils/kateglobal.cpp:126
+#: utils/kateglobal.cpp:117
 #, kde-format
 msgid "Selection, KColorScheme integration"
 msgstr "Selecció i integració del KColorScheme"
 
-#: utils/kateglobal.cpp:127
+#: utils/kateglobal.cpp:118
 #, kde-format
 msgid "Sebastian Pipping"
 msgstr "Sebastian Pipping"
 
-#: utils/kateglobal.cpp:128
+#: utils/kateglobal.cpp:119
 #, kde-format
 msgid "Search bar back- and front-end"
 msgstr "Dorsal i frontal de la barra de cerca"
 
-#: utils/kateglobal.cpp:131
+#: utils/kateglobal.cpp:122
 #, kde-format
 msgid "Jochen Wilhelmy"
 msgstr "Jochen Wilhelmy"
 
-#: utils/kateglobal.cpp:131
+#: utils/kateglobal.cpp:122
 #, kde-format
 msgid "Original KWrite Author"
 msgstr "Autor original del KWrite"
 
-#: utils/kateglobal.cpp:132
+#: utils/kateglobal.cpp:123
 #, kde-format
 msgid "Gerald Senarclens de Grancy"
 msgstr "Gerald Senarclens de Grancy"
 
-#: utils/kateglobal.cpp:133
+#: utils/kateglobal.cpp:124
 #, kde-format
 msgid "QA and Scripting"
 msgstr "QA i creació de scripts"
 
-#: utils/kateglobal.cpp:137
+#: utils/kateglobal.cpp:128
 #, kde-format
 msgid "Matteo Merli"
 msgstr "Matteo Merli"
 
-#: utils/kateglobal.cpp:137
+#: utils/kateglobal.cpp:128
 #, kde-format
 msgid "Highlighting for RPM Spec-Files, Perl, Diff and more"
 msgstr "Ressaltat per als fitxers «spec» dels RPM, Perl, diff i més"
 
-#: utils/kateglobal.cpp:138
+#: utils/kateglobal.cpp:129
 #, kde-format
 msgid "Rocky Scaletta"
 msgstr "Rocky Scaletta"
 
-#: utils/kateglobal.cpp:138
+#: utils/kateglobal.cpp:129
 #, kde-format
 msgid "Highlighting for VHDL"
 msgstr "Ressaltat per a VHDL"
 
-#: utils/kateglobal.cpp:139
+#: utils/kateglobal.cpp:130
 #, kde-format
 msgid "Yury Lebedev"
 msgstr "Yury Lebedev"
 
-#: utils/kateglobal.cpp:139
+#: utils/kateglobal.cpp:130
 #, kde-format
 msgid "Highlighting for SQL"
 msgstr "Ressaltat per a SQL"
 
-#: utils/kateglobal.cpp:140
+#: utils/kateglobal.cpp:131
 #, kde-format
 msgid "Chris Ross"
 msgstr "Chris Ross"
 
-#: utils/kateglobal.cpp:140
+#: utils/kateglobal.cpp:131
 #, kde-format
 msgid "Highlighting for Ferite"
 msgstr "Ressaltat per a Ferite"
 
-#: utils/kateglobal.cpp:141
+#: utils/kateglobal.cpp:132
 #, kde-format
 msgid "Nick Roux"
 msgstr "Nick Roux"
 
-#: utils/kateglobal.cpp:141
+#: utils/kateglobal.cpp:132
 #, kde-format
 msgid "Highlighting for ILERPG"
 msgstr "Ressaltat per a ILERPG"
 
-#: utils/kateglobal.cpp:142
+#: utils/kateglobal.cpp:133
 #, kde-format
 msgid "Carsten Niehaus"
 msgstr "Carsten Niehaus"
 
-#: utils/kateglobal.cpp:142
+#: utils/kateglobal.cpp:133
 #, kde-format
 msgid "Highlighting for LaTeX"
 msgstr "Ressaltat per a LaTeX"
 
-#: utils/kateglobal.cpp:143
+#: utils/kateglobal.cpp:134
 #, kde-format
 msgid "Per Wigren"
 msgstr "Per Wigren"
 
-#: utils/kateglobal.cpp:143
+#: utils/kateglobal.cpp:134
 #, kde-format
 msgid "Highlighting for Makefiles, Python"
 msgstr "Ressaltat per als fitxers en Make, Python"
 
-#: utils/kateglobal.cpp:144
+#: utils/kateglobal.cpp:135
 #, kde-format
 msgid "Jan Fritz"
 msgstr "Jan Fritz"
 
-#: utils/kateglobal.cpp:144
+#: utils/kateglobal.cpp:135
 #, kde-format
 msgid "Highlighting for Python"
 msgstr "Ressaltat per a Python"
 
-#: utils/kateglobal.cpp:145
+#: utils/kateglobal.cpp:136
 #, kde-format
 msgid "Daniel Naber"
 msgstr "Daniel Naber"
 
-#: utils/kateglobal.cpp:146
+#: utils/kateglobal.cpp:137
 #, kde-format
 msgid "Roland Pabel"
 msgstr "Roland Pabel"
 
-#: utils/kateglobal.cpp:146
+#: utils/kateglobal.cpp:137
 #, kde-format
 msgid "Highlighting for Scheme"
 msgstr "Ressaltat per a Scheme"
 
-#: utils/kateglobal.cpp:147
+#: utils/kateglobal.cpp:138
 #, kde-format
 msgid "Cristi Dumitrescu"
 msgstr "Cristi Dumitrescu"
 
-#: utils/kateglobal.cpp:147
+#: utils/kateglobal.cpp:138
 #, kde-format
 msgid "PHP Keyword/Datatype list"
-msgstr "Llista de les paraules clau/tipus de dades per a PHP"
+msgstr "Llista de les paraules clau/tipus de dades del PHP"
 
-#: utils/kateglobal.cpp:148
+#: utils/kateglobal.cpp:139
 #, kde-format
 msgid "Carsten Pfeiffer"
 msgstr "Carsten Pfeiffer"
 
-#: utils/kateglobal.cpp:148
+#: utils/kateglobal.cpp:139
 #, kde-format
 msgid "Very nice help"
 msgstr "Ajuda molt valuosa"
 
-#: utils/kateglobal.cpp:149
+#: utils/kateglobal.cpp:140
 #, kde-format
 msgid "Bruno Massa"
 msgstr "Bruno Massa"
 
-#: utils/kateglobal.cpp:149
+#: utils/kateglobal.cpp:140
 #, kde-format
 msgid "Highlighting for Lua"
 msgstr "Ressaltat per a Lua"
 
-#: utils/kateglobal.cpp:151
+#: utils/kateglobal.cpp:142
 #, kde-format
 msgid "All people who have contributed and I have forgotten to mention"
 msgstr "Tothom qui ha col·laborat i als que m'he descuidat de mencionar"
 
-#: utils/kateglobal.cpp:153
+#: utils/kateglobal.cpp:144
 #, kde-format
 msgctxt "NAME OF TRANSLATORS"
 msgid "Your names"
 msgstr "Sebastià Pla i Sanz,Antoni Bella"
 
-#: utils/kateglobal.cpp:153
+#: utils/kateglobal.cpp:144
 #, kde-format
 msgctxt "EMAIL OF TRANSLATORS"
 msgid "Your emails"
 msgstr "sps@sastia.com,antonibella5@yahoo.com"
 
-#: utils/kateglobal.cpp:272
+#: utils/kateglobal.cpp:258
 #, kde-format
 msgid "Configure"
 msgstr "Configura"
@@ -5740,14 +5732,14 @@ msgstr ""
 #, kde-format
 msgid "X component in global screen coordinates of the cursor position."
 msgstr ""
-"Component X de les coordenades de la pantalla global per a la posició del "
+"Component X de les coordenades de la pantalla global de la posició del "
 "cursor."
 
 #: utils/katevariableexpansionmanager.cpp:117
 #, kde-format
 msgid "Y component in global screen coordinates of the cursor position."
 msgstr ""
-"Component Y de les coordenades de la pantalla global per a la posició del "
+"Component Y de les coordenades de la pantalla global de la posició del "
 "cursor."
 
 #: utils/katevariableexpansionmanager.cpp:124
@@ -5939,7 +5931,7 @@ msgstr "Activa l'ajust dinàmic de les paraules de les línies llargues."
 #, kde-format
 msgctxt "short translation please"
 msgid "Sets the end of line mode."
-msgstr "Defineix el mode per al final de línia."
+msgstr "Defineix el mode del final de línia."
 
 #: variableeditor/variablelineedit.cpp:177
 #, kde-format
@@ -5957,7 +5949,7 @@ msgstr "Activa la vista prèvia del text plegat a la vora de l'editor."
 #, kde-format
 msgctxt "short translation please"
 msgid "Set the point size of the document font."
-msgstr "Defineix la mida del punt per al tipus de lletra del document."
+msgstr "Defineix la mida del punt del tipus de lletra del document."
 
 #: variableeditor/variablelineedit.cpp:193
 #, kde-format
@@ -6072,7 +6064,7 @@ msgstr "Defineix l'esquema de color."
 #, kde-format
 msgctxt "short translation please"
 msgid "Set the text selection color."
-msgstr "Defineix el color per a la selecció de text."
+msgstr "Defineix el color de la selecció de text."
 
 #: variableeditor/variablelineedit.cpp:305
 #, kde-format
@@ -6111,13 +6103,13 @@ msgstr ""
 #, kde-format
 msgctxt "short translation please"
 msgid "Set the word wrap column."
-msgstr "Defineix la columna per a l'ajust de les paraules."
+msgstr "Defineix la columna d'ajust de les paraules."
 
 #: variableeditor/variablelineedit.cpp:338
 #, kde-format
 msgctxt "short translation please"
 msgid "Set the word wrap marker color."
-msgstr "Defineix el color del marcador per a l'ajust de les paraules."
+msgstr "Defineix el color del marcador d'ajust de les paraules."
 
 #: variableeditor/variablelineedit.cpp:343
 #, kde-format
@@ -6369,10 +6361,10 @@ msgid ""
 "paragraph, to fit the 'Wrap words at' setting in the configuration dialog."
 "<br /><br />This is a static word wrap, meaning the document is changed."
 msgstr ""
-"Useu-ho per a ajustar la línia actual, o per a reformatar les línies "
-"seleccionades com a paràgraf, segons l'opció «Ajusta les paraules a» del "
-"diàleg de configuració. <br /><br />Això és un ajust estàtic de paraules, i "
-"vol dir que el document canviarà."
+"Useu-ho per a ajustar la línia actual, o per a tornar a donar format a les "
+"línies seleccionades com a paràgraf, segons l'opció «Ajusta les paraules a» "
+"del diàleg de configuració. <br /><br />Això és un ajust estàtic de "
+"paraules, i vol dir que el document canviarà."
 
 #: view/kateview.cpp:497
 #, kde-format
@@ -6424,12 +6416,12 @@ msgstr ""
 #: view/kateview.cpp:517
 #, kde-format
 msgid "Go to previous editing line"
-msgstr "Vés a la línia d'edició anterior"
+msgstr "Ves a la línia d'edició anterior"
 
 #: view/kateview.cpp:522
 #, kde-format
 msgid "Go to next editing line"
-msgstr "Vés a la línia d'edició següent"
+msgstr "Ves a la línia d'edició següent"
 
 #: view/kateview.cpp:527
 #, kde-format
@@ -6493,7 +6485,7 @@ msgstr ""
 #: view/kateview.cpp:565
 #, kde-format
 msgid "Capitalize"
-msgstr "Capitalitza"
+msgstr "Posa en majúscula la primera lletra"
 
 #: view/kateview.cpp:568
 #, kde-format
@@ -6501,8 +6493,8 @@ msgid ""
 "Capitalize the selection, or the word under the cursor if no text is "
 "selected."
 msgstr ""
-"Capitalitza la selecció, o la paraula a la dreta del cursor si no hi ha text "
-"seleccionat."
+"Posa en majúscula la primera lletra a la selecció, o a la paraula a la dreta "
+"del cursor si no hi ha text seleccionat."
 
 #: view/kateview.cpp:573
 #, kde-format
@@ -6751,6 +6743,11 @@ msgstr "Segueix els números de &línia"
 msgid "&Always On"
 msgstr "Sempre &actiu"
 
+#: view/kateview.cpp:725
+#, kde-format
+msgid "Static Word Wrap"
+msgstr "Ajust estàtic de les paraules"
+
 #: view/kateview.cpp:727
 #, kde-format
 msgid ""
@@ -6763,7 +6760,7 @@ msgstr ""
 #: view/kateview.cpp:734
 #, kde-format
 msgid "Show Static &Word Wrap Marker"
-msgstr "Mostra els marcadors per a l'ajust estàtic de les &paraules"
+msgstr "Mostra els marcadors d'ajust estàtic de les &paraules"
 
 #: view/kateview.cpp:737
 #, kde-format
@@ -6792,7 +6789,7 @@ msgstr ""
 #: view/kateview.cpp:746
 #, kde-format
 msgid "Show &Icon Border"
-msgstr "Mostra la vora per a les &icones"
+msgstr "Mostra la vora de les &icones"
 
 #: view/kateview.cpp:748
 #, kde-format
@@ -7185,7 +7182,7 @@ msgstr "Selecciona fins a baix de la vista"
 #: view/kateview.cpp:1099
 #, kde-format
 msgid "Move to Matching Bracket"
-msgstr "Mou al parèntesi concordi"
+msgstr "Mou al parèntesi concordant"
 
 #: view/kateview.cpp:1105
 #, kde-format
@@ -7315,24 +7312,24 @@ msgstr "%1 (R/O)"
 msgid "Search wrapped"
 msgstr "La cerca continua des del començament"
 
-#: view/kateview.cpp:3804
+#: view/kateview.cpp:3810
 #, kde-format
 msgid "Export File as HTML"
 msgstr "Exporta el fitxer com a HTML"
 
-#: view/kateviewhelpers.cpp:301 view/kateviewhelpers.cpp:344
-#: view/kateviewhelpers.cpp:980
+#: view/kateviewhelpers.cpp:302 view/kateviewhelpers.cpp:345
+#: view/kateviewhelpers.cpp:981
 #, kde-format
 msgctxt "from line - to line"
 msgid "<center>%1<br/>&#x2014;<br/>%2</center>"
 msgstr "<center>%1<br/>&#x2014;<br/>%2</center>"
 
-#: view/kateviewhelpers.cpp:1149
+#: view/kateviewhelpers.cpp:1150
 #, kde-format
 msgid "Available Commands"
 msgstr "Ordres disponibles"
 
-#: view/kateviewhelpers.cpp:1150
+#: view/kateviewhelpers.cpp:1151
 #, kde-format
 msgid ""
 "<p>For help on individual commands, do <code>'help &lt;command&gt;'</code></"
@@ -7341,17 +7338,17 @@ msgstr ""
 "<p>Per a obtenir ajuda quant a les ordres individuals, feu <code>«help &lt;"
 "ordre&gt;»</code></p>"
 
-#: view/kateviewhelpers.cpp:1157
+#: view/kateviewhelpers.cpp:1158
 #, kde-format
 msgid "No help for '%1'"
 msgstr "No hi ha ajuda per a «%1»"
 
-#: view/kateviewhelpers.cpp:1160
+#: view/kateviewhelpers.cpp:1161
 #, kde-format
 msgid "No such command <b>%1</b>"
 msgstr "No es troba l'ordre: <b>%1</b>"
 
-#: view/kateviewhelpers.cpp:1166
+#: view/kateviewhelpers.cpp:1167
 #, kde-format
 msgid ""
 "<p>This is the Katepart <b>command line</b>.<br />Syntax: <code><b>command "
@@ -7365,37 +7362,37 @@ msgstr ""
 "obtenir ajuda sobre les ordres individuals, introduïu <code><b>help &lt;"
 "ordre&gt;</b></code></p>"
 
-#: view/kateviewhelpers.cpp:1254 vimode/emulatedcommandbar/commandmode.cpp:210
+#: view/kateviewhelpers.cpp:1255 vimode/emulatedcommandbar/commandmode.cpp:210
 #, kde-format
 msgid "No such command: \"%1\""
 msgstr "No es troba l'ordre: «%1»"
 
-#: view/kateviewhelpers.cpp:1257 vimode/emulatedcommandbar/commandmode.cpp:192
+#: view/kateviewhelpers.cpp:1258 vimode/emulatedcommandbar/commandmode.cpp:192
 #, kde-format
 msgid "Error: No range allowed for command \"%1\"."
 msgstr "Error: no es permet l'abast per a l'ordre «%1»."
 
-#: view/kateviewhelpers.cpp:1267 vimode/emulatedcommandbar/commandmode.cpp:196
+#: view/kateviewhelpers.cpp:1268 vimode/emulatedcommandbar/commandmode.cpp:196
 #, kde-format
 msgid "Success: "
 msgstr "Encert: "
 
-#: view/kateviewhelpers.cpp:1281 vimode/emulatedcommandbar/commandmode.cpp:205
+#: view/kateviewhelpers.cpp:1282 vimode/emulatedcommandbar/commandmode.cpp:205
 #, kde-format
 msgid "Command \"%1\" failed."
 msgstr "L'ordre «%1» ha fallat."
 
-#: view/kateviewhelpers.cpp:2504 view/kateviewhelpers.cpp:2505
+#: view/kateviewhelpers.cpp:2544 view/kateviewhelpers.cpp:2545
 #, kde-format
 msgid "Mark Type %1"
 msgstr "Tipus de marca %1"
 
-#: view/kateviewhelpers.cpp:2528
+#: view/kateviewhelpers.cpp:2568
 #, kde-format
 msgid "Set Default Mark Type"
 msgstr "Defineix el tipus de marca per omissió"
 
-#: view/kateviewhelpers.cpp:2662
+#: view/kateviewhelpers.cpp:2702
 #, kde-format
 msgid "Disable Annotation Bar"
 msgstr "Desactiva la barra d'anotacions"
@@ -7554,7 +7551,7 @@ msgstr ""
 "<p><b>bp,bprev &mdash; document anterior</b></p><p>Ús: <tt><b>bp[revious] "
 "[N]</b></tt></p><p>Va a l'anterior <b>[N]</b> document («<b>b</b>uffer») en "
 "la llista de documents. </p><p> <b>[N]</b> està predeterminat a u. </p> "
-"<p>Dóna la volta a l'inici de la llista de documents.</p>"
+"<p>Dona la volta a l'inici de la llista de documents.</p>"
 
 #: vimode/appcommands.cpp:518
 #, kde-format
@@ -7567,7 +7564,7 @@ msgstr ""
 "<p><b>bn,bnext &mdash; commuta al document següent</b></p><p>Ús: "
 "<tt><b>bn[ext] [N]</b></tt></p><p>Va al següent <b>[N]</b> document («<b>b</"
 "b>uffer») en la llista de documents.<b>[N]</b> està predeterminat a u. </"
-"p><p>Dóna la volta al final de la llista de documents.</p>"
+"p><p>Dona la volta al final de la llista de documents.</p>"
 
 #: vimode/appcommands.cpp:526
 #, kde-format

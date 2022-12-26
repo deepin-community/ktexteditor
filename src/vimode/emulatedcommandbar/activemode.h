@@ -53,11 +53,11 @@ public:
 protected:
     // Helper methods.
     void hideAllWidgetsExcept(QWidget *widgetToKeepVisible);
-    void updateMatchHighlight(const KTextEditor::Range &matchRange);
+    void updateMatchHighlight(KTextEditor::Range matchRange);
     void close(bool wasAborted);
     void closeWithStatusMessage(const QString &exitStatusMessage);
     void startCompletion(const CompletionStartParams &completionStartParams);
-    void moveCursorTo(const KTextEditor::Cursor &cursorPos);
+    void moveCursorTo(const KTextEditor::Cursor cursorPos);
     EmulatedCommandBar *emulatedCommandBar();
     KTextEditor::ViewPrivate *view();
     InputModeManager *viInputModeManager();

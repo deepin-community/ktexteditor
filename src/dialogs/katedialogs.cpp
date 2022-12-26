@@ -449,6 +449,7 @@ KateEditGeneralConfigTab::KateEditGeneralConfigTab(QWidget *parent)
     observeChanges(ui->chkSmartCopyCut);
     observeChanges(ui->chkStaticWordWrap);
     observeChanges(ui->cmbEncloseSelection);
+    ui->lblBracketHelp->setFont(QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont));
     connect(ui->cmbEncloseSelection->lineEdit(), &QLineEdit::editingFinished, [=] {
         const int index = ui->cmbEncloseSelection->currentIndex();
         const QString text = ui->cmbEncloseSelection->currentText();
@@ -526,7 +527,7 @@ void KateEditGeneralConfigTab::reload()
     ui->cmbEncloseSelection->setItemData(0, i18n("Disable Feature"), Qt::ToolTipRole);
     ui->cmbEncloseSelection->addItem(QStringLiteral("`*_~"), MarkDown);
     ui->cmbEncloseSelection->setItemData(1, i18n("May be handy with Markdown"), Qt::ToolTipRole);
-    ui->cmbEncloseSelection->addItem(QStringLiteral("<>(){}[]"), MirrorChar);
+    ui->cmbEncloseSelection->addItem(QStringLiteral("<>(){}[]'\""), MirrorChar);
     ui->cmbEncloseSelection->setItemData(2, i18n("Mirror characters, similar but not exactly like auto brackets"), Qt::ToolTipRole);
     ui->cmbEncloseSelection->addItem(QStringLiteral("´`_.:|#@~*!?$%/=,;-+^°§&"), NonLetters);
     ui->cmbEncloseSelection->setItemData(3, i18n("Non letter character"), Qt::ToolTipRole);
@@ -873,6 +874,8 @@ KateSaveConfigTab::KateSaveConfigTab(QWidget *parent)
     QWidget *newWidget2 = new QWidget(tabWidget);
     uiadv = new Ui::OpenSaveConfigAdvWidget();
     uiadv->setupUi(newWidget2);
+    uiadv->lblExplanatory->setText(i18n("%1 backs up unsaved files to \"swap files.\" Swap files allow %1 to recover your work in the case of a system crash. Disabling swap files may cause data loss in case of a system crash.", QCoreApplication::applicationName()));
+    uiadv->lblExplanatory->setFont(QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont));
 
     // "What's This?" help can be found in the ui file
 

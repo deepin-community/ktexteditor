@@ -17,103 +17,82 @@ Comment:
 Upstream-Contact: kde-frameworks-devel@kde.org
 
 Files: *
-Copyright: 2009-2013, Alex Turbov <I.zaufi@gmail.com>
-           2013-2014, Alex Turbov <i.zaufi@gmail.com>
-           2004, Alexander Neundorf <neundorf@kde.org>
+Copyright: 2017, 18 Friedrich W. H. Kossebau <kossebau@kde.org>
+           2017, Allan Sandfeld Jensen <kde@carewolf.com>
            2003, Anakim Border <aborder@sources.sourceforge.net>
-           2002-2003, Anders Lund <anders.lund@lund.tdcadsl.dk>
+           2002-2004, Anders Lund <anders.lund@lund.tdcadsl.dk>
            2002-2010, Anders Lund <anders@alweb.dk>
            2008, Andreas Pakulat <apaku@gmx.de>
-           2012, Antoni Boucher <bouanto@hotmail.com>
            2009-2010, Bernhard Beschow <bbeschow@cs.tu-berlin.de>
-           2011, Caspar Hasenclever
            2001, Charles Samuels <charles@kde.org>
-           2005, Chris Martin <linux@chriscodes.com>
            2002, Christian Couder <christian@kdevelop.org>
-           2001-2014, Christoph Cullmann <cullmann@kde.org>
+           2001-2021, Christoph Cullmann <cullmann@kde.org>
            2014, Christoph Rüßler <christoph.ruessler@mailbox.org>
-           2008, Chusslove Illich <caslav.ilic@gmx.net>
            2007-2008, David Nolden <david.nolden.kdevelop@art-master.de>
            2000, David Smith <dsmith@algonet.se>
            2010, Diana-Victoria Tiriplica <diana.tiriplica@gmail.com>
-           2008, Diggory Hardy
-           2004, Dirk Mueller ( mueller@kde.org )
-           2004-2005, Dominik Haumann
-           2005, Dominik Haumann (dhdev@gmx.de) (documentation)
-           2012, Dominik Haumann <dhaumann kde org>
-           2005-2014, Dominik Haumann <dhaumann@kde.org>
-           2004-2006, Dominik Haumann <dhdev@gmx.de>
-           2008-2012, Erlend Hamberg <ehamberg@gmail.com>
+           2004, Dirk Mueller <mueller@kde.org>
+           2017, Dominik Haumann <dhaumann@kde.de>
+           2005-2021, Dominik Haumann <dhaumann@kde.org>
+           2005-2006, Dominik Haumann <dhdev@gmx.de>
+           2008-2011, Erlend Hamberg <ehamberg@gmail.com>
            2008, Evgeniy Ivanov <powerfox@kde.ru>
            2012, Frederik Gladhorn <gladhorn@kde.org>
+           2017-2018, Friedrich W. H. Kossebau <kossebau@kde.org>
            2013, Gerald Senarclens de Grancy <oss@senarclens.eu>
-           2004, Goffart Olivier
-           2002-2006, Hamish Rodda <rodda@kde.org>
-           2004, Irv Mullins
+           2017, Grzegorz Szymaszek <gszymaszek@short.pl>
+           2002-2007, Hamish Rodda <rodda@kde.org>
+           2021, Igor Kushnir <igorkuo@gmail.com>
+           2021, Jan Paul Batrina <jpmbatrina01@gmail.com>
+           2003, Jesse Yurkovich <yurkjes@iit.edu>
            1999, Jochen Wilhelmy <digisnap@cs.tu-berlin.de>
            2002, John Firebaugh <jfirebaugh@kde.org>
            2001-2010, Joseph Wenninger <jowenn@kde.org>
+           2017-2019, KDE Developers
+           2011, Kuzmich Svyatoslav
            2006-2007, Leo Savernik <l.savernik@aon.at>
            2006, Matt Broadstone <mbroadst@gmail.com>
-           2007-2014, Matthew Woehlke <mw_triad@users.sourceforge.net>
+           2007-2008, Matthew Woehlke <mw_triad@users.sourceforge.net>
            2002, Michael Goffioul <kdeprint@swing.be>
-           2014, Michal Humpula <michal.humpula@seznam.cz>
+           2015, Michal Humpula <michal.humpula@hudrydum.cz>
+           2018, Michal Srb <michalsrb@gmail.com>
            2008-2010, Michel Ludwig <michel.ludwig@kdemail.net>
-           2009-2014, Milian Wolff <mail@milianw.de>
-           2011-2014, Miquel Sabaté Solà <mikisabate@gmail.com>
+           2009-2010, Milian Wolff <mail@milianw.de>
+           2014, Miquel Sabaté Solà <mikisabate@gmail.com>
            2007-2008, Mirko Stocker <me@misto.ch>
+           2019-2020, Nibaldo González S. <nibgonz@gmail.com>
            2008, Niko Sams <niko.sams@gmail.com>
            2008, Niko Sams <niko.sams\gmail.com>
+           2008, Paul Giannaros <paul@giannaros.org>
            2009, Paul Gideon Dann <pdgiddie@gmail.com>
            2001-2003, Peter Kelly <pmk@post.com>
            2009, Rafael Fernández López <ereslibre@kde.org>
-           2006, Richard Dale <rdale@foton.es>
-           2008, Robin Pedersen <robinpeder@gmail.com>
-           2000, Scott Manson <sdmanson@alltel.net>
            2007, Sebastian Pipping <webmaster@hartwork.org>
            2010, Sebastian Sauer <mail@dipe.org>
-           2004, Sebastian Vuorinen <sebastian.vuorinen@helsinki.fi>
-           2003, Simon Huerlimann <simon.huerlimann@access.unizh.ch>
-           2012-2013, Simon St James <kdedevel@etotheipiplusone.com>
-           2004, Stefan Lang <langstefan@gmx.at>
+           2012-2016, Simon St James <kdedevel@etotheipiplusone.com>
            2003-2004, Stephan Kulow <coolo@kde.org>
+           2018, Sven Brauch <mail@svenbrauch.de>
            2013-2014, Sven Brauch <svenbrauch@gmail.com>
            2011, Svyatoslav Kuzmich <svatoslav1@gmail.com>
-           2012, Torsten Eichstädt
+           2007, Thomas Friedrichsmeier <thomas.friedrichsmeier@ruhr-uni-bochum.de>
            2012, Vegard Øye
            2000, Waldo Bastian <bastian@kde.org>
-           2008, Wilbert Berendsen
+           2021, Waqar Ahmed <waqar.17a@gmail.com>
            2008, Wilbert Berendsen <info@wilbertberendsen.nl>
-           2006, Wilbert Berendsen <wilbert@kde.nl>
-           Irsid - Arcelor Innovation R&D
-           2012-2013, Alex Turbov
-           2013, Alex Turbov <i.zaufi@gmail.com>
-           2002, Anders Lund <anders@alweb.dk>
-           2000, Authors and OPENCORES.ORG ////</span>
-           2005, Dominik Haumann <dhdev@gmx.de>
-           2001-2007, Free Software Foundation, Inc
-           2009-2012, Jeremy Ashkenas, DocumentCloud Inc
-           1999, Jochen Wilhelmy <digisnap@cs.tu-berlin.de>
-           2012, Johannes Schwenk, johannes.schwenk@adition.com -->
-           2012, Jose A. Ruiz</span>
-           2001, Joseph Wenninger <jowenn@kde.org>
-           2005, KDE Russian translation team
-           2002-2004, KDE Team
-           2007, KDE i18n Project for Vietnamese
-           2010, Matt Williams <matt@milliams.com>
-           2008-2014, Matthew Woehlke <mw_triad@users.sourceforge.net>
-           2001-2002, Meni Livne <livne@kde.org>
-           2007, Rosetta Contributors and Canonical Ltd 2007
-           2009, Rosetta Contributors and Canonical Ltd 2009
-           2003, Simon Huerlimann <simon.huerlimann@access.unizh.ch>
-           2002-2012, This_file_is_part_of_KDE
-           2008, Wilbert Berendsen <info@wilbertberendsen.nl>
-           2000-2005, nămcua Các tác giả Kate
-           2001, translate.org.za
-           2007, Красимир Беров <k.berov@gmail.com>
-           2000-2009, กลุ่มผู้พัฒนา Kate
-           ‎ המפתחים של Kate
+           2003, Zack Rusin <zack@kde.org>
+           2015, Zoe Clifford <zoeacacia@gmail.com>
 License: LGPL-2+
+
+Files: cmake/FindEditorConfig.cmake
+Copyright: 2017, Christoph Cullmann <cullmann@kde.org>
+License: BSD-2-Clause
+
+Files: .gitlab-ci.yml
+Copyright: 2020, Volker Krause <vkrause@kde.org>
+License: CC0-1.0
+ On Debian systems, the full text of the Creative Commons CC0 1.0
+ src/script/data/indentation/python.jsUniversal license can be found in the file
+ `/usr/share/common-licenses/CC0-1.0’.
 
 Files: src/script/data/indentation/haskell.js
        src/script/data/indentation/latex.js
@@ -135,77 +114,42 @@ License: LGPL
  On Debian systems, the complete text of the GNU Lesser General Public License can be
  found in `/usr/share/common-licenses/LGPL'.
 
-Files: autotests/input/md5checksum.txt
-       src/dialogs/katedialogs.cpp
+Files: src/dialogs/katedialogs.cpp
        src/document/katedocument.cpp
-       src/document/katedocument.h
        src/render/katerenderer.cpp
        src/render/katerenderer.h
        src/script/data/indentation/ada.js
        src/script/data/indentation/cstyle.js
-       src/script/data/indentation/lua.js
        src/script/data/indentation/pascal.js
        src/script/data/indentation/ruby.js
        src/script/data/indentation/xml.js
-       src/script/data/libraries/cursor.js
-       src/script/data/libraries/documentcursor.js
-       src/script/data/libraries/range.js
        src/script/data/libraries/string.js
        src/script/data/libraries/utils.js
-       src/script/katescriptmanager.cpp
-       src/search/katesearchbar.cpp
-       src/syntax/katehighlight.cpp
        src/utils/kateautoindent.cpp
-       src/utils/kateautoindent.h
-       src/utils/katebookmarks.cpp
-       src/utils/kateconfig.cpp
        src/view/kateview.cpp
-       src/view/kateview.h
        src/view/kateviewhelpers.cpp
        src/view/kateviewhelpers.h
        src/view/kateviewinternal.cpp
-       src/view/kateviewinternal.h
-       src/view/wordcounter.cpp
-       src/view/wordcounter.h
-Copyright: 2004, Anders Lund <anders@alweb.dk> (KateVarIndent class)
-           2003, Anakim Border <aborder@sources.sourceforge.net>
-           2002-2004, Anders Lund <anders.lund@lund.tdcadsl.dk>
+Copyright: 2003, Anakim Border <aborder@sources.sourceforge.net>
+           2002-2003, Anders Lund <anders.lund@lund.tdcadsl.dk>
            2001-2004, Anders Lund <anders@alweb.dk>
            2013, Andrey Matveyakin <a.matveyakin@gmail.com>
-           2009-2010, Bernhard Beschow <bbeschow@cs.tu-berlin.de>
-           2007, Bill Ross <bill@emailme.net.au>
-           2001-2005, Christoph Cullmann <cullmann@kde.org>
-           2006-2009, Dominik Haumann <dhaumann kde org>
-           2006, Dominik Haumann <dhdev@gmx.de>
-           2005, Dominik Haumann <dhdev@gmx.de> (basic support for config page)
+           2001-2004, Christoph Cullmann <cullmann@kde.org>
+           2005-2006, Dominik Haumann <dhdev@gmx.de>
            2008-2009, Erlend Hamberg <ehamberg@gmail.com>
+           2017-2018, Friedrich W. H. Kossebau <kossebau@kde.org>
            2013, Gerald Senarclens de Grancy <oss@senarclens.eu>
            2002-2007, Hamish Rodda <rodda@kde.org>
            2003, Jesse Yurkovich <yurkjes@iit.edu>
            1999, Jochen Wilhelmy <digisnap@cs.tu-berlin.de>
            2002, John Firebaugh <jfirebaugh@kde.org>
            2001-2010, Joseph Wenninger <jowenn@kde.org>
-           2012, Kåre Särs <kare.sars@iki.fi> (Minimap)
-           2006, Martin Krischik
+           2012, Kåre Särs <kare.sars@iki.fi> <Minimap>
            2007-2009, Matthew Woehlke <mw_triad@users.sourceforge.net>
            2009-2010, Michel Ludwig <michel.ludwig@kdemail.net>
            2007, Mirko Stocker <me@misto.ch>
-           2008, Paul Giannaros <paul@giannaros.org>
-           2007, Sebastian Pipping <webmaster@hartwork.org>
            2011, Svyatoslav Kuzmich <svatoslav1@gmail.com>
-           2007, Thomas Friedrichsmeier <thomas.friedrichsmeier@ruhr-uni-bochum.de>
 License: LGPL-2
-
-Files: po/bg/ktexteditor5.po
-Copyright: 2005, Carl A Joslin <carl.joslin@joslin.dyndns.org>
-           2008, Darrin Yeager. http://www.dyeager.org
-           2014, Dirk Sarpe <dsarpe@posteo.de>
-           2004, Roland Nagy
-License: GPL
- This file is licensed under the GPL.
- .
- On Debian systems, the complete text of the GNU General Public
- License can be found in `/usr/share/common-licenses/GPL'.
 
 Files: src/spellcheck/spellcheckbar.cpp
        src/spellcheck/spellcheckbar.h
@@ -218,35 +162,18 @@ Copyright: 2008, Alexey V. Beshenov <al@beshenov.ru>
            2003, Zack Rusin <zack@kde.org>
 License: LGPL-2.1+
 
-Files: src/script/kateindentscript.cpp
-       src/script/kateindentscript.h
-       src/script/katescript.cpp
-       src/script/katescript.h
-       src/script/katescriptdocument.cpp
-       src/script/katescriptdocument.h
-       src/script/katescriptmanager.h
-       src/script/katescriptview.cpp
-       src/script/katescriptview.h
-Copyright: 2008, Christoph Cullmann <cullmann@kde.org>
-           2009, Dominik Haumann <dhaumann kde org>
-           2010, Joseph Wenninger <jowenn@kde.org>
-           2008, Paul Giannaros <paul@giannaros.org>
-License: LGPL-2+3
-
-Files: po/ca/ktexteditor5.po
-       po/ca@valencia/ktexteditor5.po
-       po/uk/ktexteditor5.po
-Copyright: 2014-2015, This_file_is_part_of_KDE
-License: LGPL-2.1+3+KDEeV
-
 Files: src/script/data/commands/jumpMatchingIndent.js
 Copyright: 2006, Thomas Friedrichsmeier, Arne Henningsen, and the RKWard Team
 License: GPL-2
 
-Files: src/script/data/libraries/emmet/lib.js
-Copyright: 2009-2012, Jeremy Ashkenas, DocumentCloud Inc
-           2009-2011, Joshaven Potter <yourtech@gmail.com>
-           2006, Mildred <silkensedai@online.fr>
+Files: src/script/data/libraries/cursor.js
+       src/script/data/libraries/documentcursor.js
+       src/script/data/libraries/emmet/lib.js
+       src/script/data/libraries/range.js
+       src/script/data/libraries/underscore.js
+Copyright: 2009-2018, Dominik Haumann <dhaumann@kde.org>
+           2009-2012, Jeremy Ashkenas, DocumentCloud Inc.
+           2009-2018, Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 License: Expat
 
 Files: src/script/data/commands/utils.js
@@ -290,6 +217,28 @@ License: LGPL or Zlib
 Files: debian/*
 Copyright: 2014, Scarlett Clark <scarlett@scarlettgatelyclark.com>
 License: LGPL-2+
+
+License: BSD-2-Clause
+ Redistribution and use in source and binary forms, with or without modification,
+ are permitted provided that the following conditions are met:
+ .
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+ .
+ 2. Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 License: Expat
  Underscore is freely distributable under the MIT license.
@@ -384,33 +333,3 @@ License: LGPL-2.1+
  .
  On Debian systems, the complete text of the GNU Lesser General Public License
  version 2.1 can be found in "/usr/share/common-licenses/LGPL-2.1".
-
-License: LGPL-2+3
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Library General Public
- License as published by the Free Software Foundation; either
- version 2 of the License, or (at your option) version 3.
- .
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Library General Public License for more details.
- .
- You should have received a copy of the GNU Library General Public License
- along with this library; see the file COPYING.LIB.  If not, write to
- the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- Boston, MA 02110-1301, USA.
- .
- On Debian systems, the complete text of the GNU Library General Public
- License can be found in "/usr/share/common-licenses/LGPL-2", likewise, the
- complete text of the GNU Lesser General Public License can be found in
- "/usr/share/common-licenses/LGPL-3".
-
-License: LGPL-2.1+3+KDEeV
- This file is distributed under the license LGPL version 2.1 or
- version 3 or later versions approved by the membership of KDE e.V.
- .
- On Debian systems, the complete text of the GNU Lesser General Public
- License can be found in `/usr/share/common-licenses/LGPL-2.1', likewise, the
- complete text of the GNU Lesser General Public License can be found in
- `/usr/share/common-licenses/LGPL-3'.

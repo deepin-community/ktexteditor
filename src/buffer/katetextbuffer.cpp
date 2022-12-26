@@ -228,7 +228,7 @@ bool TextBuffer::finishEditing()
     return true;
 }
 
-void TextBuffer::wrapLine(const KTextEditor::Cursor &position)
+void TextBuffer::wrapLine(const KTextEditor::Cursor position)
 {
     // debug output for REAL low-level debugging
     BUFFER_DEBUG << "wrapLine" << position;
@@ -323,7 +323,7 @@ void TextBuffer::unwrapLine(int line)
     }
 }
 
-void TextBuffer::insertText(const KTextEditor::Cursor &position, const QString &text)
+void TextBuffer::insertText(const KTextEditor::Cursor position, const QString &text)
 {
     // debug output for REAL low-level debugging
     BUFFER_DEBUG << "insertText" << position << text;
@@ -361,7 +361,7 @@ void TextBuffer::insertText(const KTextEditor::Cursor &position, const QString &
     }
 }
 
-void TextBuffer::removeText(const KTextEditor::Range &range)
+void TextBuffer::removeText(KTextEditor::Range range)
 {
     // debug output for REAL low-level debugging
     BUFFER_DEBUG << "removeText" << range;

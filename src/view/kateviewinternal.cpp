@@ -116,6 +116,11 @@ KateViewInternal::KateViewInternal(KTextEditor::ViewPrivate *view)
     , m_bmStart(doc()->newMovingRange(KTextEditor::Range::invalid(), KTextEditor::MovingRange::DoNotExpand))
     , m_bmEnd(doc()->newMovingRange(KTextEditor::Range::invalid(), KTextEditor::MovingRange::DoNotExpand))
     , m_bmLastFlashPos(doc()->newMovingCursor(KTextEditor::Cursor::invalid()))
+
+    // folding marker
+    , m_fmStart(doc()->newMovingRange(KTextEditor::Range::invalid(), KTextEditor::MovingRange::DoNotExpand))
+    , m_fmEnd(doc()->newMovingRange(KTextEditor::Range::invalid(), KTextEditor::MovingRange::DoNotExpand))
+
     , m_dummy(nullptr)
 
     // stay on cursor will avoid that the view scroll around on press return at beginning
@@ -683,7 +688,7 @@ void KateViewInternal::updateView(bool changed, int viewLinesScrolled)
  * this function ensures a certain location is visible on the screen.
  * if endCol is -1, ignore making the columns visible.
  */
-void KateViewInternal::makeVisible(const KTextEditor::Cursor &c, int endCol, bool force, bool center, bool calledExternally)
+void KateViewInternal::makeVisible(const KTextEditor::Cursor c, int endCol, bool force, bool center, bool calledExternally)
 {
     // qCDebug(LOG_KTE) << "MakeVisible start " << startPos() << " end " << endPos() << " -> request: " << c;// , new start [" << scroll.line << "," <<
     // scroll.col << "] lines " << (linesDisplayed() - 1) << " height " << height(); if the line is in a folded region, unfold all the way up if (
@@ -791,7 +796,7 @@ void KateViewInternal::showEvent(QShowEvent *e)
     QWidget::showEvent(e);
 }
 
-KTextEditor::Attribute::Ptr KateViewInternal::attributeAt(const KTextEditor::Cursor &position) const
+KTextEditor::Attribute::Ptr KateViewInternal::attributeAt(const KTextEditor::Cursor position) const
 {
     KTextEditor::Attribute::Ptr attrib(new KTextEditor::Attribute());
 
@@ -817,7 +822,7 @@ int KateViewInternal::linesDisplayed() const
     return qMax(1, (h - (h % fh)) / fh);
 }
 
-QPoint KateViewInternal::cursorToCoordinate(const KTextEditor::Cursor &cursor, bool realCursor, bool includeBorder) const
+QPoint KateViewInternal::cursorToCoordinate(const KTextEditor::Cursor cursor, bool realCursor, bool includeBorder) const
 {
     if (cursor.line() >= doc()->lines()) {
         return QPoint(-1, -1);
@@ -902,7 +907,7 @@ public:
         makeValid();
     }
 
-    CalculatingCursor(KateViewInternal *vi, const KTextEditor::Cursor &c)
+    CalculatingCursor(KateViewInternal *vi, const KTextEditor::Cursor c)
         : m_cursor(c)
         , m_vi(vi)
     {
@@ -1021,7 +1026,7 @@ public:
         : CalculatingCursor(vi)
     {
     }
-    BoundedCursor(KateViewInternal *vi, const KTextEditor::Cursor &c)
+    BoundedCursor(KateViewInternal *vi, const KTextEditor::Cursor c)
         : CalculatingCursor(vi, c)
     {
     }
@@ -1094,7 +1099,7 @@ public:
         : CalculatingCursor(vi)
     {
     }
-    WrappingCursor(KateViewInternal *vi, const KTextEditor::Cursor &c)
+    WrappingCursor(KateViewInternal *vi, const KTextEditor::Cursor c)
         : CalculatingCursor(vi, c)
     {
     }
@@ -1265,7 +1270,7 @@ public:
 class CamelCursor : public CalculatingCursor
 {
 public:
-    CamelCursor(KateViewInternal *vi, const KTextEditor::Cursor &c)
+    CamelCursor(KateViewInternal *vi, const KTextEditor::Cursor c)
         : CalculatingCursor(vi, c)
     {
     }
@@ -1629,7 +1634,7 @@ KateTextLayout KateViewInternal::nextLayout() const
  * The cursors involved are virtual cursors (ie. equivalent to m_displayCursor)
  */
 
-KTextEditor::Cursor KateViewInternal::viewLineOffset(const KTextEditor::Cursor &virtualCursor, int offset, bool keepX)
+KTextEditor::Cursor KateViewInternal::viewLineOffset(const KTextEditor::Cursor virtualCursor, int offset, bool keepX)
 {
     if (!view()->dynWordWrap()) {
         KTextEditor::Cursor ret(qMin((int)view()->textFolding().visibleLines() - 1, virtualCursor.line() + offset), 0);
@@ -2047,7 +2052,7 @@ void KateViewInternal::bottom_end(bool sel)
     updateCursor(c);
 }
 
-void KateViewInternal::updateSelection(const KTextEditor::Cursor &_newCursor, bool keepSel)
+void KateViewInternal::updateSelection(const KTextEditor::Cursor _newCursor, bool keepSel)
 {
     KTextEditor::Cursor newCursor = _newCursor;
     if (keepSel) {
@@ -2176,7 +2181,7 @@ void KateViewInternal::updateSelection(const KTextEditor::Cursor &_newCursor, bo
 #endif
 }
 
-void KateViewInternal::setSelection(const KTextEditor::Range &range)
+void KateViewInternal::setSelection(KTextEditor::Range range)
 {
     disconnect(m_view, &KTextEditor::ViewPrivate::selectionChanged, this, &KateViewInternal::viewSelectionChanged);
     view()->setSelection(range);
@@ -2201,7 +2206,102 @@ void KateViewInternal::moveCursorToSelectionEdge()
     m_minLinesVisible = tmp;
 }
 
-void KateViewInternal::updateCursor(const KTextEditor::Cursor &newCursor, bool force, bool center, bool calledExternally)
+KTextEditor::Range KateViewInternal::findMatchingFoldingMarker(const KTextEditor::Cursor currentCursorPos, const int value, const int maxLines)
+{
+    const int direction = !(value < 0) ? 1 : -1;
+    int foldCounter = 0;
+    int lineCounter = 0;
+    auto &foldMarkers = m_view->doc()->buffer().plainLine(currentCursorPos.line())->foldings();
+
+    // searching a end folding marker? go left to right
+    // otherwise, go right to left
+    long i = direction == 1 ? 0 : (long)foldMarkers.size() - 1;
+
+    // For the first line, we start considering the first folding after the cursor
+    for (; i >= 0 && i < (long)foldMarkers.size(); i += direction) {
+        if ((foldMarkers[i].offset - currentCursorPos.column()) * direction > 0) {
+            if (foldMarkers[i].foldingValue == value) {
+                foldCounter += 1;
+            } else if (foldMarkers[i].foldingValue == -value && foldCounter > 0) {
+                foldCounter -= 1;
+            } else if (foldMarkers[i].foldingValue == -value && foldCounter == 0) {
+                return KTextEditor::Range(currentCursorPos.line(),
+                                          getStartOffset(direction, foldMarkers[i].offset, foldMarkers[i].length),
+                                          currentCursorPos.line(),
+                                          getEndOffset(direction, foldMarkers[i].offset, foldMarkers[i].length));
+            }
+        }
+    }
+
+    // for the other lines
+    int currentLine = currentCursorPos.line() + direction;
+    for (; currentLine >= 0 && currentLine < m_view->doc()->lines() && lineCounter < maxLines; currentLine += direction) {
+        // update line attributes
+        auto &foldMarkers = m_view->doc()->buffer().plainLine(currentLine)->foldings();
+        i = direction == 1 ? 0 : (long)foldMarkers.size() - 1;
+
+        // iterate through the markers
+        for (; i >= 0 && i < (long)foldMarkers.size(); i += direction) {
+            if (foldMarkers[i].foldingValue == value) {
+                foldCounter += 1;
+            } else if (foldMarkers[i].foldingValue == -value && foldCounter != 0) {
+                foldCounter -= 1;
+            } else if (foldMarkers[i].foldingValue == -value && foldCounter == 0) {
+                return KTextEditor::Range(currentLine,
+                                          getStartOffset(direction, foldMarkers[i].offset, foldMarkers[i].length),
+                                          currentLine,
+                                          getEndOffset(direction, foldMarkers[i].offset, foldMarkers[i].length));
+            }
+        }
+        lineCounter += 1;
+    }
+
+    // got out of loop, no matching folding found
+    // returns a invalid folding range
+    return KTextEditor::Range::invalid();
+}
+
+void KateViewInternal::updateFoldingMarkersHighlighting()
+{
+    auto &foldings = m_view->doc()->buffer().plainLine(m_cursor.line())->foldings();
+
+    for (unsigned long i = 0; i < foldings.size(); i++) {
+        // 1 -> left to right, the current folding is start type
+        // -1 -> right to left, the current folding is end type
+        int direction = !(foldings[i].foldingValue < 0) ? 1 : -1;
+
+        int startOffset = getStartOffset(-direction, foldings[i].offset, foldings[i].length);
+        int endOffset = getEndOffset(-direction, foldings[i].offset, foldings[i].length);
+
+        if (m_cursor.column() >= startOffset && m_cursor.column() <= endOffset) {
+            const auto foldingMarkerMatch = findMatchingFoldingMarker(KTextEditor::Cursor(m_cursor.line(), m_cursor.column()), foldings[i].foldingValue, 2000);
+
+            if (!foldingMarkerMatch.isValid()) {
+                break;
+            }
+
+            // set fmStart to Opening Folding Marker and fmEnd to Ending Folding Marker
+            if (direction == 1) {
+                m_fmStart->setRange(KTextEditor::Range(m_cursor.line(), startOffset, m_cursor.line(), endOffset));
+                m_fmEnd->setRange(foldingMarkerMatch);
+            } else {
+                m_fmStart->setRange(foldingMarkerMatch);
+                m_fmEnd->setRange(KTextEditor::Range(m_cursor.line(), startOffset, m_cursor.line(), endOffset));
+            }
+
+            KTextEditor::Attribute::Ptr fill = KTextEditor::Attribute::Ptr(new KTextEditor::Attribute());
+            fill->setBackground(view()->m_renderer->config()->highlightedBracketColor());
+
+            m_fmStart->setAttribute(fill);
+            m_fmEnd->setAttribute(fill);
+            return;
+        }
+    }
+    m_fmStart->setRange(KTextEditor::Range::invalid());
+    m_fmEnd->setRange(KTextEditor::Range::invalid());
+}
+
+void KateViewInternal::updateCursor(const KTextEditor::Cursor newCursor, bool force, bool center, bool calledExternally)
 {
     if (!force && (m_cursor.toCursor() == newCursor)) {
         m_displayCursor = toVirtualCursor(newCursor);
@@ -2232,6 +2332,8 @@ void KateViewInternal::updateCursor(const KTextEditor::Cursor &newCursor, bool f
     }
 
     updateBracketMarks();
+
+    updateFoldingMarkersHighlighting();
 
     // avoid double work, tagLine => tagLines => not that cheap, much more costly than to compare 2 ints
     tagLine(oldDisplayCursor);
@@ -2342,7 +2444,7 @@ void KateViewInternal::updateBracketMarks()
     hideBracketMatchPreview();
 }
 
-bool KateViewInternal::tagLine(const KTextEditor::Cursor &virtualCursor)
+bool KateViewInternal::tagLine(const KTextEditor::Cursor virtualCursor)
 {
     // we had here some special case handling for one line, it was just randomly wrong for dyn. word wrapped stuff => use the generic function
     return tagLines(virtualCursor, virtualCursor, false);
@@ -2426,7 +2528,7 @@ bool KateViewInternal::tagLines(KTextEditor::Cursor start, KTextEditor::Cursor e
     return ret;
 }
 
-bool KateViewInternal::tagRange(const KTextEditor::Range &range, bool realCursors)
+bool KateViewInternal::tagRange(KTextEditor::Range range, bool realCursors)
 {
     return tagLines(range.start(), range.end(), realCursors);
 }
@@ -2599,6 +2701,7 @@ bool KateViewInternal::eventFilter(QObject *obj, QEvent *e)
 
 void KateViewInternal::keyPressEvent(QKeyEvent *e)
 {
+    m_shiftKeyPressed = e->modifiers() & Qt::ShiftModifier;
     if (e->key() == Qt::Key_Left && e->modifiers() == Qt::AltModifier) {
         view()->emitNavigateLeft();
         e->setAccepted(true);
@@ -2728,19 +2831,15 @@ void KateViewInternal::keyReleaseEvent(QKeyEvent *e)
         view()->completionWidget()->toggleExpanded(false, true);
     }
 
-    if ((e->modifiers() & Qt::SHIFT) == Qt::SHIFT) {
-        m_shiftKeyPressed = true;
-    } else {
-        if (m_shiftKeyPressed) {
-            m_shiftKeyPressed = false;
+    if (m_shiftKeyPressed && (e->modifiers() & Qt::ShiftModifier) == 0) {
+        m_shiftKeyPressed = false;
 
-            if (m_selChangedByUser) {
-                if (view()->selection()) {
-                    QApplication::clipboard()->setText(view()->selectionText(), QClipboard::Selection);
-                }
-
-                m_selChangedByUser = false;
+        if (m_selChangedByUser) {
+            if (view()->selection()) {
+                QApplication::clipboard()->setText(view()->selectionText(), QClipboard::Selection);
             }
+
+            m_selChangedByUser = false;
         }
     }
 
@@ -2778,7 +2877,7 @@ bool KateViewInternal::isAcceptableInput(const QKeyEvent *e) const
 
 void KateViewInternal::contextMenuEvent(QContextMenuEvent *e)
 {
-    // try to show popup menu
+    // calculate where to show the context menu
 
     QPoint p = e->pos();
 
@@ -2790,7 +2889,7 @@ void KateViewInternal::contextMenuEvent(QContextMenuEvent *e)
         placeCursor(e->pos());
     }
 
-    // popup is a qguardedptr now
+    // show it
     if (view()->contextMenu()) {
         view()->spellingMenu()->setUseMouseForMisspelledRange((e->reason() == QContextMenuEvent::Mouse));
         view()->contextMenu()->popup(mapToGlobal(p));
@@ -3945,7 +4044,7 @@ void KateViewInternal::editEnd(int editTagLineStart, int editTagLineEnd, bool ta
     editIsRunning = false;
 }
 
-void KateViewInternal::editSetCursor(const KTextEditor::Cursor &_cursor)
+void KateViewInternal::editSetCursor(const KTextEditor::Cursor _cursor)
 {
     if (m_cursor.toCursor() != _cursor) {
         m_cursor.setPosition(_cursor);
@@ -3968,17 +4067,22 @@ void KateViewInternal::viewSelectionChanged()
     m_selectionCached.setStart(KTextEditor::Cursor::invalid());
 }
 
+bool KateViewInternal::isUserSelecting() const
+{
+    return m_selChangedByUser;
+}
+
 KateLayoutCache *KateViewInternal::cache() const
 {
     return m_layoutCache;
 }
 
-KTextEditor::Cursor KateViewInternal::toRealCursor(const KTextEditor::Cursor &virtualCursor) const
+KTextEditor::Cursor KateViewInternal::toRealCursor(const KTextEditor::Cursor virtualCursor) const
 {
     return KTextEditor::Cursor(view()->textFolding().visibleLineToLine(virtualCursor.line()), virtualCursor.column());
 }
 
-KTextEditor::Cursor KateViewInternal::toVirtualCursor(const KTextEditor::Cursor &realCursor) const
+KTextEditor::Cursor KateViewInternal::toVirtualCursor(const KTextEditor::Cursor realCursor) const
 {
     // only convert valid lines, folding doesn't like invalid input!
     // don't validate whole cursor, column might be -1
@@ -4022,7 +4126,7 @@ KTextEditor::DocumentPrivate *KateViewInternal::doc() const
     return m_view->doc();
 }
 
-bool KateViewInternal::rangeAffectsView(const KTextEditor::Range &range, bool realCursors) const
+bool KateViewInternal::rangeAffectsView(KTextEditor::Range range, bool realCursors) const
 {
     int startLine = KateViewInternal::startLine();
     int endLine = startLine + (int)m_visibleLineCount;
@@ -4110,9 +4214,11 @@ void KateViewInternal::inputMethodEvent(QInputMethodEvent *e)
         doc()->inputMethodEnd();
     }
 
-    if (!e->commitString().isEmpty() || e->replacementLength()) {
+    if (!e->commitString().isEmpty() || e->replacementLength() || !e->preeditString().isEmpty()) {
         view()->removeSelectedText();
+    }
 
+    if (!e->commitString().isEmpty() || e->replacementLength()) {
         KTextEditor::Range preeditRange = *m_imPreeditRange;
 
         KTextEditor::Cursor start(m_imPreeditRange->start().line(), m_imPreeditRange->start().column() + e->replacementStart());
@@ -4166,7 +4272,8 @@ void KateViewInternal::inputMethodEvent(QInputMethodEvent *e)
         const auto &attributes = e->attributes();
         for (auto &a : attributes) {
             if (a.type == QInputMethodEvent::Cursor) {
-                newCursor = m_imPreeditRange->start() + KTextEditor::Cursor(0, a.start);
+                const int cursor = qMin(a.start, e->preeditString().length());
+                newCursor = m_imPreeditRange->start() + KTextEditor::Cursor(0, cursor);
                 hideCursor = !a.length;
                 QColor c = qvariant_cast<QColor>(a.value);
                 if (c.isValid()) {
@@ -4175,17 +4282,18 @@ void KateViewInternal::inputMethodEvent(QInputMethodEvent *e)
 
             } else if (a.type == QInputMethodEvent::TextFormat) {
                 QTextCharFormat f = qvariant_cast<QTextFormat>(a.value).toCharFormat();
-
-                if (f.isValid() && decorationColumn <= a.start) {
+                const int start = qMin(a.start, e->preeditString().length());
+                const int end = qMin(a.start + a.length, e->preeditString().length());
+                if (f.isValid() && decorationColumn <= start && start != end) {
                     const KTextEditor::MovingCursor &preEditRangeStart = m_imPreeditRange->start();
                     const int startLine = preEditRangeStart.line();
                     const int startCol = preEditRangeStart.column();
-                    KTextEditor::Range fr(startLine, startCol + a.start, startLine, startCol + a.start + a.length);
+                    KTextEditor::Range fr(startLine, startCol + start, startLine, startCol + end);
                     std::unique_ptr<KTextEditor::MovingRange> formatRange(doc()->newMovingRange(fr));
                     KTextEditor::Attribute::Ptr attribute(new KTextEditor::Attribute());
                     attribute->merge(f);
                     formatRange->setAttribute(attribute);
-                    decorationColumn = a.start + a.length;
+                    decorationColumn = end;
                     m_imPreeditRangeChildren.push_back(std::move(formatRange));
                 }
             }
@@ -4204,7 +4312,7 @@ void KateViewInternal::inputMethodEvent(QInputMethodEvent *e)
 
 // END IM INPUT STUFF
 
-void KateViewInternal::flashChar(const KTextEditor::Cursor &pos, KTextEditor::Attribute::Ptr attribute)
+void KateViewInternal::flashChar(const KTextEditor::Cursor pos, KTextEditor::Attribute::Ptr attribute)
 {
     Q_ASSERT(pos.isValid());
     Q_ASSERT(attribute.constData());
@@ -4269,7 +4377,7 @@ void KateViewInternal::hideBracketMatchPreview()
     m_bmPreview.reset();
 }
 
-void KateViewInternal::documentTextInserted(KTextEditor::Document *document, const KTextEditor::Range &range)
+void KateViewInternal::documentTextInserted(KTextEditor::Document *document, KTextEditor::Range range)
 {
 #ifndef QT_NO_ACCESSIBILITY
     if (QAccessible::isActive()) {
@@ -4281,7 +4389,7 @@ void KateViewInternal::documentTextInserted(KTextEditor::Document *document, con
 #endif
 }
 
-void KateViewInternal::documentTextRemoved(KTextEditor::Document * /*document*/, const KTextEditor::Range &range, const QString &oldText)
+void KateViewInternal::documentTextRemoved(KTextEditor::Document * /*document*/, KTextEditor::Range range, const QString &oldText)
 {
 #ifndef QT_NO_ACCESSIBILITY
     if (QAccessible::isActive()) {

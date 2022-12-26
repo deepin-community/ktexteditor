@@ -164,6 +164,15 @@ public:
         return line(lineno);
     }
 
+    int lineLength(int lineno) const
+    {
+        if (lineno < 0 || lineno >= lines()) {
+            return -1;
+        }
+
+        return Kate::TextBuffer::lineLength(lineno);
+    }
+
     /**
      * Update highlighting of given line @p line, if needed.
      * If @p line is already highlighted, this function does nothing.
@@ -191,7 +200,7 @@ public:
      * Wrap line at given cursor position.
      * @param position line/column as cursor where to wrap
      */
-    void wrapLine(const KTextEditor::Cursor &position) override;
+    void wrapLine(const KTextEditor::Cursor position) override;
 
 public:
     inline int tabWidth() const

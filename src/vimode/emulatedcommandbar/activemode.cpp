@@ -33,7 +33,7 @@ void ActiveMode::hideAllWidgetsExcept(QWidget *widgetToKeepVisible)
     m_emulatedCommandBar->hideAllWidgetsExcept(widgetToKeepVisible);
 }
 
-void ActiveMode::updateMatchHighlight(const KTextEditor::Range &matchRange)
+void ActiveMode::updateMatchHighlight(KTextEditor::Range matchRange)
 {
     m_matchHighligher->updateMatchHighlight(matchRange);
 }
@@ -54,7 +54,7 @@ void ActiveMode::startCompletion(const CompletionStartParams &completionStartPar
     m_emulatedCommandBar->m_completer->startCompletion(completionStartParams);
 }
 
-void ActiveMode::moveCursorTo(const KTextEditor::Cursor &cursorPos)
+void ActiveMode::moveCursorTo(const KTextEditor::Cursor cursorPos)
 {
     m_view->setCursorPosition(cursorPos);
     if (m_viInputModeManager->getCurrentViMode() == ViMode::VisualMode || m_viInputModeManager->getCurrentViMode() == ViMode::VisualLineMode) {

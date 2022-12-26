@@ -16,7 +16,7 @@ class KateDocumentTest : public QObject
 
 public:
     KateDocumentTest();
-    ~KateDocumentTest();
+    ~KateDocumentTest() override;
 
 public Q_SLOTS:
     void initTestCase();
@@ -43,6 +43,7 @@ private Q_SLOTS:
     void testSearch();
     void testMatchingBracket_data();
     void testMatchingBracket();
+    void testIndentOnPaste();
 };
 
 #endif // KATE_DOCUMENT_TEST_H

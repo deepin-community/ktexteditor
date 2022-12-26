@@ -441,7 +441,8 @@ void KateDocumentTest::testReplaceTabs()
     doc.paste(view, "\tHi");
     // ... and it still does not with indent-pasted on.
     // This behaviour is up to discussion.
-    QCOMPARE(doc.text(), QStringLiteral("int main() {\n    Hi\n}"));
+    // \t survives as we don't indent in the given case anymore, see 077dfe954699c674d2c34caf380199a4af7d184a
+    QCOMPARE(doc.text(), QStringLiteral("int main() {\n    \tHi\n}"));
 
     reset();
     doc.paste(view, "some\ncode\n  3\nhi");
@@ -763,6 +764,39 @@ void KateDocumentTest::testMatchingBracket()
     KTextEditor::DocumentPrivate doc;
     doc.setText(text);
     QCOMPARE(doc.findMatchingBracket(cursor, maxLines), match);
+}
+
+void KateDocumentTest::testIndentOnPaste()
+{
+    KTextEditor::DocumentPrivate doc;
+    auto view = static_cast<KTextEditor::ViewPrivate *>(doc.createView(nullptr));
+
+    doc.setHighlightingMode("C++");
+    doc.config()->setTabWidth(4);
+    doc.config()->setIndentationMode("cppstyle");
+
+    doc.setConfigValue("indent-pasted-text", true);
+
+    /**
+     * namespace ns
+     * {
+     * class MyClass
+     */
+    doc.setText(QStringLiteral("namespace ns\n{\nclass MyClass"));
+    view->setCursorPosition({2, 5});
+    doc.paste(view, QStringLiteral(" SOME_MACRO"));
+    // We have text in the line we are pasting in so the existing indentation shouldn't be disturbed
+    QCOMPARE(doc.text(), QStringLiteral("namespace ns\n{\nclass SOME_MACRO MyClass"));
+
+    /**
+     * namespace ns
+     * {
+     */
+    doc.setText(QStringLiteral("namespace ns\n{\n"));
+    view->setCursorPosition({2, 0});
+    doc.paste(view, QStringLiteral("class MyClass"));
+    // We have no text in the line we are pasting in so indentation will be adjusted
+    QCOMPARE(doc.text(), QStringLiteral("namespace ns\n{\n    class MyClass"));
 }
 
 #include "katedocument_test.moc"

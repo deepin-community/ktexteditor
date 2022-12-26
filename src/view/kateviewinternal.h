@@ -18,6 +18,7 @@
 
 #include "inlinenotedata.h"
 #include "katetextcursor.h"
+#include "katetextline.h"
 
 #include <QDrag>
 #include <QElapsedTimer>
@@ -49,13 +50,14 @@ class KateAbstractInputMode;
 class ZoomEventFilter;
 class KateRenderer;
 class KateTextPreview;
+class KateViewTest;
 
 class QScrollBar;
 class QScroller;
 class QScrollEvent;
 class QScrollPrepareEvent;
 
-class KateViewInternal : public QWidget
+class KTEXTEDITOR_EXPORT KateViewInternal : public QWidget
 {
     Q_OBJECT
 
@@ -69,6 +71,7 @@ class KateViewInternal : public QWidget
     friend class CamelCursor;
     friend class KateAbstractInputMode;
     friend class ::KateTextPreview;
+    friend class KateViewTest;
 
 public:
     enum Bias { left = -1, none = 0, right = 1 };
@@ -86,7 +89,7 @@ public:
     void editStart();
     void editEnd(int editTagLineStart, int editTagLineEnd, bool tagFrom);
 
-    void editSetCursor(const KTextEditor::Cursor &cursor);
+    void editSetCursor(const KTextEditor::Cursor cursor);
 
 private:
     uint editSessionNumber;
@@ -97,13 +100,13 @@ private:
 
     // BEGIN TAG & CLEAR & UPDATE STUFF
 public:
-    bool tagLine(const KTextEditor::Cursor &virtualCursor);
+    bool tagLine(const KTextEditor::Cursor virtualCursor);
 
     bool tagLines(int start, int end, bool realLines = false);
     // cursors not const references as they are manipulated within
     bool tagLines(KTextEditor::Cursor start, KTextEditor::Cursor end, bool realCursors = false);
 
-    bool tagRange(const KTextEditor::Range &range, bool realCursors);
+    bool tagRange(KTextEditor::Range range, bool realCursors);
 
     void tagAll();
 
@@ -117,7 +120,7 @@ private Q_SLOTS:
     void updateView(bool changed = false, int viewLinesScrolled = 0);
 
 private:
-    void makeVisible(const KTextEditor::Cursor &c, int endCol, bool force = false, bool center = false, bool calledExternally = false);
+    void makeVisible(const KTextEditor::Cursor c, int endCol, bool force = false, bool center = false, bool calledExternally = false);
 
 public:
     // Start Position is a virtual cursor
@@ -201,16 +204,31 @@ public:
         return m_mouse;
     }
 
-    QPoint cursorToCoordinate(const KTextEditor::Cursor &cursor, bool realCursor = true, bool includeBorder = true) const;
+    QPoint cursorToCoordinate(const KTextEditor::Cursor cursor, bool realCursor = true, bool includeBorder = true) const;
     // by default, works on coordinates of the whole widget, eg. offsetted by the border
     KTextEditor::Cursor coordinatesToCursor(const QPoint &coord, bool includeBorder = true) const;
     QPoint cursorCoordinates(bool includeBorder = true) const;
     KTextEditor::Cursor findMatchingBracket();
 
+    KTextEditor::Range findMatchingFoldingMarker(const KTextEditor::Cursor current_cursor_pos, const int value, const int maxLines);
+    void updateFoldingMarkersHighlighting();
+
+    inline int getStartOffset(int direction, int offset, int length) const
+    {
+        return direction == 1 ? offset - length : offset;
+    }
+
+    inline int getEndOffset(int direction, int offset, int length) const
+    {
+        return direction == 1 ? offset : offset + length;
+    }
+
     KateIconBorder *iconBorder() const
     {
         return m_leftBorder;
     }
+
+    bool isUserSelecting() const;
 
     // EVENT HANDLING STUFF - IMPORTANT
 private:
@@ -262,22 +280,22 @@ private:
     void scrollPos(KTextEditor::Cursor &c, bool force = false, bool calledExternally = false, bool emitSignals = true);
     void scrollLines(int lines, bool sel);
 
-    KTextEditor::Attribute::Ptr attributeAt(const KTextEditor::Cursor &position) const;
+    KTextEditor::Attribute::Ptr attributeAt(const KTextEditor::Cursor position) const;
     int linesDisplayed() const;
 
     int lineToY(int viewLine) const;
 
-    void updateSelection(const KTextEditor::Cursor &, bool keepSel);
-    void setSelection(const KTextEditor::Range &);
+    void updateSelection(const KTextEditor::Cursor, bool keepSel);
+    void setSelection(KTextEditor::Range);
     void moveCursorToSelectionEdge();
-    void updateCursor(const KTextEditor::Cursor &newCursor, bool force = false, bool center = false, bool calledExternally = false);
+    void updateCursor(const KTextEditor::Cursor newCursor, bool force = false, bool center = false, bool calledExternally = false);
     void updateBracketMarks();
     void beginSelectLine(const QPoint &pos);
 
     void placeCursor(const QPoint &p, bool keepSelection = false, bool updateSelection = true);
     bool isTargetSelected(const QPoint &p);
     // Returns whether the given range affects the area currently visible in the view
-    bool rangeAffectsView(const KTextEditor::Range &range, bool realCursors) const;
+    bool rangeAffectsView(KTextEditor::Range range, bool realCursors) const;
 
     void doDrag();
 
@@ -310,6 +328,9 @@ private:
     std::unique_ptr<KTextEditor::MovingCursor> m_bmLastFlashPos;
     std::unique_ptr<KateTextPreview> m_bmPreview;
     void updateBracketMarkAttributes();
+
+    // Folding mark
+    std::unique_ptr<KTextEditor::MovingRange> m_fmStart, m_fmEnd;
 
     enum DragState { diNone, diPending, diDragging };
 
@@ -385,10 +406,10 @@ private:
     // find the cursor offset by (offset) view lines from a cursor.
     // when keepX is true, the column position will be calculated based on the x
     // position of the specified cursor.
-    KTextEditor::Cursor viewLineOffset(const KTextEditor::Cursor &virtualCursor, int offset, bool keepX = false);
+    KTextEditor::Cursor viewLineOffset(const KTextEditor::Cursor virtualCursor, int offset, bool keepX = false);
 
-    KTextEditor::Cursor toRealCursor(const KTextEditor::Cursor &virtualCursor) const;
-    KTextEditor::Cursor toVirtualCursor(const KTextEditor::Cursor &realCursor) const;
+    KTextEditor::Cursor toRealCursor(const KTextEditor::Cursor virtualCursor) const;
+    KTextEditor::Cursor toVirtualCursor(const KTextEditor::Cursor realCursor) const;
 
     // These variable holds the most recent maximum real & visible column number
     bool m_preserveX;
@@ -401,7 +422,7 @@ private:
     // implementation details for KTextEditor::FlashTextInterface
     //
 public:
-    void flashChar(const KTextEditor::Cursor &pos, KTextEditor::Attribute::Ptr attribute);
+    void flashChar(const KTextEditor::Cursor pos, KTextEditor::Attribute::Ptr attribute);
     void showBracketMatchPreview();
     void hideBracketMatchPreview();
 
@@ -428,8 +449,8 @@ private Q_SLOTS:
     void cursorTimeout();
     void textHintTimeout();
 
-    void documentTextInserted(KTextEditor::Document *document, const KTextEditor::Range &range);
-    void documentTextRemoved(KTextEditor::Document *document, const KTextEditor::Range &range, const QString &oldText);
+    void documentTextInserted(KTextEditor::Document *document, KTextEditor::Range range);
+    void documentTextRemoved(KTextEditor::Document *document, KTextEditor::Range range, const QString &oldText);
 
     //
     // KTE::TextHintInterface

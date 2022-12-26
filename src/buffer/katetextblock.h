@@ -7,6 +7,8 @@
 #ifndef KATE_TEXTBLOCK_H
 #define KATE_TEXTBLOCK_H
 
+#include "katetextline.h"
+
 #include <unordered_map>
 #include <unordered_set>
 
@@ -73,6 +75,17 @@ public:
     TextLine line(int line) const;
 
     /**
+     * Retrieve length for @p line.
+     * @param line wanted line number
+     * @return length of line
+     */
+    int lineLength(int line) const
+    {
+        Q_ASSERT(line >= startLine() && (line - startLine()) < lines());
+        return m_lines[line - startLine()]->length();
+    }
+
+    /**
      * Append a new line with given text.
      * @param textOfLine text of the line to append
      */
@@ -103,7 +116,7 @@ public:
      * @param position line/column as cursor where to wrap
      * @param fixStartLinesStartIndex start index to fix start lines, normally this is this block
      */
-    void wrapLine(const KTextEditor::Cursor &position, int fixStartLinesStartIndex);
+    void wrapLine(const KTextEditor::Cursor position, int fixStartLinesStartIndex);
 
     /**
      * Unwrap given line.
@@ -118,14 +131,14 @@ public:
      * @param position position where to insert text
      * @param text text to insert
      */
-    void insertText(const KTextEditor::Cursor &position, const QString &text);
+    void insertText(const KTextEditor::Cursor position, const QString &text);
 
     /**
      * Remove text at given range.
      * @param range range of text to remove, must be on one line only.
      * @param removedText will be filled with removed text
      */
-    void removeText(const KTextEditor::Range &range, QString &removedText);
+    void removeText(KTextEditor::Range range, QString &removedText);
 
     /**
      * Debug output, print whole block content with line numbers and line length

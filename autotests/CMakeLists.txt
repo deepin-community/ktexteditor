@@ -1,4 +1,4 @@
-find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Test)
+find_package(Qt${QT_MAJOR_VERSION} ${REQUIRED_QT_VERSION} CONFIG REQUIRED Test)
 
 include(ECMMarkAsTest)
 include(ECMAddTests)
@@ -38,7 +38,7 @@ set (KTEXTEDITOR_TEST_LINK_LIBS KF5TextEditor
   KF5::I18n
   KF5::GuiAddons
   KF5::SyntaxHighlighting
-  Qt5::Qml
+  Qt${QT_MAJOR_VERSION}::Qml
 )
 
 include(ECMMarkAsTest)
@@ -95,7 +95,7 @@ KTEXTEDITOR_ENCODING_TEST ("ISO 8859-15" "latin15-with-utf8-bom.txt")
 # test executable for indentation
 add_executable(kateindenttest src/indenttest.cpp src/script_test_base.cpp src/testutils.cpp)
 target_link_libraries(kateindenttest ${KTEXTEDITOR_TEST_LINK_LIBS}
-    Qt5::Test)
+    Qt${QT_MAJOR_VERSION}::Test)
 ecm_mark_as_test(kateindenttest)
 
 # test macro for indentation tests
@@ -107,12 +107,7 @@ ENDMACRO(KTEXTEDITOR_INDENT_TEST)
 KTEXTEDITOR_INDENT_TEST ("testPython")
 KTEXTEDITOR_INDENT_TEST ("testJulia")
 KTEXTEDITOR_INDENT_TEST ("testCstyle")
-
-# guard against execution with qt that has broken QJSEngine regex, see: https://bugreports.qt.io/browse/QTBUG-72879
-if (NOT Qt5Widgets_VERSION VERSION_EQUAL 5.12.0)
-    KTEXTEDITOR_INDENT_TEST ("testCppstyle")
-endif()
-
+KTEXTEDITOR_INDENT_TEST ("testCppstyle")
 KTEXTEDITOR_INDENT_TEST ("testCMake")
 KTEXTEDITOR_INDENT_TEST ("testRuby")
 KTEXTEDITOR_INDENT_TEST ("testHaskell")
@@ -126,7 +121,7 @@ KTEXTEDITOR_INDENT_TEST ("testReplicode")
 macro(ktexteditor_unit_test testname)
   ecm_add_test(src/${testname}.cpp ${ARGN}
                TEST_NAME ${testname}
-	       LINK_LIBRARIES ${KTEXTEDITOR_TEST_LINK_LIBS} Qt5::Test)
+               LINK_LIBRARIES ${KTEXTEDITOR_TEST_LINK_LIBS} Qt${QT_MAJOR_VERSION}::Test)
 endmacro()
 
 ecm_add_tests(
@@ -156,7 +151,7 @@ ecm_add_tests(
   src/katetextblocktest.cpp
   src/camelcursortest.cpp
   src/encodingtest.cpp
-  LINK_LIBRARIES ${KTEXTEDITOR_TEST_LINK_LIBS} Qt5::Test
+  LINK_LIBRARIES ${KTEXTEDITOR_TEST_LINK_LIBS} Qt${QT_MAJOR_VERSION}::Test
 )
 
 ktexteditor_unit_test(completion_test src/codecompletiontestmodel.cpp src/codecompletiontestmodels.cpp)
@@ -176,7 +171,7 @@ add_subdirectory(src/vimode)
 add_executable(katemodemanager_benchmark src/katemodemanager_test_base.cpp src/katemodemanager_benchmark.cpp)
 ecm_mark_nongui_executable(katemodemanager_benchmark)
 add_test(NAME katemodemanager_benchmark COMMAND katemodemanager_benchmark CONFIGURATIONS BENCHMARK)
-target_link_libraries(katemodemanager_benchmark ${KTEXTEDITOR_TEST_LINK_LIBS} Qt5::Test)
+target_link_libraries(katemodemanager_benchmark ${KTEXTEDITOR_TEST_LINK_LIBS} Qt${QT_MAJOR_VERSION}::Test)
 
 add_executable(bench_search src/benchmarks/bench_search.cpp)
 target_link_libraries(bench_search PRIVATE ${KTEXTEDITOR_TEST_LINK_LIBS})

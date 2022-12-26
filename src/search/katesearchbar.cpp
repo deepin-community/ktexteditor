@@ -311,7 +311,7 @@ void KateSearchBar::showResultMessage()
     }
 }
 
-void KateSearchBar::highlightMatch(const Range &range)
+void KateSearchBar::highlightMatch(Range range)
 {
     KTextEditor::MovingRange *const highlight = m_view->doc()->newMovingRange(range, Kate::TextRange::DoNotExpand);
     highlight->setView(m_view); // show only in this view
@@ -322,7 +322,7 @@ void KateSearchBar::highlightMatch(const Range &range)
     m_hlRanges.append(highlight);
 }
 
-void KateSearchBar::highlightReplacement(const Range &range)
+void KateSearchBar::highlightReplacement(Range range)
 {
     KTextEditor::MovingRange *const highlight = m_view->doc()->newMovingRange(range, Kate::TextRange::DoNotExpand);
     highlight->setView(m_view); // show only in this view
@@ -390,13 +390,13 @@ void KateSearchBar::indicateMatch(MatchResult matchResult)
     lineEdit->setPalette(background);
 }
 
-/*static*/ void KateSearchBar::selectRange(KTextEditor::ViewPrivate *view, const KTextEditor::Range &range)
+/*static*/ void KateSearchBar::selectRange(KTextEditor::ViewPrivate *view, KTextEditor::Range range)
 {
     view->setCursorPositionInternal(range.end());
     view->setSelection(range);
 }
 
-void KateSearchBar::selectRange2(const KTextEditor::Range &range)
+void KateSearchBar::selectRange2(KTextEditor::Range range)
 {
     disconnect(m_view, &KTextEditor::View::selectionChanged, this, &KateSearchBar::updateSelectionOnly);
     selectRange(m_view, range);
@@ -810,18 +810,24 @@ void KateSearchBar::findOrReplaceAll()
 
     int line = m_inputRange.start().line();
 
-    QElapsedTimer rolex; // Watchog to suspend the work after some time
-    rolex.start();
     bool timeOut = false;
     bool done = false;
+
+    // This variable holds the number of lines that we have searched
+    // When it reaches 50K, we break the loop to allow event processing
+    int numLinesSearched = 0;
+    // Use a simple range in the loop to avoid needless work
+    KTextEditor::Range workingRangeCopy = m_workingRange->toRange();
     do {
         if (block) {
             delete m_workingRange; // Never forget that!
             m_workingRange = m_view->doc()->newMovingRange(m_view->doc()->rangeOnLine(m_inputRange, line));
+            workingRangeCopy = m_workingRange->toRange();
         }
 
         do {
-            match.searchText(*m_workingRange, searchPattern());
+            int currentSearchLine = workingRangeCopy.start().line();
+            match.searchText(workingRangeCopy, searchPattern());
             if (!match.isValid()) {
                 done = true;
                 break;
@@ -851,7 +857,7 @@ void KateSearchBar::findOrReplaceAll()
             }
 
             // Continue after match
-            if (lastRange.end() >= m_workingRange->end()) {
+            if (lastRange.end() >= workingRangeCopy.end()) {
                 done = true;
                 break;
             }
@@ -863,19 +869,25 @@ void KateSearchBar::findOrReplaceAll()
                 // If we don't advance here we will loop forever...
                 workingStart.move(1);
             }
-            m_workingRange->setRange(workingStart.toCursor(), m_workingRange->end());
+            workingRangeCopy.setRange(workingStart.toCursor(), workingRangeCopy.end());
 
             // Are we done?
-            if (!m_workingRange->toRange().isValid() || workingStart.atEndOfDocument()) {
+            if (!workingRangeCopy.isValid() || workingStart.atEndOfDocument()) {
                 done = true;
                 break;
             }
 
-            timeOut = rolex.elapsed() > 150;
+            // Check if we have searched through 50K lines and time out.
+            // We do this to allow the search operation to be cancelled
+            numLinesSearched += workingRangeCopy.start().line() - currentSearchLine;
+            timeOut = numLinesSearched >= 50000;
 
         } while (!m_cancelFindOrReplace && !timeOut);
 
     } while (!m_cancelFindOrReplace && !timeOut && block && ++line <= m_inputRange.end().line());
+
+    // update m_workingRange
+    m_workingRange->setRange(workingRangeCopy);
 
     if (done || m_cancelFindOrReplace) {
         Q_EMIT findOrReplaceAllFinished();

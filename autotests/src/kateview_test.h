@@ -16,7 +16,7 @@ class KateViewTest : public QObject
 
 public:
     KateViewTest();
-    ~KateViewTest();
+    ~KateViewTest() override;
 
 private Q_SLOTS:
     void testReloadMultipleViews();
@@ -34,6 +34,9 @@ private Q_SLOTS:
     void testGotoMatchingBracket();
     void testFindSelected();
     void testTransposeWord();
+
+    void testFindMatchingFoldingMarker();
+    void testUpdateFoldingMarkersHighlighting();
 };
 
 #endif // KATE_VIEW_TEST_H

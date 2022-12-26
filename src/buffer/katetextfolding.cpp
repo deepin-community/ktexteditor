@@ -14,7 +14,7 @@
 
 namespace Kate
 {
-TextFolding::FoldingRange::FoldingRange(TextBuffer &buffer, const KTextEditor::Range &range, FoldingRangeFlags _flags)
+TextFolding::FoldingRange::FoldingRange(TextBuffer &buffer, KTextEditor::Range range, FoldingRangeFlags _flags)
     : start(new TextCursor(buffer, range.start(), KTextEditor::MovingCursor::MoveOnInsert))
     , end(new TextCursor(buffer, range.end(), KTextEditor::MovingCursor::MoveOnInsert))
     , parent(nullptr)
@@ -51,7 +51,11 @@ void TextFolding::clear()
 {
     // reset counter
     m_idCounter = -1;
+    clearFoldingRanges();
+}
 
+void TextFolding::clearFoldingRanges()
+{
     // no ranges, no work
     if (m_foldingRanges.isEmpty()) {
         // assert all stuff is consistent and return!
@@ -70,7 +74,7 @@ void TextFolding::clear()
     Q_EMIT foldingRangesChanged();
 }
 
-qint64 TextFolding::newFoldingRange(const KTextEditor::Range &range, FoldingRangeFlags flags)
+qint64 TextFolding::newFoldingRange(KTextEditor::Range range, FoldingRangeFlags flags)
 {
     // sort out invalid and empty ranges
     // that makes no sense, they will never grow again!
@@ -715,9 +719,7 @@ void TextFolding::exportFoldingRanges(const TextFolding::FoldingRange::Vector &r
 
 void TextFolding::importFoldingRanges(const QJsonDocument &folds)
 {
-    for (FoldingRange *range : std::as_const(m_foldingRanges)) {
-        unfoldRange(range->id);
-    }
+    clearFoldingRanges();
 
     // try to create all folding ranges
     const auto jsonRanges = folds.array();

@@ -35,7 +35,6 @@
 #include <QToolButton>
 
 const bool hideAutomaticCompletionOnExactMatch = true;
-const bool invokeCompletionAlways = true;
 
 // If this is true, the completion-list is navigated up/down when 'tab' is pressed, instead of doing partial completion
 const bool shellLikeTabCompletion = false;
@@ -337,7 +336,7 @@ void KateCompletionWidget::deleteCompletionRanges()
     m_completionRanges.clear();
 }
 
-void KateCompletionWidget::startCompletion(const KTextEditor::Range &word,
+void KateCompletionWidget::startCompletion(KTextEditor::Range word,
                                            KTextEditor::CodeCompletionModel *model,
                                            KTextEditor::CodeCompletionModel::InvocationType invocationType)
 {
@@ -350,7 +349,7 @@ void KateCompletionWidget::startCompletion(const KTextEditor::Range &word,
     startCompletion(word, models, invocationType);
 }
 
-void KateCompletionWidget::startCompletion(const KTextEditor::Range &word,
+void KateCompletionWidget::startCompletion(KTextEditor::Range word,
                                            const QList<KTextEditor::CodeCompletionModel *> &modelsToStart,
                                            KTextEditor::CodeCompletionModel::InvocationType invocationType)
 {
@@ -418,9 +417,7 @@ void KateCompletionWidget::startCompletion(const KTextEditor::Range &word,
         }
         if (m_completionRanges.contains(model)) {
             if (*m_completionRanges[model].range == range) {
-                if (!invokeCompletionAlways) {
-                    continue; // Leave it running as it is
-                }
+                continue; // Leave it running as it is
             } else { // delete the range that was used previously
                 KTextEditor::MovingRange *oldRange = m_completionRanges[model].range;
                 // qCDebug(LOG_KTE)<<"removing completion range 2";
@@ -468,6 +465,27 @@ void KateCompletionWidget::startCompletion(const KTextEditor::Range &word,
     } else {
         abortCompletion();
     }
+}
+
+QString KateCompletionWidget::tailString() const
+{
+    if (!KateViewConfig::global()->wordCompletionRemoveTail()) {
+        return QString();
+    }
+
+    const int line = view()->cursorPosition().line();
+    const int column = view()->cursorPosition().column();
+
+    const QString text = view()->document()->line(line);
+
+    static constexpr auto options = QRegularExpression::UseUnicodePropertiesOption | QRegularExpression::DontCaptureOption;
+    static const QRegularExpression findWordEnd(QStringLiteral("^[_\\w]*\\b"), options);
+
+    QRegularExpressionMatch match = findWordEnd.match(text.mid(column));
+    if (match.hasMatch()) {
+        return match.captured(0);
+    }
+    return QString();
 }
 
 void KateCompletionWidget::waitForModelReset()
@@ -730,11 +748,6 @@ void KateCompletionWidget::cursorPositionChanged()
     const QList<KTextEditor::CodeCompletionModel *> checkCompletionRanges = m_completionRanges.keys();
     for (QList<KTextEditor::CodeCompletionModel *>::const_iterator it = checkCompletionRanges.begin(); it != checkCompletionRanges.end(); ++it) {
         KTextEditor::CodeCompletionModel *model = *it;
-
-        if (model->rowCount() == 0) {
-            continue;
-        }
-
         if (!m_completionRanges.contains(model)) {
             continue;
         }
@@ -912,9 +925,43 @@ bool KateCompletionWidget::execute()
     Q_ASSERT(model);
 
     Q_ASSERT(m_completionRanges.contains(model));
+
     KTextEditor::Cursor start = m_completionRanges[model].range->start();
 
+    // Save the "tail"
+    QString tailStr = tailString();
+    std::unique_ptr<KTextEditor::MovingCursor> afterTailMCursor(view()->doc()->newMovingCursor(view()->cursorPosition()));
+    afterTailMCursor->move(tailStr.size());
+
     model->executeCompletionItem(view(), *m_completionRanges[model].range, toExecute);
+    // NOTE the CompletionRange is now removed from m_completionRanges
+
+    // There are situations where keeping the tail is beneficial, but with the "Remove tail on complete" option is enabled,
+    // the tail is removed. For these situations we convert the completion into two edits:
+    // 1) Insert the completion
+    // 2) Remove the tail
+    //
+    // When we encounter one of these situations we can just do _one_ undo to have the tail back.
+    //
+    // Technically the tail is already removed by "executeCompletionItem()", so before this call we save the possible tail
+    // and re-add the tail before we end the first grouped "edit". Then immediately after that we add a second edit that
+    // removes the tail again.
+    // NOTE: The ViInputMode makes assumptions about the edit actions in a completion and breaks if we insert extra
+    // edits here, so we just disable this feature for ViInputMode
+    if (!tailStr.isEmpty() && view()->viewInputMode() != KTextEditor::View::ViInputMode) {
+        KTextEditor::Cursor currentPos = view()->cursorPosition();
+        KTextEditor::Cursor afterPos = afterTailMCursor->toCursor();
+        // Re add the tail for a possible undo to bring the tail back
+        view()->document()->insertText(afterPos, tailStr);
+        view()->setCursorPosition(currentPos);
+        view()->doc()->editEnd();
+
+        // Now remove the tail in a separate edit
+        KTextEditor::Cursor endPos = afterPos;
+        endPos.setColumn(afterPos.column() + tailStr.size());
+        view()->doc()->editStart();
+        view()->document()->removeText(KTextEditor::Range(afterPos, endPos));
+    }
 
     view()->doc()->editEnd();
     m_completionEditRunning = false;

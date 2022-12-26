@@ -171,7 +171,7 @@ private:
      * Notify about wrap line at given cursor position.
      * @param position line/column as cursor where to wrap
      */
-    void wrapLine(const KTextEditor::Cursor &position);
+    void wrapLine(const KTextEditor::Cursor position);
 
     /**
      * Notify about unwrap given line.
@@ -186,14 +186,14 @@ private:
      * @param length text length to be inserted
      * @param oldLineLength text length of the line before this insert
      */
-    void insertText(const KTextEditor::Cursor &position, int length, int oldLineLength);
+    void insertText(const KTextEditor::Cursor position, int length, int oldLineLength);
 
     /**
      * Notify about remove text at given range.
      * @param range range of text to remove, must be on one line only.
      * @param oldLineLength text length of the line before this remove
      */
-    void removeText(const KTextEditor::Range &range, int oldLineLength);
+    void removeText(KTextEditor::Range range, int oldLineLength);
 
     /**
      * Generic function to add a entry to the history. Is used by the above functions for the different editing primitives.

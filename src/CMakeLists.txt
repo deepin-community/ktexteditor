@@ -4,15 +4,10 @@ add_subdirectory(data)
 # jscripts for the part
 add_subdirectory( script/data )
 
-# set right defines for libgit2 usage
-if(LIBGIT2_FOUND)
-    SET (CMAKE_REQUIRED_LIBRARIES LibGit2::LibGit2)
-    set (KTEXTEDITOR_OPTIONAL_LIBS ${KTEXTEDITOR_OPTIONAL_LIBS} LibGit2::LibGit2)
-endif()
-
 if(EditorConfig_FOUND)
     SET (CMAKE_REQUIRED_LIBRARIES ${EditorConfig_LIBRARIES})
     set (KTEXTEDITOR_OPTIONAL_LIBS ${KTEXTEDITOR_OPTIONAL_LIBS} ${EditorConfig_LIBRARIES})
+    include_directories(${EditorConfig_INCLUDE_DIRS})
 endif()
 
 # handle include files, both normal ones and generated ones
@@ -305,7 +300,7 @@ ecm_generate_export_header(KF5TextEditor
 )
 add_library(KF5::TextEditor ALIAS KF5TextEditor)
 
-target_include_directories(KF5TextEditor INTERFACE "$<INSTALL_INTERFACE:${KDE_INSTALL_INCLUDEDIR_KF5}/KTextEditor>")
+target_include_directories(KF5TextEditor INTERFACE "$<INSTALL_INTERFACE:${KDE_INSTALL_INCLUDEDIR_KF}/KTextEditor>")
 
 # API is more or less KParts & KSyntaxHighlighting, other stuff is used only internally
 target_link_libraries(KF5TextEditor
@@ -313,8 +308,8 @@ PUBLIC
   KF5::Parts
   KF5::SyntaxHighlighting
 PRIVATE
-  Qt5::Qml
-  Qt5::PrintSupport
+  Qt${QT_MAJOR_VERSION}::Qml
+  Qt${QT_MAJOR_VERSION}::PrintSupport
   KF5::I18n
   KF5::Archive
   KF5::GuiAddons
@@ -333,11 +328,38 @@ set_target_properties(KF5TextEditor
    EXPORT_NAME "TextEditor"
 )
 
+# precompiled headers support
+if(ENABLE_PCH)
+    target_precompile_headers(KF5TextEditor
+        PRIVATE
+            <QHash>
+            <QList>
+            <QMap>
+            <QPointer>
+            <QSharedData>
+            <QSharedPointer>
+            <QString>
+            <QStringList>
+            <QTextFormat>
+            <QTimer>
+            <QVariant>
+            <QVector>
+            <QWidget>
+            <algorithm>
+            <functional>
+            <memory>
+            <string>
+            <type_traits>
+            <utility>
+            <vector>
+    )
+endif()
+
 install(TARGETS KF5TextEditor EXPORT KF5TextEditorTargets ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/ktexteditor_export.h
-  DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF5}/KTextEditor
+  DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/KTextEditor
   COMPONENT Devel
 )
 
@@ -370,7 +392,7 @@ if(BUILD_QCH)
 endif()
 
 include(ECMGeneratePriFile)
-ecm_generate_pri_file(BASE_NAME KTextEditor LIB_NAME KF5TextEditor DEPS "KParts" FILENAME_VAR PRI_FILENAME INCLUDE_INSTALL_DIR ${KDE_INSTALL_INCLUDEDIR_KF5}/KTextEditor)
+ecm_generate_pri_file(BASE_NAME KTextEditor LIB_NAME KF5TextEditor DEPS "KParts" FILENAME_VAR PRI_FILENAME INCLUDE_INSTALL_DIR ${KDE_INSTALL_INCLUDEDIR_KF}/KTextEditor)
 install(FILES ${PRI_FILENAME} DESTINATION ${ECM_MKSPECS_INSTALL_DIR})
 
 

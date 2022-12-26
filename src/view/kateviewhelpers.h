@@ -325,6 +325,7 @@ private:
     void mouseMoveEvent(QMouseEvent *) override;
     void mouseReleaseEvent(QMouseEvent *) override;
     void mouseDoubleClickEvent(QMouseEvent *) override;
+    void contextMenuEvent(QContextMenuEvent *e) override;
     void leaveEvent(QEvent *event) override;
     void wheelEvent(QWheelEvent *e) override;
 
@@ -595,7 +596,7 @@ class KTEXTEDITOR_EXPORT KateCommandLineBar : public KateViewBarWidget
 
 public:
     explicit KateCommandLineBar(KTextEditor::ViewPrivate *view, QWidget *parent = nullptr);
-    ~KateCommandLineBar();
+    ~KateCommandLineBar() override;
 
     void setText(const QString &text, bool selected = true);
     void execute(const QString &text);

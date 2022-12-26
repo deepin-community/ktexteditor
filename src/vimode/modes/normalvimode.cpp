@@ -3839,7 +3839,7 @@ bool NormalViMode::paste(PasteLocation pasteLocation, bool isgPaste, bool isInde
     return true;
 }
 
-KTextEditor::Cursor NormalViMode::cursorPosAtEndOfPaste(const KTextEditor::Cursor &pasteLocation, const QString &pastedText) const
+KTextEditor::Cursor NormalViMode::cursorPosAtEndOfPaste(const KTextEditor::Cursor pasteLocation, const QString &pastedText) const
 {
     KTextEditor::Cursor cAfter = pasteLocation;
     const int lineCount = pastedText.count(QLatin1Char('\n')) + 1;
@@ -3872,7 +3872,7 @@ void NormalViMode::reformatLines(unsigned int from, unsigned int to) const
 {
     // BUG #340550: Do not remove empty lines when reformatting
     KTextEditor::DocumentPrivate *document = doc();
-    auto isNonEmptyLine = [this](QStringView text) {
+    auto isNonEmptyLine = [](QStringView text) {
         for (int i = 0; i < text.length(); ++i) {
             if (!text.at(i).isSpace()) {
                 return true;
@@ -4011,7 +4011,7 @@ void NormalViMode::highlightYank(const Range &range, const OperationMode mode)
     }
 }
 
-void NormalViMode::addHighlightYank(const KTextEditor::Range &yankRange)
+void NormalViMode::addHighlightYank(KTextEditor::Range yankRange)
 {
     KTextEditor::MovingRange *highlightedYank = m_view->doc()->newMovingRange(yankRange, Kate::TextRange::DoNotExpand);
     highlightedYank->setView(m_view); // show only in this view
@@ -4085,7 +4085,11 @@ bool NormalViMode::waitingForRegisterOrCharToSearch()
 
 void NormalViMode::textInserted(KTextEditor::Document *document, KTextEditor::Range range)
 {
-    Q_UNUSED(document);
+    if (m_viInputModeManager->view()->viewInputMode() != KTextEditor::View::ViInputMode) {
+        return;
+    }
+
+    Q_UNUSED(document)
     const bool isInsertReplaceMode =
         (m_viInputModeManager->getCurrentViMode() == ViMode::InsertMode || m_viInputModeManager->getCurrentViMode() == ViMode::ReplaceMode);
     const bool continuesInsertion = range.start().line() == m_currentChangeEndMarker.line() && range.start().column() == m_currentChangeEndMarker.column();
@@ -4120,6 +4124,10 @@ void NormalViMode::textInserted(KTextEditor::Document *document, KTextEditor::Ra
 
 void NormalViMode::textRemoved(KTextEditor::Document *document, KTextEditor::Range range)
 {
+    if (m_viInputModeManager->view()->viewInputMode() != KTextEditor::View::ViInputMode) {
+        return;
+    }
+
     Q_UNUSED(document);
     const bool isInsertReplaceMode =
         (m_viInputModeManager->getCurrentViMode() == ViMode::InsertMode || m_viInputModeManager->getCurrentViMode() == ViMode::ReplaceMode);

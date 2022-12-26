@@ -472,7 +472,7 @@ void SwapFile::finishEditing()
     m_swapfile.flush();
 }
 
-void SwapFile::wrapLine(const KTextEditor::Cursor &position)
+void SwapFile::wrapLine(const KTextEditor::Cursor position)
 {
     // skip if not open
     if (!m_swapfile.isOpen()) {
@@ -498,7 +498,7 @@ void SwapFile::unwrapLine(int line)
     m_needSync = true;
 }
 
-void SwapFile::insertText(const KTextEditor::Cursor &position, const QString &text)
+void SwapFile::insertText(const KTextEditor::Cursor position, const QString &text)
 {
     // skip if not open
     if (!m_swapfile.isOpen()) {
@@ -511,7 +511,7 @@ void SwapFile::insertText(const KTextEditor::Cursor &position, const QString &te
     m_needSync = true;
 }
 
-void SwapFile::removeText(const KTextEditor::Range &range)
+void SwapFile::removeText(KTextEditor::Range range)
 {
     // skip if not open
     if (!m_swapfile.isOpen()) {

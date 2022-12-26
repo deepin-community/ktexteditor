@@ -189,7 +189,7 @@ void KateHighlighting::applyFolding(int offset, int length, KSyntaxHighlighting:
     Q_ASSERT(m_textLineToHighlight);
     Q_ASSERT(region.isValid());
     const int foldingValue = (region.type() == KSyntaxHighlighting::FoldingRegion::Begin) ? int(region.id()) : -int(region.id());
-    m_textLineToHighlight->addFolding(offset + ((region.type() == KSyntaxHighlighting::FoldingRegion::Begin) ? 0 : length), foldingValue);
+    m_textLineToHighlight->addFolding(offset + ((region.type() == KSyntaxHighlighting::FoldingRegion::Begin) ? 0 : length), length, foldingValue);
 
     // for each end region, decrement counter for that type, erase if count reaches 0!
     if (foldingValue < 0) {
@@ -386,7 +386,7 @@ bool KateHighlighting::isEmptyLine(const Kate::TextLineData *textline) const
     return false;
 }
 
-int KateHighlighting::attributeForLocation(KTextEditor::DocumentPrivate *doc, const KTextEditor::Cursor &cursor)
+int KateHighlighting::attributeForLocation(KTextEditor::DocumentPrivate *doc, const KTextEditor::Cursor cursor)
 {
     // Validate parameters to prevent out of range access
     if (cursor.line() < 0 || cursor.line() >= doc->lines() || cursor.column() < 0) {
@@ -412,7 +412,7 @@ int KateHighlighting::attributeForLocation(KTextEditor::DocumentPrivate *doc, co
     return 0;
 }
 
-QStringList KateHighlighting::keywordsForLocation(KTextEditor::DocumentPrivate *doc, const KTextEditor::Cursor &cursor)
+QStringList KateHighlighting::keywordsForLocation(KTextEditor::DocumentPrivate *doc, const KTextEditor::Cursor cursor)
 {
     // FIXME-SYNTAX: was before more precise, aka context level
     const auto &def = m_propertiesForFormat.at(attributeForLocation(doc, cursor))->definition;
@@ -424,12 +424,12 @@ QStringList KateHighlighting::keywordsForLocation(KTextEditor::DocumentPrivate *
     return keywords;
 }
 
-bool KateHighlighting::spellCheckingRequiredForLocation(KTextEditor::DocumentPrivate *doc, const KTextEditor::Cursor &cursor)
+bool KateHighlighting::spellCheckingRequiredForLocation(KTextEditor::DocumentPrivate *doc, const KTextEditor::Cursor cursor)
 {
     return m_formats.at(attributeForLocation(doc, cursor)).spellCheck();
 }
 
-QString KateHighlighting::higlightingModeForLocation(KTextEditor::DocumentPrivate *doc, const KTextEditor::Cursor &cursor)
+QString KateHighlighting::higlightingModeForLocation(KTextEditor::DocumentPrivate *doc, const KTextEditor::Cursor cursor)
 {
     return m_propertiesForFormat.at(attributeForLocation(doc, cursor))->definition.name();
 }

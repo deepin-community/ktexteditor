@@ -295,7 +295,7 @@ protected:
     OperationMode getOperationMode() const;
 
     void highlightYank(const Range &range, const OperationMode mode = CharWise);
-    void addHighlightYank(const KTextEditor::Range &range);
+    void addHighlightYank(KTextEditor::Range range);
 
     bool motionWillBeUsedWithCommand() const
     {
@@ -328,7 +328,7 @@ protected:
     // line for linewise.
     enum PasteLocation { AtCurrentPosition, AfterCurrentPosition };
     bool paste(NormalViMode::PasteLocation pasteLocation, bool isgPaste, bool isIndentedPaste);
-    KTextEditor::Cursor cursorPosAtEndOfPaste(const KTextEditor::Cursor &pasteLocation, const QString &pastedText) const;
+    KTextEditor::Cursor cursorPosAtEndOfPaste(const KTextEditor::Cursor pasteLocation, const QString &pastedText) const;
 
 protected:
     QString m_keys;
