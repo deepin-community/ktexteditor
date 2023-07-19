@@ -12,6 +12,7 @@
 
 #include "katedocument.h"
 #include "kateundomanager.h"
+#include "kateview.h"
 
 #include <ktexteditor/cursor.h>
 #include <ktexteditor/view.h>
@@ -214,11 +215,15 @@ void KateEditMarkLineAutoWrappedUndo::redo()
     doc->editMarkLineAutoWrapped(m_line, m_autowrapped);
 }
 
-KateUndoGroup::KateUndoGroup(KateUndoManager *manager, const KTextEditor::Cursor cursorPosition, KTextEditor::Range selectionRange)
+KateUndoGroup::KateUndoGroup(KateUndoManager *manager,
+                             const KTextEditor::Cursor cursorPosition,
+                             KTextEditor::Range selection,
+                             const QVector<KTextEditor::ViewPrivate::PlainSecondaryCursor> &secondary)
     : m_manager(manager)
-    , m_undoSelection(selectionRange)
+    , m_undoSelection(selection)
     , m_redoSelection(-1, -1, -1, -1)
     , m_undoCursor(cursorPosition)
+    , m_undoSecondaryCursors(secondary)
     , m_redoCursor(-1, -1)
 {
 }
@@ -228,7 +233,7 @@ KateUndoGroup::~KateUndoGroup()
     qDeleteAll(m_items);
 }
 
-void KateUndoGroup::undo(KTextEditor::View *view)
+void KateUndoGroup::undo(KTextEditor::ViewPrivate *view)
 {
     if (m_items.isEmpty()) {
         return;
@@ -246,6 +251,8 @@ void KateUndoGroup::undo(KTextEditor::View *view)
         } else {
             view->removeSelection();
         }
+        view->clearSecondaryCursors();
+        view->addSecondaryCursorsWithSelection(m_undoSecondaryCursors);
 
         if (m_undoCursor.isValid()) {
             view->setCursorPosition(m_undoCursor);
@@ -255,7 +262,7 @@ void KateUndoGroup::undo(KTextEditor::View *view)
     m_manager->endUndo();
 }
 
-void KateUndoGroup::redo(KTextEditor::View *view)
+void KateUndoGroup::redo(KTextEditor::ViewPrivate *view)
 {
     if (m_items.isEmpty()) {
         return;
@@ -273,6 +280,8 @@ void KateUndoGroup::redo(KTextEditor::View *view)
         } else {
             view->removeSelection();
         }
+        view->clearSecondaryCursors();
+        view->addSecondaryCursorsWithSelection(m_redoSecondaryCursors);
 
         if (m_redoCursor.isValid()) {
             view->setCursorPosition(m_redoCursor);
@@ -282,9 +291,12 @@ void KateUndoGroup::redo(KTextEditor::View *view)
     m_manager->endUndo();
 }
 
-void KateUndoGroup::editEnd(const KTextEditor::Cursor cursorPosition, KTextEditor::Range selectionRange)
+void KateUndoGroup::editEnd(const KTextEditor::Cursor cursorPosition,
+                            KTextEditor::Range selectionRange,
+                            const QVector<KTextEditor::ViewPrivate::PlainSecondaryCursor> &secondaryCursors)
 {
     m_redoCursor = cursorPosition;
+    m_redoSecondaryCursors = secondaryCursors;
     m_redoSelection = selectionRange;
 }
 
@@ -325,7 +337,9 @@ bool KateUndoGroup::merge(KateUndoGroup *newGroup, bool complex)
         }
 
         m_redoCursor = newGroup->m_redoCursor;
+        m_redoSecondaryCursors = newGroup->m_redoSecondaryCursors;
         m_redoSelection = newGroup->m_redoSelection;
+        //         m_redoSelections = newGroup->m_redoSelections;
 
         return true;
     }

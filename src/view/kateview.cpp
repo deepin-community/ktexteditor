@@ -14,6 +14,7 @@
 // BEGIN includes
 #include "kateview.h"
 
+#include "clipboardhistorydialog.h"
 #include "export/exporter.h"
 #include "inlinenotedata.h"
 #include "kateabstractinputmode.h"
@@ -52,7 +53,6 @@
 #include <KParts/Event>
 
 #include <KActionCollection>
-#include <KCharsets>
 #include <KConfig>
 #include <KConfigGroup>
 #include <KCursor>
@@ -63,11 +63,13 @@
 #include <KToggleAction>
 #include <KXMLGUIFactory>
 
+#include <QActionGroup>
 #include <QApplication>
 #include <QClipboard>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFont>
+#include <QInputDialog>
 #include <QKeyEvent>
 #include <QLayout>
 #include <QMimeData>
@@ -453,11 +455,12 @@ void KTextEditor::ViewPrivate::setupActions()
     m_copy = a = ac->addAction(KStandardAction::Copy, this, SLOT(copy()));
     a->setWhatsThis(i18n("Use this command to copy the currently selected text to the system clipboard."));
 
-    m_pasteMenu = ac->addAction(QStringLiteral("edit_paste_menu"), new KatePasteMenu(i18n("Clipboard &History"), this));
-    connect(KTextEditor::EditorPrivate::self(),
-            &KTextEditor::EditorPrivate::clipboardHistoryChanged,
-            this,
-            &KTextEditor::ViewPrivate::slotClipboardHistoryChanged);
+    m_clipboardHistory = a = ac->addAction(QStringLiteral("clipboard_history_paste"), this, [this] {
+        ClipboardHistoryDialog chd(mainWindow()->window(), this);
+        chd.openDialog(KTextEditor::EditorPrivate::self()->clipboardHistory());
+    });
+    a->setText(i18n("Clipboard &History Paste"));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::ALT | Qt::Key_V));
 
     if (QApplication::clipboard()->supportsSelection()) {
         m_pasteSelection = a = ac->addAction(QStringLiteral("edit_paste_selection"), this, SLOT(pasteSelection()));
@@ -467,7 +470,7 @@ void KTextEditor::ViewPrivate::setupActions()
     }
 
     m_swapWithClipboard = a = ac->addAction(QStringLiteral("edit_swap_with_clipboard"), this, SLOT(swapWithClipboard()));
-    a->setText(i18n("Swap with clipboard contents"));
+    a->setText(i18n("Swap with Clipboard Contents"));
     a->setWhatsThis(i18n("Swap the selected text with the clipboard contents"));
 
     if (!doc()->readOnly()) {
@@ -500,32 +503,47 @@ void KTextEditor::ViewPrivate::setupActions()
                  "You can configure whether tabs should be honored and used or replaced with spaces, in the configuration dialog."));
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::cleanIndent);
 
-        a = ac->addAction(QStringLiteral("tools_align"));
-        a->setText(i18n("&Align"));
-        a->setWhatsThis(i18n("Use this to align the current line or block of text to its proper indent level."));
-        connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::align);
+        a = ac->addAction(QStringLiteral("tools_formatIndent"));
+        a->setText(i18n("&Format Indentation"));
+        a->setWhatsThis(i18n("Use this to auto indent the current line or block of text to its proper indent level."));
+        connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::formatIndent);
+
+        a = ac->addAction(QStringLiteral("tools_alignOn"));
+        a->setText(i18n("&Align On..."));
+        a->setWhatsThis(
+            i18n("This command aligns lines in the selected block or whole document on the column given by a regular expression "
+                 "that you will be prompted for.<br /><br />"
+                 "If you give an empty pattern it will align on the first non-blank character by default.<br />"
+                 "If the pattern has a capture it will indent on the captured match.<br /><br />"
+                 "<i>Examples</i>:<br />"
+                 "With '-' it will insert spaces before the first '-' of each lines to align them all on the same column.<br />"
+                 "With ':\\s+(.)' it will insert spaces before the first non-blank character that occurs after a colon to align "
+                 "them all on the same column."));
+        connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::alignOn);
 
         a = ac->addAction(QStringLiteral("tools_comment"));
         a->setText(i18n("C&omment"));
-        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::Key_D));
+        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::Key_D));
         a->setWhatsThis(
             i18n("This command comments out the current line or a selected block of text.<br /><br />"
                  "The characters for single/multiple line comments are defined within the language's highlighting."));
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::comment);
 
         a = ac->addAction(QStringLiteral("Previous Editing Line"));
-        a->setText(i18n("Go to previous editing line"));
-        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::Key_E));
+        a->setText(i18n("Go to Previous Editing Location"));
+        a->setIcon(QIcon::fromTheme(QStringLiteral("arrow-left")));
+        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::Key_E));
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::goToPreviousEditingPosition);
 
         a = ac->addAction(QStringLiteral("Next Editing Line"));
-        a->setText(i18n("Go to next editing line"));
-        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_E));
+        a->setText(i18n("Go to Next Editing Location"));
+        a->setIcon(QIcon::fromTheme(QStringLiteral("arrow-right")));
+        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_E));
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::goToNextEditingPosition);
 
         a = ac->addAction(QStringLiteral("tools_uncomment"));
         a->setText(i18n("Unco&mment"));
-        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_D));
+        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_D));
         a->setWhatsThis(
             i18n("This command removes comments from the current line or a selected block of text.<br /><br />"
                  "The characters for single/multiple line comments are defined within the language's highlighting."));
@@ -533,7 +551,7 @@ void KTextEditor::ViewPrivate::setupActions()
 
         a = ac->addAction(QStringLiteral("tools_toggle_comment"));
         a->setText(i18n("Toggle Comment"));
-        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::Key_Slash));
+        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::Key_Slash));
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::toggleComment);
 
         a = m_toggleWriteLock = new KToggleAction(i18n("&Read Only Mode"), this);
@@ -545,7 +563,7 @@ void KTextEditor::ViewPrivate::setupActions()
         a = ac->addAction(QStringLiteral("tools_uppercase"));
         a->setIcon(QIcon::fromTheme(QStringLiteral("format-text-uppercase")));
         a->setText(i18n("Uppercase"));
-        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::Key_U));
+        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::Key_U));
         a->setWhatsThis(
             i18n("Convert the selection to uppercase, or the character to the "
                  "right of the cursor if no text is selected."));
@@ -554,7 +572,7 @@ void KTextEditor::ViewPrivate::setupActions()
         a = ac->addAction(QStringLiteral("tools_lowercase"));
         a->setIcon(QIcon::fromTheme(QStringLiteral("format-text-lowercase")));
         a->setText(i18n("Lowercase"));
-        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_U));
+        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_U));
         a->setWhatsThis(
             i18n("Convert the selection to lowercase, or the character to the "
                  "right of the cursor if no text is selected."));
@@ -563,7 +581,7 @@ void KTextEditor::ViewPrivate::setupActions()
         a = ac->addAction(QStringLiteral("tools_capitalize"));
         a->setIcon(QIcon::fromTheme(QStringLiteral("format-text-capitalize")));
         a->setText(i18n("Capitalize"));
-        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_U));
+        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_U));
         a->setWhatsThis(
             i18n("Capitalize the selection, or the word under the "
                  "cursor if no text is selected."));
@@ -571,16 +589,16 @@ void KTextEditor::ViewPrivate::setupActions()
 
         a = ac->addAction(QStringLiteral("tools_join_lines"));
         a->setText(i18n("Join Lines"));
-        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::Key_J));
+        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::Key_J));
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::joinLines);
 
         a = ac->addAction(QStringLiteral("tools_invoke_code_completion"));
         a->setText(i18n("Invoke Code Completion"));
         a->setWhatsThis(i18n("Manually invoke command completion, usually by using a shortcut bound to this action."));
-        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::Key_Space));
+        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::Key_Space));
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::userInvokedCompletion);
     } else {
-        for (auto *action : {m_cut, m_paste, m_pasteMenu, m_swapWithClipboard}) {
+        for (auto *action : {m_cut, m_paste, m_clipboardHistory, m_swapWithClipboard}) {
             action->setEnabled(false);
         }
 
@@ -622,12 +640,14 @@ void KTextEditor::ViewPrivate::setupActions()
     a->setWhatsThis(i18n("This command opens a dialog and lets you choose a line that you want the cursor to move to."));
 
     a = ac->addAction(QStringLiteral("modified_line_up"));
-    a->setText(i18n("Move to Previous Modified Line"));
+    a->setIcon(QIcon::fromTheme(QStringLiteral("go-previous")));
+    a->setText(i18n("Go to Previous Modified Line"));
     a->setWhatsThis(i18n("Move upwards to the previous modified line."));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::toPrevModifiedLine);
 
     a = ac->addAction(QStringLiteral("modified_line_down"));
-    a->setText(i18n("Move to Next Modified Line"));
+    a->setIcon(QIcon::fromTheme(QStringLiteral("go-next")));
+    a->setText(i18n("Go to Next Modified Line"));
     a->setWhatsThis(i18n("Move downwards to the next modified line."));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::toNextModifiedLine);
 
@@ -648,7 +668,8 @@ void KTextEditor::ViewPrivate::setupActions()
     menu->setWhatsThis(i18n("Here you can choose how the current document should be highlighted."));
     menu->updateMenu(m_doc);
 
-    KateViewSchemaAction *schemaMenu = new KateViewSchemaAction(i18n("&Color Theme"), this);
+    KateViewSchemaAction *schemaMenu = new KateViewSchemaAction(i18n("&Editor Color Theme"), this);
+    schemaMenu->setIcon(QIcon::fromTheme(QStringLiteral("kcolorchooser")));
     ac->addAction(QStringLiteral("view_schemas"), schemaMenu);
     schemaMenu->updateMenu(this);
 
@@ -656,7 +677,11 @@ void KTextEditor::ViewPrivate::setupActions()
     KateViewIndentationAction *indentMenu = new KateViewIndentationAction(m_doc, i18n("&Indentation"), this);
     ac->addAction(QStringLiteral("tools_indentation"), indentMenu);
 
-    m_selectAll = a = ac->addAction(KStandardAction::SelectAll, this, SLOT(selectAll()));
+    m_selectAll = ac->addAction(KStandardAction::SelectAll);
+    connect(m_selectAll, &QAction::triggered, this, [this] {
+        selectAll();
+        qApp->clipboard()->setText(selectionText(), QClipboard::Selection);
+    });
     a->setWhatsThis(i18n("Select the entire text of the current document."));
 
     m_deSelect = a = ac->addAction(KStandardAction::Deselect, this, SLOT(clearSelection()));
@@ -689,13 +714,13 @@ void KTextEditor::ViewPrivate::setupActions()
 
     a = m_toggleBlockSelection = new KToggleAction(i18n("Bl&ock Selection Mode"), this);
     ac->addAction(QStringLiteral("set_verticalSelect"), a);
-    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_B));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_B));
     a->setWhatsThis(i18n("This command allows switching between the normal (line based) selection mode and the block selection mode."));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::toggleBlockSelection);
 
     a = ac->addAction(QStringLiteral("switch_next_input_mode"));
-    a->setText(i18n("Switch to next Input Mode"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_V));
+    a->setText(i18n("Switch to Next Input Mode"));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_V));
     a->setWhatsThis(i18n("Switch to the next input mode."));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::cycleInputMode);
 
@@ -828,15 +853,33 @@ void KTextEditor::ViewPrivate::setupActions()
 
     a = ac->addAction(QStringLiteral("edit_find_selected"));
     a->setText(i18n("Find Selected"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::Key_H));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::Key_H));
     a->setWhatsThis(i18n("Finds next occurrence of selected text."));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::findSelectedForwards);
 
     a = ac->addAction(QStringLiteral("edit_find_selected_backwards"));
     a->setText(i18n("Find Selected Backwards"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_H));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_H));
     a->setWhatsThis(i18n("Finds previous occurrence of selected text."));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::findSelectedBackwards);
+
+    a = ac->addAction(QStringLiteral("edit_find_multicursor_next_occurrence"));
+    a->setText(i18n("Find and Select Next Occurrence"));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::ALT | Qt::Key_J));
+    a->setWhatsThis(i18n("Finds next occurrence of the word under cursor and add it to selection."));
+    connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::findNextOccurunceAndSelect);
+
+    a = ac->addAction(QStringLiteral("edit_skip_multicursor_current_occurrence"));
+    a->setText(i18n("Mark Currently Selected Occurrence as Skipped"));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::ALT | Qt::Key_K));
+    a->setWhatsThis(i18n("Marks the currently selected word as skipped."));
+    connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::skipCurrentOccurunceSelection);
+
+    a = ac->addAction(QStringLiteral("edit_find_multicursor_all_occurrences"));
+    a->setText(i18n("Find and Select All Occurrences"));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::ALT | Qt::SHIFT | Qt::CTRL | Qt::Key_J));
+    a->setWhatsThis(i18n("Finds all occurrences of the word under cursor and select them."));
+    connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::findAllOccuruncesAndSelect);
 
     a = ac->addAction(KStandardAction::FindNext, this, SLOT(findNext()));
     a->setWhatsThis(i18n("Look up the next occurrence of the search phrase."));
@@ -849,12 +892,40 @@ void KTextEditor::ViewPrivate::setupActions()
     a = ac->addAction(KStandardAction::Replace, this, SLOT(replace()));
     a->setWhatsThis(i18n("Look up a piece of text or regular expression and replace the result with some given text."));
 
+    a = ac->addAction(QStringLiteral("edit_create_multi_cursor_from_sel"));
+    a->setText(i18n("Add Cursors to Line Ends"));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::ALT | Qt::SHIFT | Qt::Key_I));
+    a->setWhatsThis(i18n("Creates a cursor at the end of every line in selection."));
+    connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::createMultiCursorsFromSelection);
+
+    a = ac->addAction(QStringLiteral("edit_create_multi_cursor_down"));
+    a->setText(i18n("Add Caret below Cursor"));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::ALT | Qt::CTRL | Qt::Key_Down));
+    a->setWhatsThis(i18n("Adds a caret in the line below the current caret."));
+    connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::addSecondaryCursorDown);
+
+    a = ac->addAction(QStringLiteral("edit_create_multi_cursor_up"));
+    a->setText(i18n("Add Caret above Cursor"));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::ALT | Qt::CTRL | Qt::Key_Up));
+    a->setWhatsThis(i18n("Adds a caret in the line above the current caret."));
+    connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::addSecondaryCursorUp);
+
+    a = ac->addAction(QStringLiteral("edit_toggle_camel_case_cursor"));
+    a->setText(i18n("Toggle Camel Case Cursor Movement"));
+    a->setWhatsThis(i18n("Toggle between normal word movement and camel case cursor movement."));
+    connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::toggleCamelCaseCursor);
+
+    a = ac->addAction(QStringLiteral("edit_remove_cursors_from_empty_lines"));
+    a->setText(i18n("Remove Cursors from Empty Lines"));
+    a->setWhatsThis(i18n("Remove cursors from empty lines"));
+    connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::removeCursorsFromEmptyLines);
+
     m_spell->createActions(ac);
     m_toggleOnTheFlySpellCheck = new KToggleAction(i18n("Automatic Spell Checking"), this);
     m_toggleOnTheFlySpellCheck->setWhatsThis(i18n("Enable/disable automatic spell checking"));
     connect(m_toggleOnTheFlySpellCheck, &KToggleAction::triggered, this, &KTextEditor::ViewPrivate::toggleOnTheFlySpellCheck);
     ac->addAction(QStringLiteral("tools_toggle_automatic_spell_checking"), m_toggleOnTheFlySpellCheck);
-    ac->setDefaultShortcut(m_toggleOnTheFlySpellCheck, QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
+    ac->setDefaultShortcut(m_toggleOnTheFlySpellCheck, QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_O));
 
     a = ac->addAction(QStringLiteral("tools_change_dictionary"));
     a->setText(i18n("Change Dictionary..."));
@@ -890,7 +961,6 @@ void KTextEditor::ViewPrivate::setupActions()
     // widget and setting the shortcut context
     setupEditActions();
     setupCodeFolding();
-    slotClipboardHistoryChanged();
 
     ac->addAssociatedWidget(m_viewInternal);
 
@@ -923,13 +993,13 @@ void KTextEditor::ViewPrivate::setupEditActions()
 
     a = ac->addAction(QStringLiteral("select_char_left"));
     a->setText(i18n("Select Character Left"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT + Qt::Key_Left));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT | Qt::Key_Left));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftCursorLeft);
     m_editActions.push_back(a);
 
     a = ac->addAction(QStringLiteral("select_word_left"));
     a->setText(i18n("Select Word Left"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_Left));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT | Qt::CTRL | Qt::Key_Left));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftWordLeft);
     m_editActions.push_back(a);
 
@@ -941,13 +1011,13 @@ void KTextEditor::ViewPrivate::setupEditActions()
 
     a = ac->addAction(QStringLiteral("select_char_right"));
     a->setText(i18n("Select Character Right"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT + Qt::Key_Right));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT | Qt::Key_Right));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftCursorRight);
     m_editActions.push_back(a);
 
     a = ac->addAction(QStringLiteral("select_word_right"));
     a->setText(i18n("Select Word Right"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_Right));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT | Qt::CTRL | Qt::Key_Right));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftWordRight);
     m_editActions.push_back(a);
 
@@ -965,13 +1035,13 @@ void KTextEditor::ViewPrivate::setupEditActions()
 
     a = ac->addAction(QStringLiteral("select_beginning_of_line"));
     a->setText(i18n("Select to Beginning of Line"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT + Qt::Key_Home));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT | Qt::Key_Home));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftHome);
     m_editActions.push_back(a);
 
     a = ac->addAction(QStringLiteral("select_beginning_of_document"));
     a->setText(i18n("Select to Beginning of Document"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_Home));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT | Qt::CTRL | Qt::Key_Home));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftTop);
     m_editActions.push_back(a);
 
@@ -989,25 +1059,25 @@ void KTextEditor::ViewPrivate::setupEditActions()
 
     a = ac->addAction(QStringLiteral("select_end_of_line"));
     a->setText(i18n("Select to End of Line"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT + Qt::Key_End));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT | Qt::Key_End));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftEnd);
     m_editActions.push_back(a);
 
     a = ac->addAction(QStringLiteral("select_end_of_document"));
     a->setText(i18n("Select to End of Document"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_End));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT | Qt::CTRL | Qt::Key_End));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftBottom);
     m_editActions.push_back(a);
 
     a = ac->addAction(QStringLiteral("select_line_up"));
     a->setText(i18n("Select to Previous Line"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT + Qt::Key_Up));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT | Qt::Key_Up));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftUp);
     m_editActions.push_back(a);
 
     a = ac->addAction(QStringLiteral("scroll_line_up"));
     a->setText(i18n("Scroll Line Up"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::Key_Up));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::Key_Up));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::scrollUp);
     m_editActions.push_back(a);
 
@@ -1037,13 +1107,13 @@ void KTextEditor::ViewPrivate::setupEditActions()
 
     a = ac->addAction(QStringLiteral("select_line_down"));
     a->setText(i18n("Select to Next Line"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT + Qt::Key_Down));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT | Qt::Key_Down));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftDown);
     m_editActions.push_back(a);
 
     a = ac->addAction(QStringLiteral("scroll_line_down"));
     a->setText(i18n("Scroll Line Down"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::Key_Down));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::Key_Down));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::scrollDown);
     m_editActions.push_back(a);
 
@@ -1055,19 +1125,19 @@ void KTextEditor::ViewPrivate::setupEditActions()
 
     a = ac->addAction(QStringLiteral("select_page_up"));
     a->setText(i18n("Select Page Up"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT + Qt::Key_PageUp));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT | Qt::Key_PageUp));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftPageUp);
     m_editActions.push_back(a);
 
     a = ac->addAction(QStringLiteral("move_top_of_view"));
     a->setText(i18n("Move to Top of View"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::ALT + Qt::Key_Home));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::ALT | Qt::Key_Home));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::topOfView);
     m_editActions.push_back(a);
 
     a = ac->addAction(QStringLiteral("select_top_of_view"));
     a->setText(i18n("Select to Top of View"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::ALT + Qt::SHIFT + Qt::Key_Home));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::ALT | Qt::SHIFT | Qt::Key_Home));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftTopOfView);
     m_editActions.push_back(a);
 
@@ -1079,31 +1149,31 @@ void KTextEditor::ViewPrivate::setupEditActions()
 
     a = ac->addAction(QStringLiteral("select_page_down"));
     a->setText(i18n("Select Page Down"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT + Qt::Key_PageDown));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT | Qt::Key_PageDown));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftPageDown);
     m_editActions.push_back(a);
 
     a = ac->addAction(QStringLiteral("move_bottom_of_view"));
     a->setText(i18n("Move to Bottom of View"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::ALT + Qt::Key_End));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::ALT | Qt::Key_End));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::bottomOfView);
     m_editActions.push_back(a);
 
     a = ac->addAction(QStringLiteral("select_bottom_of_view"));
     a->setText(i18n("Select to Bottom of View"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::ALT + Qt::SHIFT + Qt::Key_End));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::ALT | Qt::SHIFT | Qt::Key_End));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftBottomOfView);
     m_editActions.push_back(a);
 
     a = ac->addAction(QStringLiteral("to_matching_bracket"));
-    a->setText(i18n("Move to Matching Bracket"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::Key_6));
+    a->setText(i18n("Go to Matching Bracket"));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::Key_6));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::toMatchingBracket);
     // m_editActions << a;
 
     a = ac->addAction(QStringLiteral("select_matching_bracket"));
     a->setText(i18n("Select to Matching Bracket"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_6));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::SHIFT | Qt::CTRL | Qt::Key_6));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::shiftToMatchingBracket);
     // m_editActions << a;
 
@@ -1111,7 +1181,6 @@ void KTextEditor::ViewPrivate::setupEditActions()
     if (!doc()->readOnly()) {
         a = ac->addAction(QStringLiteral("transpose_char"));
         a->setText(i18n("Transpose Characters"));
-        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::Key_T));
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::transpose);
         m_editActions.push_back(a);
 
@@ -1122,7 +1191,7 @@ void KTextEditor::ViewPrivate::setupEditActions()
 
         a = ac->addAction(QStringLiteral("delete_line"));
         a->setText(i18n("Delete Line"));
-        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::Key_K));
+        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::Key_K));
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::killLine);
         m_editActions.push_back(a);
 
@@ -1147,13 +1216,13 @@ void KTextEditor::ViewPrivate::setupEditActions()
         a = ac->addAction(QStringLiteral("backspace"));
         a->setText(i18n("Backspace"));
         QList<QKeySequence> scuts;
-        scuts << QKeySequence(Qt::Key_Backspace) << QKeySequence(Qt::SHIFT + Qt::Key_Backspace);
+        scuts << QKeySequence(Qt::Key_Backspace) << QKeySequence(Qt::SHIFT | Qt::Key_Backspace);
         ac->setDefaultShortcuts(a, scuts);
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::backspace);
         m_editActions.push_back(a);
 
         a = ac->addAction(QStringLiteral("insert_tabulator"));
-        a->setText(i18n("Insert Tab"));
+        a->setText(i18n("Insert Tab Character"));
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::insertTab);
         m_editActions.push_back(a);
 
@@ -1161,18 +1230,36 @@ void KTextEditor::ViewPrivate::setupEditActions()
         a->setText(i18n("Insert Smart Newline"));
         a->setWhatsThis(i18n("Insert newline including leading characters of the current line which are not letters or numbers."));
         scuts.clear();
-        scuts << QKeySequence(Qt::SHIFT + Qt::Key_Return) << QKeySequence(Qt::SHIFT + Qt::Key_Enter);
+        scuts << QKeySequence(Qt::SHIFT | Qt::Key_Return) << QKeySequence(Qt::SHIFT | Qt::Key_Enter);
         ac->setDefaultShortcuts(a, scuts);
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::smartNewline);
         m_editActions.push_back(a);
 
         a = ac->addAction(QStringLiteral("no_indent_newline"));
-        a->setText(i18n("Insert a non-indented Newline"));
+        a->setText(i18n("Insert a Non-Indented Newline"));
         a->setWhatsThis(i18n("Insert a new line without indentation, regardless of indentation settings."));
         scuts.clear();
-        scuts << QKeySequence(Qt::CTRL + Qt::Key_Return) << QKeySequence(Qt::CTRL + Qt::Key_Enter);
+        scuts << QKeySequence(Qt::CTRL | Qt::Key_Return) << QKeySequence(Qt::CTRL | Qt::Key_Enter);
         ac->setDefaultShortcuts(a, scuts);
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::noIndentNewline);
+        m_editActions.push_back(a);
+
+        a = ac->addAction(QStringLiteral("newline_above"));
+        a->setText(i18n("Insert a Newline Above Current Line"));
+        a->setWhatsThis(i18n("Insert a new line above current line without modifying the current line."));
+        scuts.clear();
+        scuts << QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_Return) << QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_Enter);
+        ac->setDefaultShortcuts(a, scuts);
+        connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::newLineAbove);
+        m_editActions.push_back(a);
+
+        a = ac->addAction(QStringLiteral("newline_below"));
+        a->setText(i18n("Insert a Newline Below Current Line"));
+        a->setWhatsThis(i18n("Insert a new line below current line without modifying the current line."));
+        scuts.clear();
+        scuts << QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Return) << QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Enter);
+        ac->setDefaultShortcuts(a, scuts);
+        connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::newLineBelow);
         m_editActions.push_back(a);
 
         a = ac->addAction(QStringLiteral("tools_indent"));
@@ -1181,14 +1268,14 @@ void KTextEditor::ViewPrivate::setupEditActions()
         a->setWhatsThis(
             i18n("Use this to indent a selected block of text.<br /><br />"
                  "You can configure whether tabs should be honored and used or replaced with spaces, in the configuration dialog."));
-        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::Key_I));
+        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::Key_I));
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::indent);
 
         a = ac->addAction(QStringLiteral("tools_unindent"));
         a->setIcon(QIcon::fromTheme(QStringLiteral("format-indent-less")));
         a->setText(i18n("&Unindent"));
         a->setWhatsThis(i18n("Use this to unindent a selected block of text."));
-        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
+        ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_I));
         connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::unIndent);
     }
 
@@ -1206,12 +1293,12 @@ void KTextEditor::ViewPrivate::setupCodeFolding()
 
     a = ac->addAction(QStringLiteral("folding_toplevel"));
     a->setText(i18n("Fold Toplevel Nodes"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Minus));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Minus));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::slotFoldToplevelNodes);
 
     a = ac->addAction(QStringLiteral("folding_expandtoplevel"));
     a->setText(i18n("Unfold Toplevel Nodes"));
-    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Plus));
+    ac->setDefaultShortcut(a, QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Plus));
     connect(a, &QAction::triggered, this, &KTextEditor::ViewPrivate::slotExpandToplevelNodes);
 
     /*a = ac->addAction(QLatin1String("folding_expandall"));
@@ -1277,8 +1364,7 @@ KTextEditor::Range KTextEditor::ViewPrivate::foldLine(int line)
 
     // Ensure not to fold the end marker to avoid a deceptive look, but only on token based folding
     // ensure we don't compute an invalid line by moving outside of the foldingRange range by checking onSingleLine(), see bug 417890
-    Kate::TextLine startTextLine = doc()->buffer().plainLine(line);
-    if (!startTextLine->markedAsFoldingStartIndentation() && !foldingRange.onSingleLine()) {
+    if (!m_doc->buffer().isFoldingStartingOnLine(line).second && !foldingRange.onSingleLine()) {
         const int adjustedLine = foldingRange.end().line() - 1;
         foldingRange.setEnd(KTextEditor::Cursor(adjustedLine, doc()->buffer().plainLine(adjustedLine)->length()));
     }
@@ -1402,18 +1488,25 @@ QString KTextEditor::ViewPrivate::viewInputModeHuman() const
     return currentInputMode()->viewInputModeHuman();
 }
 
-void KTextEditor::ViewPrivate::setInputMode(KTextEditor::View::InputMode mode)
+void KTextEditor::ViewPrivate::setInputMode(KTextEditor::View::InputMode mode, const bool rememberInConfig)
 {
     if (currentInputMode()->viewInputMode() == mode) {
         return;
+    }
+
+    // No multi cursors for vi
+    if (mode == KTextEditor::View::InputMode::ViInputMode) {
+        clearSecondaryCursors();
     }
 
     m_viewInternal->m_currentInputMode->deactivate();
     m_viewInternal->m_currentInputMode = m_viewInternal->m_inputModes[mode].get();
     m_viewInternal->m_currentInputMode->activate();
 
-    config()->setValue(KateViewConfig::InputMode,
-                       mode); // TODO: this could be called from read config procedure, so it's not a good idea to set a specific view mode here
+    // remember in local config if requested, we skip this for the calls in updateConfig
+    if (rememberInConfig) {
+        config()->setValue(KateViewConfig::InputMode, mode);
+    }
 
     /* small duplication, but need to do this if not toggled by action */
     const auto inputModeActions = m_inputModeActions->actions();
@@ -1490,6 +1583,10 @@ void KTextEditor::ViewPrivate::slotLostFocus()
         m_viewInternal->m_columnScroll->update();
     }
 
+    if (doc()->config()->autoSave() && doc()->config()->autoSaveOnFocusOut() && doc()->isModified() && doc()->url().isLocalFile()) {
+        doc()->documentSave();
+    }
+
     Q_EMIT focusOut(this);
 }
 
@@ -1517,7 +1614,6 @@ void KTextEditor::ViewPrivate::slotReadWriteChanged()
 
     m_cut->setEnabled(doc()->isReadWrite() && (selection() || m_config->smartCopyCut()));
     m_paste->setEnabled(doc()->isReadWrite());
-    m_pasteMenu->setEnabled(doc()->isReadWrite() && !KTextEditor::EditorPrivate::self()->clipboardHistory().isEmpty());
     if (m_pasteSelection) {
         m_pasteSelection->setEnabled(doc()->isReadWrite());
     }
@@ -1529,7 +1625,8 @@ void KTextEditor::ViewPrivate::slotReadWriteChanged()
                            QStringLiteral("tools_indent"),
                            QStringLiteral("tools_unindent"),
                            QStringLiteral("tools_cleanIndent"),
-                           QStringLiteral("tools_align"),
+                           QStringLiteral("tools_formatIndet"),
+                           QStringLiteral("tools_alignOn"),
                            QStringLiteral("tools_comment"),
                            QStringLiteral("tools_uncomment"),
                            QStringLiteral("tools_toggle_comment"),
@@ -1556,9 +1653,20 @@ void KTextEditor::ViewPrivate::slotReadWriteChanged()
     Q_EMIT viewInputModeChanged(this, viewInputMode());
 }
 
-void KTextEditor::ViewPrivate::slotClipboardHistoryChanged()
+void KTextEditor::ViewPrivate::toggleCamelCaseCursor()
 {
-    m_pasteMenu->setEnabled(doc()->isReadWrite() && !KTextEditor::EditorPrivate::self()->clipboardHistory().isEmpty());
+    const auto enabled = doc()->config()->camelCursor();
+    doc()->config()->setCamelCursor(!enabled);
+    KTextEditor::Message *m;
+    if (enabled) {
+        m = new KTextEditor::Message(i18n("Camel case movement disabled"));
+    } else {
+        m = new KTextEditor::Message(i18n("Camel case movement enabled"));
+    }
+    m->setPosition(KTextEditor::Message::TopInView);
+    m->setAutoHide(1000);
+    m->setAutoHideMode(KTextEditor::Message::Immediate);
+    doc()->postMessage(m);
 }
 
 void KTextEditor::ViewPrivate::slotUpdateUndo()
@@ -1609,6 +1717,11 @@ void KTextEditor::ViewPrivate::toggleInsert()
 {
     doc()->config()->setOvr(!doc()->config()->ovr());
     m_toggleInsert->setChecked(isOverwriteMode());
+
+    // No multi cursors for overwrite mode
+    if (isOverwriteMode()) {
+        clearSecondaryCursors();
+    }
 
     Q_EMIT viewModeChanged(this, viewMode());
     Q_EMIT viewInputModeChanged(this, viewInputMode());
@@ -1686,6 +1799,11 @@ void KTextEditor::ViewPrivate::writeSessionConfig(KConfigGroup &config, const QS
 int KTextEditor::ViewPrivate::getEol() const
 {
     return doc()->config()->eol();
+}
+
+QMenu *KTextEditor::ViewPrivate::getEolMenu()
+{
+    return m_setEndOfLine->menu();
 }
 
 void KTextEditor::ViewPrivate::setEol(int eol)
@@ -1874,6 +1992,135 @@ void KTextEditor::ViewPrivate::findSelectedBackwards()
     currentInputMode()->findSelectedBackwards();
 }
 
+void KTextEditor::ViewPrivate::skipCurrentOccurunceSelection()
+{
+    if (isMulticursorNotAllowed()) {
+        return;
+    }
+    m_skipCurrentSelection = true;
+}
+
+void KTextEditor::ViewPrivate::findNextOccurunceAndSelect()
+{
+    if (isMulticursorNotAllowed()) {
+        return;
+    }
+
+    const auto text = selection() ? doc()->text(selectionRange()) : QString();
+    if (text.isEmpty()) {
+        const auto selection = doc()->wordRangeAt(cursorPosition());
+        // We don't want matching word highlights
+        setSelection(selection);
+        setCursorPosition(selection.end());
+        clearHighlights();
+
+        for (auto &c : m_secondaryCursors) {
+            const auto range = doc()->wordRangeAt(c.cursor());
+            if (!c.range && !c.anchor.isValid()) {
+                c.anchor = range.start();
+                c.range.reset(newSecondarySelectionRange(range));
+                c.pos->setPosition(range.end());
+            }
+            tagLines(range);
+        }
+        return;
+    } else if (!m_rangesForHighlights.empty()) {
+        clearHighlights();
+    }
+
+    // Use selection range end as starting point
+    const auto lastSelectionRange = selectionRange();
+
+    KTextEditor::Range searchRange(lastSelectionRange.end(), doc()->documentRange().end());
+    QVector<KTextEditor::Range> matches = doc()->searchText(searchRange, text, KTextEditor::Default);
+    if (!matches.isEmpty() && !matches.constFirst().isValid()) {
+        searchRange.setRange(doc()->documentRange().start(), lastSelectionRange.end());
+        matches = doc()->searchText(searchRange, text, KTextEditor::Default);
+    }
+
+    // No match found or only one possible match
+    if (matches.empty() || !matches.constFirst().isValid() || matches.constFirst() == selectionRange()) {
+        return;
+    }
+
+    auto it = std::find_if(m_secondaryCursors.begin(), m_secondaryCursors.end(), [&](const SecondaryCursor &c) {
+        return c.range && c.range->toRange() == matches.constFirst();
+    });
+
+    if (it != m_secondaryCursors.end()) {
+        m_secondaryCursors.erase(it);
+    }
+
+    // Move our primary to cursor to this match and select it
+    // Ensure we don't create occurence highlights
+    setSelection(matches.constFirst());
+    setCursorPosition(matches.constFirst().end());
+    clearHighlights();
+
+    // If we are skipping this selection, then we don't have to do anything
+    if (!m_skipCurrentSelection) {
+        PlainSecondaryCursor c;
+        c.pos = lastSelectionRange.end();
+        c.range = lastSelectionRange;
+        // make our previous primary selection a secondary
+        addSecondaryCursorsWithSelection({c});
+    }
+    // reset value
+    m_skipCurrentSelection = false;
+}
+
+void KTextEditor::ViewPrivate::findAllOccuruncesAndSelect()
+{
+    if (isMulticursorNotAllowed()) {
+        return;
+    }
+
+    QString text = selection() ? doc()->text(selectionRange()) : QString();
+    if (text.isEmpty()) {
+        const auto selection = doc()->wordRangeAt(cursorPosition());
+        setSelection(selection);
+        setCursorPosition(selection.end());
+        clearHighlights();
+        text = doc()->text(selection);
+
+        for (auto &c : m_secondaryCursors) {
+            const auto range = doc()->wordRangeAt(c.cursor());
+            if (!c.range && !c.anchor.isValid()) {
+                c.anchor = range.start();
+                c.range.reset(newSecondarySelectionRange(range));
+                c.pos->setPosition(range.end());
+            }
+            tagLines(range);
+        }
+    }
+
+    KTextEditor::Range searchRange(doc()->documentRange());
+    QVector<KTextEditor::Range> matches;
+    QVector<PlainSecondaryCursor> resultRanges;
+    do {
+        matches = doc()->searchText(searchRange, text, KTextEditor::Default);
+
+        if (matches.constFirst().isValid()) {
+            // Dont add if matches primary selection
+            if (matches.constFirst() != selectionRange()) {
+                PlainSecondaryCursor c;
+                c.pos = matches.constFirst().end();
+                c.range = matches.constFirst();
+                resultRanges.push_back(c);
+            }
+            searchRange.setStart(matches.constFirst().end());
+        }
+    } while (matches.first().isValid());
+
+    // ensure to clear occurence highlights
+    if (!resultRanges.empty()) {
+        clearHighlights();
+    }
+
+    clearSecondaryCursors();
+    addSecondaryCursorsWithSelection(resultRanges);
+}
+
 void KTextEditor::ViewPrivate::replace()
 {
     currentInputMode()->findReplace();
@@ -1903,6 +2150,45 @@ void KTextEditor::ViewPrivate::showSearchWrappedHint(bool isReverseSearch)
         m_wrappedMessage->setAutoHideMode(KTextEditor::Message::Immediate);
         m_wrappedMessage->setView(this);
         this->doc()->postMessage(m_wrappedMessage);
+    }
+}
+
+void KTextEditor::ViewPrivate::createMultiCursorsFromSelection()
+{
+    if (!selection() || selectionRange().isEmpty()) {
+        return;
+    }
+    // Is this really needed?
+    // Lets just clear them now for simplicity
+    clearSecondaryCursors();
+
+    const auto range = selectionRange();
+    QVector<KTextEditor::Cursor> cursorsToAdd;
+    const auto start = range.start().line() < 0 ? 0 : range.start().line();
+    const auto end = range.end().line() > doc()->lines() ? doc()->lines() : range.end().line();
+    const auto currentLine = cursorPosition().line();
+    setCursorPosition({currentLine, doc()->lineLength(currentLine)});
+    for (int line = start; line <= end; ++line) {
+        if (line != currentLine) {
+            cursorsToAdd.push_back({line, doc()->lineLength(line)});
+        }
+    }
+    // clear selection
+    setSelection({});
+    setSecondaryCursors(cursorsToAdd);
+}
+
+void KTextEditor::ViewPrivate::removeCursorsFromEmptyLines()
+{
+    if (!m_secondaryCursors.empty()) {
+        std::vector<KTextEditor::Cursor> cursorsToRemove;
+        for (const auto &c : m_secondaryCursors) {
+            auto cursor = c.cursor();
+            if (doc()->lineLength(cursor.line()) == 0) {
+                cursorsToRemove.push_back(cursor);
+            }
+        }
+        removeSecondaryCursors(cursorsToRemove);
     }
 }
 
@@ -1940,8 +2226,6 @@ void KTextEditor::ViewPrivate::updateConfig()
 
     // dyn. word wrap & markers
     if (m_hasWrap != config()->dynWordWrap()) {
-        m_viewInternal->prepareForDynWrapChange();
-
         m_hasWrap = config()->dynWordWrap();
 
         m_viewInternal->dynWrapChanged();
@@ -1991,7 +2275,7 @@ void KTextEditor::ViewPrivate::updateConfig()
         input->updateConfig();
     }
 
-    setInputMode(config()->inputMode());
+    setInputMode(config()->inputMode(), false /* don't remember in config for these calls */);
 
     reflectOnTheFlySpellCheckStatus(doc()->isOnTheFlySpellCheckingEnabled());
 
@@ -2143,6 +2427,9 @@ void KTextEditor::ViewPrivate::editStart()
 void KTextEditor::ViewPrivate::editEnd(int editTagLineStart, int editTagLineEnd, bool tagFrom)
 {
     m_viewInternal->editEnd(editTagLineStart, editTagLineEnd, tagFrom);
+    textFolding().editEnd(editTagLineStart, editTagLineEnd, [this](int line) {
+        return m_doc->buffer().isFoldingStartingOnLine(line).first;
+    });
 }
 
 void KTextEditor::ViewPrivate::editSetCursor(const KTextEditor::Cursor cursor)
@@ -2303,21 +2590,58 @@ bool KTextEditor::ViewPrivate::selection() const
 
 QString KTextEditor::ViewPrivate::selectionText() const
 {
-    return doc()->text(m_selection, blockSelect);
+    if (blockSelect) {
+        return doc()->text(m_selection, blockSelect);
+    }
+
+    QVarLengthArray<KTextEditor::Range, 16> ranges;
+    for (const auto &c : m_secondaryCursors) {
+        if (c.range) {
+            ranges.push_back(c.range->toRange());
+        }
+    }
+    ranges.push_back(m_selection.toRange());
+    std::sort(ranges.begin(), ranges.end());
+
+    QString text;
+    text.reserve(ranges.size() * m_selection.toRange().columnWidth());
+    for (int i = 0; i < ranges.size() - 1; ++i) {
+        text += doc()->text(ranges[i]) + QStringLiteral("\n");
+    }
+    text += doc()->text(ranges.last());
+
+    return text;
 }
 
 bool KTextEditor::ViewPrivate::removeSelectedText()
 {
-    if (!selection()) {
+    if (!hasSelections()) {
         return false;
     }
 
-    doc()->editStart();
+    KTextEditor::Document::EditingTransaction t(doc());
+
+    bool removed = false;
+    // Handle multicursors selection removal
+    if (!blockSelect) {
+        completionWidget()->setIgnoreBufferSignals(true);
+        for (auto &c : m_secondaryCursors) {
+            if (c.range) {
+                removed = true;
+                doc()->removeText(c.range->toRange());
+                c.clearSelection();
+            }
+        }
+        completionWidget()->setIgnoreBufferSignals(false);
+    }
 
     // Optimization: clear selection before removing text
     KTextEditor::Range selection = m_selection;
-
+    if (!selection.isValid()) {
+        return removed;
+    }
     doc()->removeText(selection, blockSelect);
+    removed = true;
 
     // don't redraw the cleared selection - that's done in editEnd().
     if (blockSelect) {
@@ -2328,19 +2652,26 @@ bool KTextEditor::ViewPrivate::removeSelectedText()
         setSelection(newSelection);
         setCursorPositionInternal(newSelection.start());
     } else {
+        clearSecondarySelections();
         clearSelection(false);
     }
 
-    doc()->editEnd();
-
-    return true;
+    return removed;
 }
 
 bool KTextEditor::ViewPrivate::selectAll()
 {
+    clearSecondaryCursors();
     setBlockSelection(false);
-    top();
-    shiftBottom();
+    // We use setSelection here to ensure we don't scroll anywhere
+    // The cursor stays in place i.e., it doesn't move to end of selection
+    // that is okay and expected.
+    // The idea here is to maintain scroll position in case select all was
+    // mistakenly triggered, and also to if you just want to copy text,
+    // there is no need to scroll anywhere.
+    setSelection(doc()->documentRange());
+    m_viewInternal->moveCursorToSelectionEdge(/*scroll=*/false);
+    m_viewInternal->updateMicroFocus();
     return true;
 }
 
@@ -2445,6 +2776,7 @@ void KTextEditor::ViewPrivate::cut()
 void KTextEditor::ViewPrivate::copy() const
 {
     QString text;
+    KTextEditor::EditorPrivate::self()->copyToMulticursorClipboard({});
 
     if (!selection()) {
         if (!m_config->smartCopyCut()) {
@@ -2454,10 +2786,27 @@ void KTextEditor::ViewPrivate::copy() const
         m_viewInternal->moveEdge(KateViewInternal::left, false);
     } else {
         text = selectionText();
+
+        // Multicursor copy
+        if (!m_secondaryCursors.empty()) {
+            QVarLengthArray<KTextEditor::Range, 16> ranges;
+            for (const auto &c : m_secondaryCursors) {
+                if (c.range) {
+                    ranges.push_back(c.range->toRange());
+                }
+            }
+            ranges.push_back(m_selection.toRange());
+            std::sort(ranges.begin(), ranges.end());
+            QStringList texts;
+            for (auto range : ranges) {
+                texts.append(doc()->text(range));
+            }
+            KTextEditor::EditorPrivate::self()->copyToMulticursorClipboard(texts);
+        }
     }
 
     // copy to clipboard and our history!
-    KTextEditor::EditorPrivate::self()->copyToClipboard(text);
+    KTextEditor::EditorPrivate::self()->copyToClipboard(text, m_doc->url().fileName());
 }
 
 void KTextEditor::ViewPrivate::pasteSelection()
@@ -2537,6 +2886,9 @@ bool KTextEditor::ViewPrivate::setBlockSelection(bool on)
 
 bool KTextEditor::ViewPrivate::toggleBlockSelection()
 {
+    // no multicursors for blockselect
+    clearSecondaryCursors();
+
     m_toggleBlockSelection->setChecked(!blockSelect);
     return setBlockSelection(!blockSelect);
 }
@@ -2601,6 +2953,427 @@ bool KTextEditor::ViewPrivate::setMouseTrackingEnabled(bool)
 {
     // FIXME support
     return true;
+}
+
+bool KTextEditor::ViewPrivate::isMulticursorNotAllowed() const
+{
+    return blockSelection() || isOverwriteMode() || currentInputMode()->viewInputMode() == KTextEditor::View::InputMode::ViInputMode;
+}
+
+void KTextEditor::ViewPrivate::addSecondaryCursor(const KTextEditor::Cursor &pos)
+{
+    auto primaryCursor = cursorPosition();
+    const bool overlapsOrOnPrimary = pos == primaryCursor || (selection() && selectionRange().contains(pos));
+    if (overlapsOrOnPrimary && m_secondaryCursors.empty()) {
+        // Clicking on primary cursor while it is the only cursor,
+        // we do nothing
+        return;
+    } else if (overlapsOrOnPrimary) {
+        // Clicking on primary cursor, we have secondaries
+        // so just make the last secondary cursor primary
+        // and remove caret at current primary cursor position
+        auto &last = m_secondaryCursors.back();
+        setCursorPosition(last.cursor());
+        if (last.range) {
+            setSelection(last.range->toRange());
+            Q_ASSERT(last.anchor.isValid());
+            m_viewInternal->m_selectAnchor = last.anchor;
+        }
+        m_secondaryCursors.pop_back();
+        return;
+    }
+
+    // If there are any existing cursors at this position
+    // remove them and be done i.e., if you click on an
+    // existing cursor it is removed.
+    if (removeSecondaryCursors({pos}, /*removeIfSelectionOverlap=*/true)) {
+        return;
+    }
+
+    // We are adding a new cursor!
+    // - Move primary cursor to the position where the click happened
+    // - Old primary cursor becomes a secondary cursor
+    // Doing it like this makes multi mouse selections very easy
+    setCursorPosition(pos);
+    KTextEditor::ViewPrivate::PlainSecondaryCursor p;
+    p.pos = primaryCursor;
+    p.range = selection() ? selectionRange() : KTextEditor::Range::invalid();
+    clearSelection();
+    addSecondaryCursorsWithSelection({p});
+}
+
+void KTextEditor::ViewPrivate::setSecondaryCursors(const QVector<KTextEditor::Cursor> &positions)
+{
+    clearSecondaryCursors();
+
+    if (positions.isEmpty() || isMulticursorNotAllowed()) {
+        return;
+    }
+
+    const auto totalLines = doc()->lines();
+    for (auto p : positions) {
+        if (p != cursorPosition() && p.line() < totalLines) {
+            SecondaryCursor c;
+            c.pos.reset(static_cast<Kate::TextCursor *>(doc()->newMovingCursor(p)));
+            m_secondaryCursors.push_back(std::move(c));
+            tagLine(p);
+        }
+    }
+    sortCursors();
+    paintCursors();
+}
+
+void KTextEditor::ViewPrivate::clearSecondarySelections()
+{
+    for (auto &c : m_secondaryCursors) {
+        c.range.reset();
+        c.anchor = KTextEditor::Cursor::invalid();
+    }
+}
+
+void KTextEditor::ViewPrivate::clearSecondaryCursors()
+{
+    if (m_secondaryCursors.empty()) {
+        return;
+    }
+    for (const auto &c : m_secondaryCursors) {
+        tagLine(c.cursor());
+    }
+    m_secondaryCursors.clear();
+    m_viewInternal->updateDirty();
+}
+
+const std::vector<KTextEditor::ViewPrivate::SecondaryCursor> &KTextEditor::ViewPrivate::secondaryCursors() const
+{
+    return m_secondaryCursors;
+}
+
+QVector<KTextEditor::ViewPrivate::PlainSecondaryCursor> KTextEditor::ViewPrivate::plainSecondaryCursors() const
+{
+    QVector<PlainSecondaryCursor> cursors;
+    cursors.reserve(m_secondaryCursors.size());
+    std::transform(m_secondaryCursors.begin(), m_secondaryCursors.end(), std::back_inserter(cursors), [](const SecondaryCursor &c) {
+        if (c.range) {
+            return PlainSecondaryCursor{c.cursor(), c.range->toRange()};
+        }
+        return PlainSecondaryCursor{c.cursor(), KTextEditor::Range::invalid()};
+    });
+    return cursors;
+}
+
+bool KTextEditor::ViewPrivate::removeSecondaryCursors(const std::vector<KTextEditor::Cursor> &cursorsToRemove, bool removeIfOverlapsSelection)
+{
+    Q_ASSERT(std::is_sorted(cursorsToRemove.begin(), cursorsToRemove.end()));
+
+    QVarLengthArray<KTextEditor::Cursor, 8> linesToTag;
+
+    if (removeIfOverlapsSelection) {
+        m_secondaryCursors.erase(std::remove_if(m_secondaryCursors.begin(),
+                                                m_secondaryCursors.end(),
+                                                [&](const SecondaryCursor &c) {
+                                                    auto it =
+                                                        std::find_if(cursorsToRemove.begin(), cursorsToRemove.end(), [&c](const KTextEditor::Cursor &pos) {
+                                                            return c.cursor() == pos || (c.range && c.range->contains(pos));
+                                                        });
+                                                    const bool match = it != cursorsToRemove.end();
+                                                    if (match) {
+                                                        linesToTag.push_back(c.cursor());
+                                                    }
+                                                    return match;
+                                                }),
+                                 m_secondaryCursors.end());
+    } else {
+        m_secondaryCursors.erase(std::remove_if(m_secondaryCursors.begin(),
+                                                m_secondaryCursors.end(),
+                                                [&](const SecondaryCursor &c) {
+                                                    auto it =
+                                                        std::find_if(cursorsToRemove.begin(), cursorsToRemove.end(), [&c](const KTextEditor::Cursor &pos) {
+                                                            return c.cursor() == pos;
+                                                        });
+                                                    const bool match = it != cursorsToRemove.end();
+                                                    if (match) {
+                                                        linesToTag.push_back(c.cursor());
+                                                    }
+                                                    return match;
+                                                }),
+                                 m_secondaryCursors.end());
+    }
+
+    for (const auto &c : linesToTag) {
+        tagLine(m_viewInternal->toVirtualCursor(c));
+    }
+    return !linesToTag.empty();
+
+    for (auto cur : cursorsToRemove) {
+        auto &sec = m_secondaryCursors;
+        auto it = std::find_if(sec.begin(), sec.end(), [cur](const SecondaryCursor &c) {
+            return c.cursor() == cur;
+        });
+        if (it != sec.end()) {
+            //             removedAny = true;
+            m_secondaryCursors.erase(it);
+            tagLine(m_viewInternal->toVirtualCursor(cur));
+        }
+    }
+
+    //     if (removedAny) {
+    m_viewInternal->updateDirty();
+    if (cursorPosition() == KTextEditor::Cursor(0, 0)) {
+        m_viewInternal->paintCursor();
+    }
+    return !linesToTag.empty();
+    //     }
+    //     return removedAny;
+}
+
+void KTextEditor::ViewPrivate::ensureUniqueCursors(bool matchLine)
+{
+    if (m_secondaryCursors.empty()) {
+        return;
+    }
+
+    std::vector<SecondaryCursor>::iterator it;
+    if (matchLine) {
+        auto matchLine = [](const SecondaryCursor &l, const SecondaryCursor &r) {
+            return l.cursor().line() == r.cursor().line();
+        };
+        it = std::unique(m_secondaryCursors.begin(), m_secondaryCursors.end(), matchLine);
+    } else {
+        it = std::unique(m_secondaryCursors.begin(), m_secondaryCursors.end());
+    }
+    if (it != m_secondaryCursors.end()) {
+        m_secondaryCursors.erase(it, m_secondaryCursors.end());
+    }
+
+    if (matchLine) {
+        const int ln = cursorPosition().line();
+        m_secondaryCursors.erase(std::remove_if(m_secondaryCursors.begin(),
+                                                m_secondaryCursors.end(),
+                                                [ln](const SecondaryCursor &c) {
+                                                    return c.cursor().line() == ln;
+                                                }),
+                                 m_secondaryCursors.end());
+    } else {
+        const auto cp = cursorPosition();
+        m_secondaryCursors.erase(std::remove_if(m_secondaryCursors.begin(),
+                                                m_secondaryCursors.end(),
+                                                [cp](const SecondaryCursor &c) {
+                                                    return c.cursor() == cp;
+                                                }),
+                                 m_secondaryCursors.end());
+    }
+}
+
+void KTextEditor::ViewPrivate::addSecondaryCursorsWithSelection(const QVector<PlainSecondaryCursor> &cursorsWithSelection)
+{
+    if (isMulticursorNotAllowed() || cursorsWithSelection.isEmpty()) {
+        return;
+    }
+
+    for (const auto &c : cursorsWithSelection) {
+        // We don't want to add on top of primary cursor
+        if (c.pos == cursorPosition()) {
+            continue;
+        }
+        SecondaryCursor n;
+        n.pos.reset(static_cast<Kate::TextCursor *>(doc()->newMovingCursor(c.pos)));
+        if (c.range.isValid()) {
+            n.range.reset(newSecondarySelectionRange(c.range));
+            n.anchor = c.range.start() == c.pos ? c.range.end() : c.range.start();
+        }
+        m_secondaryCursors.push_back(std::move(n));
+    }
+    sortCursors();
+    paintCursors();
+}
+
+Kate::TextRange *KTextEditor::ViewPrivate::newSecondarySelectionRange(KTextEditor::Range selRange)
+{
+    constexpr auto expandBehaviour = KTextEditor::MovingRange::ExpandLeft | KTextEditor::MovingRange::ExpandRight;
+    auto range = new Kate::TextRange(doc()->buffer(), selRange, expandBehaviour);
+    static KTextEditor::Attribute::Ptr selAttr;
+    if (!selAttr) {
+        selAttr = new KTextEditor::Attribute;
+        auto color = QColor::fromRgba(theme().editorColor(KSyntaxHighlighting::Theme::TextSelection));
+        selAttr->setBackground(color);
+    }
+    range->setZDepth(-999999.);
+    range->setAttribute(selAttr);
+    return range;
+}
+
+bool KTextEditor::ViewPrivate::hasSelections() const
+{
+    if (selection())
+        return true;
+    return std::any_of(m_secondaryCursors.cbegin(), m_secondaryCursors.cend(), [](const SecondaryCursor &c) {
+        return c.range && !c.range->isEmpty();
+    });
+}
+
+void KTextEditor::ViewPrivate::addSecondaryCursorDown()
+{
+    KTextEditor::Cursor last = cursorPosition();
+    const auto &secondary = secondaryCursors();
+    if (!secondary.empty()) {
+        last = secondary.back().cursor();
+        last = std::max(cursorPosition(), last);
+    }
+    if (last.line() >= doc()->lastLine()) {
+        return;
+    }
+
+    auto nextRange = m_viewInternal->nextLayout(last);
+    if (!nextRange.isValid()) {
+        return;
+    }
+    auto primaryCursorLineLayout = m_viewInternal->currentLayout(cursorPosition());
+    if (!primaryCursorLineLayout.isValid()) {
+        return;
+    }
+
+    int x = renderer()->cursorToX(primaryCursorLineLayout, cursorPosition().column(), !wrapCursor());
+    auto next = renderer()->xToCursor(nextRange, x, !wrapCursor());
+    addSecondaryCursor(next);
+}
+
+void KTextEditor::ViewPrivate::addSecondaryCursorUp()
+{
+    KTextEditor::Cursor last = cursorPosition();
+    const auto &secondary = secondaryCursors();
+    if (!secondary.empty()) {
+        last = secondary.front().cursor();
+        last = std::min(cursorPosition(), last);
+    }
+    if (last.line() == 0) {
+        return;
+    }
+    auto nextRange = m_viewInternal->previousLayout(last);
+    if (!nextRange.isValid()) {
+        return;
+    }
+
+    auto primaryCursorLineLayout = m_viewInternal->currentLayout(cursorPosition());
+    if (!primaryCursorLineLayout.isValid()) {
+        return;
+    }
+
+    int x = renderer()->cursorToX(primaryCursorLineLayout, cursorPosition().column(), !wrapCursor());
+    auto next = renderer()->xToCursor(nextRange, x, !wrapCursor());
+    addSecondaryCursor(next);
+}
+
+QVector<KTextEditor::Cursor> KTextEditor::ViewPrivate::cursors() const
+{
+    QVector<KTextEditor::Cursor> ret;
+    ret.reserve(m_secondaryCursors.size() + 1);
+    ret << cursorPosition();
+    std::transform(m_secondaryCursors.begin(), m_secondaryCursors.end(), std::back_inserter(ret), [](const SecondaryCursor &c) {
+        return c.cursor();
+    });
+    return ret;
+}
+
+QVector<KTextEditor::Range> KTextEditor::ViewPrivate::selectionRanges() const
+{
+    if (!selection()) {
+        return {};
+    }
+
+    QVector<KTextEditor::Range> ret;
+    ret.reserve(m_secondaryCursors.size() + 1);
+    ret << selectionRange();
+    std::transform(m_secondaryCursors.begin(), m_secondaryCursors.end(), std::back_inserter(ret), [](const SecondaryCursor &c) {
+        if (!c.range) {
+            qWarning() << "selectionRanges(): Unexpected null selection range, please fix";
+            return KTextEditor::Range::invalid();
+        }
+        return c.range->toRange();
+    });
+    return ret;
+}
+
+void KTextEditor::ViewPrivate::setCursors(const QVector<KTextEditor::Cursor> &cursorPositions)
+{
+    if (isMulticursorNotAllowed()) {
+        qWarning() << "setCursors failed: Multicursors not allowed because one of the following is true"
+                   << ", blockSelection: " << blockSelection() << ", overwriteMode: " << isOverwriteMode()
+                   << ", viMode: " << (currentInputMode()->viewInputMode() == KTextEditor::View::InputMode::ViInputMode);
+        return;
+    }
+
+    clearSecondaryCursors();
+    if (cursorPositions.empty()) {
+        return;
+    }
+
+    const auto primary = cursorPositions.front();
+    // We clear primary selection because primary and secondary
+    // cursors should always have same selection state
+    setSelection({});
+    setCursorPosition(primary);
+    // First will be auto ignored because it equals cursorPosition()
+    setSecondaryCursors(cursorPositions);
+}
+
+void KTextEditor::ViewPrivate::setSelections(const QVector<KTextEditor::Range> &selectionRanges)
+{
+    if (isMulticursorNotAllowed()) {
+        qWarning() << "setSelections failed: Multicursors not allowed because one of the following is true"
+                   << ", blockSelection: " << blockSelection() << ", overwriteMode: " << isOverwriteMode()
+                   << ", viMode: " << (currentInputMode()->viewInputMode() == KTextEditor::View::InputMode::ViInputMode);
+        return;
+    }
+
+    clearSecondaryCursors();
+    setSelection({});
+    if (selectionRanges.isEmpty()) {
+        return;
+    }
+
+    auto first = selectionRanges.front();
+    setCursorPosition(first.end());
+    setSelection(first);
+
+    if (selectionRanges.size() == 1) {
+        return;
+    }
+
+    const auto docRange = doc()->documentRange();
+    for (auto it = selectionRanges.begin() + 1; it != selectionRanges.end(); ++it) {
+        KTextEditor::Range r = *it;
+        KTextEditor::Cursor c = r.end();
+        if (c == cursorPosition() || !r.isValid() || r.isEmpty() || !docRange.contains(r)) {
+            continue;
+        }
+
+        SecondaryCursor n;
+        n.pos.reset(static_cast<Kate::TextCursor *>(doc()->newMovingCursor(c)));
+        n.range.reset(newSecondarySelectionRange(r));
+        n.anchor = r.start();
+        m_secondaryCursors.push_back(std::move(n));
+    }
+    m_viewInternal->mergeSelections();
+
+    sortCursors();
+    paintCursors();
+}
+
+void KTextEditor::ViewPrivate::sortCursors()
+{
+    std::sort(m_secondaryCursors.begin(), m_secondaryCursors.end());
+    ensureUniqueCursors();
+}
+
+void KTextEditor::ViewPrivate::paintCursors()
+{
+    if (m_viewInternal->m_cursorTimer.isActive()) {
+        if (QApplication::cursorFlashTime() > 0) {
+            m_viewInternal->m_cursorTimer.start(QApplication::cursorFlashTime() / 2);
+        }
+        renderer()->setDrawCaret(true);
+    }
+    m_viewInternal->paintCursor();
 }
 
 bool KTextEditor::ViewPrivate::isCompletionActive() const
@@ -2681,6 +3454,28 @@ void KTextEditor::ViewPrivate::sendCompletionAborted()
 
 void KTextEditor::ViewPrivate::paste(const QString *textToPaste)
 {
+    const int cursorCount = m_secondaryCursors.size() + 1; // 1 primary cursor
+    const auto multicursorClipboard = KTextEditor::EditorPrivate::self()->multicursorClipboard();
+    if (cursorCount == multicursorClipboard.size() && !textToPaste) {
+        if (doc()->multiPaste(this, multicursorClipboard)) {
+            return;
+        }
+    } else if (!textToPaste && cursorCount > 1) {
+        // We still have multiple cursors, but the amount
+        // of multicursors doesn't match the entry count in clipboard
+        QStringList texts;
+        texts.reserve(cursorCount);
+        QString clipboard = QApplication::clipboard()->text(QClipboard::Clipboard);
+        for (int i = 0; i < cursorCount; ++i) {
+            texts << clipboard;
+        }
+        // It might still fail for e.g., if we are in block mode,
+        // in that case we will fallback to normal pasting below
+        if (doc()->multiPaste(this, texts)) {
+            return;
+        }
+    }
+
     m_temporaryAutomaticInvocationDisabled = true;
     doc()->paste(this, textToPaste ? *textToPaste : QApplication::clipboard()->text(QClipboard::Clipboard));
     m_temporaryAutomaticInvocationDisabled = false;
@@ -2767,9 +3562,34 @@ bool KTextEditor::ViewPrivate::setCursorPositionVisual(const KTextEditor::Cursor
     return setCursorPositionInternal(position, doc()->config()->tabWidth(), true);
 }
 
-QString KTextEditor::ViewPrivate::currentTextLine()
+bool KTextEditor::ViewPrivate::isLineRTL(int line) const
 {
-    return doc()->line(cursorPosition().line());
+    const QString s = doc()->line(line);
+    if (s.isEmpty()) {
+        int line = cursorPosition().line();
+        if (line == 0) {
+            const int count = doc()->lines();
+            for (int i = 1; i < count; ++i) {
+                const QString ln = doc()->line(i);
+                if (ln.isEmpty()) {
+                    continue;
+                }
+                return ln.isRightToLeft();
+            }
+        } else {
+            int line = cursorPosition().line();
+            for (; line >= 0; --line) {
+                const QString s = doc()->line(line);
+                if (s.isEmpty()) {
+                    continue;
+                }
+                return s.isRightToLeft();
+            }
+        }
+        return false;
+    } else {
+        return s.isRightToLeft();
+    }
 }
 
 QTextLayout *KTextEditor::ViewPrivate::textLayout(int line) const
@@ -2807,34 +3627,57 @@ void KTextEditor::ViewPrivate::cleanIndent()
     doc()->indent(r, 0);
 }
 
-void KTextEditor::ViewPrivate::align()
+void KTextEditor::ViewPrivate::formatIndent()
 {
     // no selection: align current line; selection: use selection range
     const int line = cursorPosition().line();
-    KTextEditor::Range alignRange(KTextEditor::Cursor(line, 0), KTextEditor::Cursor(line, 0));
+    KTextEditor::Range formatRange(KTextEditor::Cursor(line, 0), KTextEditor::Cursor(line, 0));
     if (selection()) {
-        alignRange = selectionRange();
+        formatRange = selectionRange();
     }
 
-    doc()->align(this, alignRange);
+    doc()->align(this, formatRange);
+}
+
+// alias of formatIndent, for backward compatibility
+void KTextEditor::ViewPrivate::align()
+{
+    formatIndent();
+}
+
+void KTextEditor::ViewPrivate::alignOn()
+{
+    static QString pattern;
+    KTextEditor::Range range;
+    if (!selection()) {
+        range = doc()->documentRange();
+    } else {
+        range = selectionRange();
+    }
+    bool ok;
+    pattern = QInputDialog::getText(window(), i18n("Align On"), i18n("Alignment pattern:"), QLineEdit::Normal, pattern, &ok);
+    if (!ok) {
+        return;
+    }
+    doc()->alignOn(range, pattern, this->blockSelection());
 }
 
 void KTextEditor::ViewPrivate::comment()
 {
     m_selection.setInsertBehaviors(Kate::TextRange::ExpandLeft | Kate::TextRange::ExpandRight);
-    doc()->comment(this, cursorPosition().line(), cursorPosition().column(), 1);
+    doc()->comment(this, cursorPosition().line(), cursorPosition().column(), DocumentPrivate::Comment);
     m_selection.setInsertBehaviors(Kate::TextRange::ExpandRight);
 }
 
 void KTextEditor::ViewPrivate::uncomment()
 {
-    doc()->comment(this, cursorPosition().line(), cursorPosition().column(), -1);
+    doc()->comment(this, cursorPosition().line(), cursorPosition().column(), DocumentPrivate::UnComment);
 }
 
 void KTextEditor::ViewPrivate::toggleComment()
 {
     m_selection.setInsertBehaviors(Kate::TextRange::ExpandLeft | Kate::TextRange::ExpandRight);
-    doc()->comment(this, cursorPosition().line(), cursorPosition().column(), 0);
+    doc()->comment(this, cursorPosition().line(), cursorPosition().column(), DocumentPrivate::ToggleComment);
     m_selection.setInsertBehaviors(Kate::TextRange::ExpandRight);
 }
 
@@ -2845,16 +3688,43 @@ void KTextEditor::ViewPrivate::uppercase()
 
 void KTextEditor::ViewPrivate::killLine()
 {
+    std::vector<int> linesToRemove;
     if (m_selection.isEmpty()) {
-        doc()->removeLine(cursorPosition().line());
+        // collect lines of all cursors
+        linesToRemove.reserve(m_secondaryCursors.size() + 1);
+        for (const auto &c : m_secondaryCursors) {
+            linesToRemove.push_back(c.pos->line());
+        }
+        // add primary cursor line
+        linesToRemove.push_back(cursorPosition().line());
     } else {
-        doc()->editStart();
+        linesToRemove.reserve(m_secondaryCursors.size() + 1);
+        for (const auto &c : m_secondaryCursors) {
+            const auto &range = c.range;
+            if (!range) {
+                continue;
+            }
+            for (int line = range->end().line(); line >= range->start().line(); line--) {
+                linesToRemove.push_back(line);
+            }
+        }
+
         // cache endline, else that moves and we might delete complete document if last line is selected!
         for (int line = m_selection.end().line(), endLine = m_selection.start().line(); line >= endLine; line--) {
-            doc()->removeLine(line);
+            linesToRemove.push_back(line);
         }
-        doc()->editEnd();
     }
+
+    std::sort(linesToRemove.begin(), linesToRemove.end(), std::greater{});
+    linesToRemove.erase(std::unique(linesToRemove.begin(), linesToRemove.end()), linesToRemove.end());
+
+    doc()->editStart();
+    std::for_each(linesToRemove.begin(), linesToRemove.end(), [this](int line) {
+        doc()->removeLine(line);
+    });
+    doc()->editEnd();
+
+    ensureUniqueCursors();
 }
 
 void KTextEditor::ViewPrivate::lowercase()
@@ -2905,9 +3775,24 @@ void KTextEditor::ViewPrivate::noIndentNewline()
     m_viewInternal->updateView();
 }
 
+void KTextEditor::ViewPrivate::newLineAbove()
+{
+    doc()->newLine(this, KTextEditor::DocumentPrivate::Indent, KTextEditor::DocumentPrivate::Above);
+    m_viewInternal->iconBorder()->updateForCursorLineChange();
+    m_viewInternal->updateView();
+}
+
+void KTextEditor::ViewPrivate::newLineBelow()
+{
+    doc()->newLine(this, KTextEditor::DocumentPrivate::Indent, KTextEditor::DocumentPrivate::Below);
+    m_viewInternal->iconBorder()->updateForCursorLineChange();
+    m_viewInternal->updateView();
+}
+
 void KTextEditor::ViewPrivate::backspace()
 {
-    doc()->backspace(this, cursorPosition());
+    // Will take care of both multi and primary cursors
+    doc()->backspace(this);
 }
 
 void KTextEditor::ViewPrivate::insertTab()
@@ -2922,13 +3807,34 @@ void KTextEditor::ViewPrivate::deleteWordLeft()
     KTextEditor::Range selection = selectionRange();
     removeSelectedText();
     doc()->editEnd();
+
+    ensureUniqueCursors();
+
     m_viewInternal->tagRange(selection, true);
     m_viewInternal->updateDirty();
 }
 
 void KTextEditor::ViewPrivate::keyDelete()
 {
+    KTextEditor::Document::EditingTransaction t(doc());
+    // multi cursor
+
+    if (removeSelectedText()) {
+        return;
+    }
+
+    for (const auto &c : m_secondaryCursors) {
+        if (c.range) {
+            doc()->removeText(c.range->toRange());
+        } else {
+            doc()->del(this, c.cursor());
+        }
+    }
+
+    // primary cursor
     doc()->del(this, cursorPosition());
+
+    ensureUniqueCursors();
 }
 
 void KTextEditor::ViewPrivate::deleteWordRight()
@@ -2938,13 +3844,21 @@ void KTextEditor::ViewPrivate::deleteWordRight()
     KTextEditor::Range selection = selectionRange();
     removeSelectedText();
     doc()->editEnd();
+
+    ensureUniqueCursors();
+
     m_viewInternal->tagRange(selection, true);
     m_viewInternal->updateDirty();
 }
 
 void KTextEditor::ViewPrivate::transpose()
 {
+    doc()->editBegin();
+    for (const auto &c : m_secondaryCursors) {
+        doc()->transpose(c.cursor());
+    }
     doc()->transpose(cursorPosition());
+    doc()->editEnd();
 }
 
 void KTextEditor::ViewPrivate::transposeWord()
@@ -3000,7 +3914,7 @@ void KTextEditor::ViewPrivate::transposeWord()
 void KTextEditor::ViewPrivate::cursorLeft()
 {
     if (selection() && !config()->persistentSelection()) {
-        if (currentTextLine().isRightToLeft()) {
+        if (isLineRTL(cursorPosition().line())) {
             m_viewInternal->updateCursor(selectionRange().end());
             setSelection(KTextEditor::Range::invalid());
         } else {
@@ -3008,8 +3922,16 @@ void KTextEditor::ViewPrivate::cursorLeft()
             setSelection(KTextEditor::Range::invalid());
         }
 
+        for (const auto &c : m_secondaryCursors) {
+            if (!c.range) {
+                continue;
+            }
+            const bool rtl = isLineRTL(c.cursor().line());
+            c.pos->setPosition(rtl ? c.range->end() : c.range->start());
+        }
+        clearSecondarySelections();
     } else {
-        if (currentTextLine().isRightToLeft()) {
+        if (isLineRTL(cursorPosition().line())) {
             m_viewInternal->cursorNextChar();
         } else {
             m_viewInternal->cursorPrevChar();
@@ -3019,7 +3941,7 @@ void KTextEditor::ViewPrivate::cursorLeft()
 
 void KTextEditor::ViewPrivate::shiftCursorLeft()
 {
-    if (currentTextLine().isRightToLeft()) {
+    if (isLineRTL(cursorPosition().line())) {
         m_viewInternal->cursorNextChar(true);
     } else {
         m_viewInternal->cursorPrevChar(true);
@@ -3029,7 +3951,7 @@ void KTextEditor::ViewPrivate::shiftCursorLeft()
 void KTextEditor::ViewPrivate::cursorRight()
 {
     if (selection() && !config()->persistentSelection()) {
-        if (currentTextLine().isRightToLeft()) {
+        if (isLineRTL(cursorPosition().line())) {
             m_viewInternal->updateCursor(selectionRange().start());
             setSelection(KTextEditor::Range::invalid());
         } else {
@@ -3037,8 +3959,16 @@ void KTextEditor::ViewPrivate::cursorRight()
             setSelection(KTextEditor::Range::invalid());
         }
 
+        for (const auto &c : m_secondaryCursors) {
+            if (!c.range) {
+                continue;
+            }
+            const bool rtl = doc()->line(c.cursor().line()).isRightToLeft();
+            c.pos->setPosition(rtl ? c.range->start() : c.range->end());
+        }
+        clearSecondarySelections();
     } else {
-        if (currentTextLine().isRightToLeft()) {
+        if (isLineRTL(cursorPosition().line())) {
             m_viewInternal->cursorPrevChar();
         } else {
             m_viewInternal->cursorNextChar();
@@ -3048,7 +3978,7 @@ void KTextEditor::ViewPrivate::cursorRight()
 
 void KTextEditor::ViewPrivate::shiftCursorRight()
 {
-    if (currentTextLine().isRightToLeft()) {
+    if (isLineRTL(cursorPosition().line())) {
         m_viewInternal->cursorPrevChar(true);
     } else {
         m_viewInternal->cursorNextChar(true);
@@ -3057,16 +3987,16 @@ void KTextEditor::ViewPrivate::shiftCursorRight()
 
 void KTextEditor::ViewPrivate::wordLeft()
 {
-    if (currentTextLine().isRightToLeft()) {
-        m_viewInternal->wordNext(m_viewInternal->isUserSelecting());
+    if (isLineRTL(cursorPosition().line())) {
+        m_viewInternal->wordNext();
     } else {
-        m_viewInternal->wordPrev(m_viewInternal->isUserSelecting());
+        m_viewInternal->wordPrev();
     }
 }
 
 void KTextEditor::ViewPrivate::shiftWordLeft()
 {
-    if (currentTextLine().isRightToLeft()) {
+    if (isLineRTL(cursorPosition().line())) {
         m_viewInternal->wordNext(true);
     } else {
         m_viewInternal->wordPrev(true);
@@ -3075,16 +4005,16 @@ void KTextEditor::ViewPrivate::shiftWordLeft()
 
 void KTextEditor::ViewPrivate::wordRight()
 {
-    if (currentTextLine().isRightToLeft()) {
-        m_viewInternal->wordPrev(m_viewInternal->isUserSelecting());
+    if (isLineRTL(cursorPosition().line())) {
+        m_viewInternal->wordPrev();
     } else {
-        m_viewInternal->wordNext(m_viewInternal->isUserSelecting());
+        m_viewInternal->wordNext();
     }
 }
 
 void KTextEditor::ViewPrivate::shiftWordRight()
 {
-    if (currentTextLine().isRightToLeft()) {
+    if (isLineRTL(cursorPosition().line())) {
         m_viewInternal->wordPrev(true);
     } else {
         m_viewInternal->wordNext(true);
@@ -3093,7 +4023,7 @@ void KTextEditor::ViewPrivate::shiftWordRight()
 
 void KTextEditor::ViewPrivate::home()
 {
-    m_viewInternal->home(m_viewInternal->isUserSelecting());
+    m_viewInternal->home();
 }
 
 void KTextEditor::ViewPrivate::shiftHome()
@@ -3103,7 +4033,7 @@ void KTextEditor::ViewPrivate::shiftHome()
 
 void KTextEditor::ViewPrivate::end()
 {
-    m_viewInternal->end(m_viewInternal->isUserSelecting());
+    m_viewInternal->end();
 }
 
 void KTextEditor::ViewPrivate::shiftEnd()
@@ -3113,7 +4043,7 @@ void KTextEditor::ViewPrivate::shiftEnd()
 
 void KTextEditor::ViewPrivate::up()
 {
-    m_viewInternal->cursorUp(m_viewInternal->isUserSelecting());
+    m_viewInternal->cursorUp();
 }
 
 void KTextEditor::ViewPrivate::shiftUp()
@@ -3123,7 +4053,7 @@ void KTextEditor::ViewPrivate::shiftUp()
 
 void KTextEditor::ViewPrivate::down()
 {
-    m_viewInternal->cursorDown(m_viewInternal->isUserSelecting());
+    m_viewInternal->cursorDown();
 }
 
 void KTextEditor::ViewPrivate::shiftDown()
@@ -3163,7 +4093,7 @@ void KTextEditor::ViewPrivate::shiftBottomOfView()
 
 void KTextEditor::ViewPrivate::pageUp()
 {
-    m_viewInternal->pageUp(m_viewInternal->isUserSelecting());
+    m_viewInternal->pageUp();
 }
 
 void KTextEditor::ViewPrivate::shiftPageUp()
@@ -3173,7 +4103,7 @@ void KTextEditor::ViewPrivate::shiftPageUp()
 
 void KTextEditor::ViewPrivate::pageDown()
 {
-    m_viewInternal->pageDown(m_viewInternal->isUserSelecting());
+    m_viewInternal->pageDown();
 }
 
 void KTextEditor::ViewPrivate::shiftPageDown()
@@ -3343,7 +4273,7 @@ void KTextEditor::ViewPrivate::aboutToShowContextMenu()
 
 void KTextEditor::ViewPrivate::aboutToHideContextMenu()
 {
-    m_spellingMenu->setUseMouseForMisspelledRange(false);
+    m_spellingMenu->cleanUpAfterShown();
 }
 
 // BEGIN ConfigInterface stff
@@ -3440,7 +4370,7 @@ void KTextEditor::ViewPrivate::setConfigValue(const QString &key, const QVariant
     }
 
     // No success? Go the old way
-    if (value.canConvert(QVariant::Color)) {
+    if (value.canConvert<QColor>()) {
         if (key == QLatin1String("background-color")) {
             renderer()->config()->setBackgroundColor(value.value<QColor>());
         } else if (key == QLatin1String("selection-color")) {
@@ -3458,7 +4388,8 @@ void KTextEditor::ViewPrivate::setConfigValue(const QString &key, const QVariant
         } else if (key == QLatin1String("current-line-number-color")) {
             renderer()->config()->setCurrentLineNumberColor(value.value<QColor>());
         }
-    } else if (value.type() == QVariant::Bool) {
+    }
+    if (value.type() == QVariant::Bool) {
         // Note explicit type check above. If we used canConvert, then
         // values of type UInt will be trapped here.
         if (key == QLatin1String("dynamic-word-wrap")) {
@@ -3468,10 +4399,10 @@ void KTextEditor::ViewPrivate::setConfigValue(const QString &key, const QVariant
         } else if (key == QLatin1String("line-count")) {
             config()->setShowLineCount(value.toBool());
         }
-    } else if (key == QLatin1String("font") && value.canConvert(QVariant::Font)) {
+    } else if (key == QLatin1String("font") && value.canConvert<QFont>()) {
         renderer()->config()->setFont(value.value<QFont>());
     } else if (key == QLatin1String("theme") && value.type() == QVariant::String) {
-        renderer()->config()->setSchema(value.value<QString>());
+        renderer()->config()->setSchema(value.toString());
     }
 }
 
@@ -3573,6 +4504,10 @@ void KTextEditor::ViewPrivate::paintEvent(QPaintEvent *e)
 {
     // base class
     KTextEditor::View::paintEvent(e);
+
+    if (!config()->showFocusFrame()) {
+        return;
+    }
 
     const QRect contentsRect = m_topSpacer->geometry() | m_bottomSpacer->geometry() | m_leftSpacer->geometry() | m_rightSpacer->geometry();
 
@@ -3789,6 +4724,11 @@ void KTextEditor::ViewPrivate::saveFoldingState()
     m_savedFoldingState = m_textFolding.exportFoldingRanges();
 }
 
+void KTextEditor::ViewPrivate::clearFoldingState()
+{
+    m_savedFoldingState = {};
+}
+
 void KTextEditor::ViewPrivate::applyFoldingState()
 {
     m_textFolding.importFoldingRanges(m_savedFoldingState);
@@ -3884,12 +4824,14 @@ void KTextEditor::ViewPrivate::createHighlights()
         matches = doc()->searchText(searchRange, pattern, KTextEditor::Regex);
 
         if (matches.first().isValid()) {
-            std::unique_ptr<KTextEditor::MovingRange> mr(doc()->newMovingRange(matches.first()));
-            mr->setZDepth(-90000.0); // Set the z-depth to slightly worse than the selection
-            mr->setAttribute(attr);
-            mr->setView(this);
-            mr->setAttributeOnlyForViews(true);
-            m_rangesForHighlights.push_back(std::move(mr));
+            if (matches.first() != selectionRange()) {
+                std::unique_ptr<KTextEditor::MovingRange> mr(doc()->newMovingRange(matches.first()));
+                mr->setZDepth(-90000.0); // Set the z-depth to slightly worse than the selection
+                mr->setAttribute(attr);
+                mr->setView(this);
+                mr->setAttributeOnlyForViews(true);
+                m_rangesForHighlights.push_back(std::move(mr));
+            }
             start = matches.first().end();
         }
     } while (matches.first().isValid());
@@ -3902,7 +4844,7 @@ KateAbstractInputMode *KTextEditor::ViewPrivate::currentInputMode() const
 
 void KTextEditor::ViewPrivate::toggleInputMode()
 {
-    if (QAction *a = dynamic_cast<QAction *>(sender())) {
+    if (QAction *a = qobject_cast<QAction *>(sender())) {
         setInputMode(static_cast<KTextEditor::View::InputMode>(a->data().toInt()));
     }
 }
@@ -3956,7 +4898,8 @@ QVarLengthArray<KateInlineNoteData, 8> KTextEditor::ViewPrivate::inlineNotes(int
     QVarLengthArray<KateInlineNoteData, 8> allInlineNotes;
     for (KTextEditor::InlineNoteProvider *provider : m_inlineNoteProviders) {
         int index = 0;
-        for (auto column : provider->inlineNotes(line)) {
+        const auto columns = provider->inlineNotes(line);
+        for (int column : columns) {
             const bool underMouse = Cursor(line, column) == m_viewInternal->m_activeInlineNote.m_position;
             KateInlineNoteData note =
                 {provider, this, {line, column}, index, underMouse, m_viewInternal->renderer()->currentFont(), m_viewInternal->renderer()->lineHeight()};

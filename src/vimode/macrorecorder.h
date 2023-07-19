@@ -7,6 +7,8 @@
 #ifndef KATEVI_MACRORECORDER_H
 #define KATEVI_MACRORECORDER_H
 
+#include "keyevent.h"
+
 #include <QChar>
 #include <QKeyEvent>
 #include <QList>
@@ -29,14 +31,14 @@ public:
     void dropLast();
 
     void replay(const QChar &macroRegister);
-    bool isReplaying();
+    bool isReplaying() const;
 
 private:
     InputModeManager *m_viInputModeManager;
 
     bool m_isRecording;
     QChar m_register;
-    QList<QKeyEvent> m_eventsLog;
+    QList<KeyEvent> m_eventsLog;
 
     int m_macrosBeingReplayedCount;
     QChar m_lastPlayedMacroRegister;

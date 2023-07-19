@@ -55,6 +55,7 @@ namespace Kate
 class TextRange;
 }
 
+class QTextCodec;
 class QTimer;
 class QVBoxLayout;
 
@@ -329,6 +330,12 @@ private:
     void leaveEvent(QEvent *event) override;
     void wheelEvent(QWheelEvent *e) override;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    void enterEvent(QEnterEvent *e) override;
+#else
+    void enterEvent(QEvent *e) override;
+#endif
+
     void showMarkMenu(uint line, const QPoint &pos);
 
     void hideAnnotationTooltip();
@@ -357,6 +364,7 @@ private:
     bool m_dynWrapIndicatorsOn : 1;
     bool m_annotationBorderOn : 1;
     bool m_updatePositionToArea : 1;
+    bool m_mouseOver = false;
 
     typedef QPair<int, KateIconBorder::BorderArea> AreaPosition;
     std::vector<AreaPosition> m_positionToArea;
@@ -386,6 +394,7 @@ private:
 private Q_SLOTS:
     void highlightFolding();
     void handleDestroyedAnnotationItemDelegate();
+    void delayedUpdateOfSizeWithRepaint();
 
 private:
     QString m_hoveredAnnotationGroupIdentifier;
@@ -401,8 +410,8 @@ class KateViewEncodingAction : public KSelectAction
 public:
     KateViewEncodingAction(KTextEditor::DocumentPrivate *_doc, KTextEditor::ViewPrivate *_view, const QString &text, QObject *parent, bool saveAsMode = false);
 
-    int mibForName(const QString &codecName, bool *ok = nullptr) const;
-    QTextCodec *codecForMib(int mib) const;
+    static int mibForName(const QString &codecName, bool *ok = nullptr);
+    static QTextCodec *codecForMib(int mib);
 
     QTextCodec *currentCodec() const;
     bool setCurrentCodec(QTextCodec *codec);
@@ -557,13 +566,8 @@ public:
     void removePermanentBarWidget(KateViewBarWidget *barWidget);
 
     /**
-     * @return if viewbar has permanent widget @p barWidget
-     */
-    bool hasPermanentWidget(KateViewBarWidget *barWidget) const;
-
-    /**
-     * @return true if the KateViewBar is hidden or displays a permanentBarWidget */
-    bool hiddenOrPermanent() const;
+     * @return true if the a KateViewBar is visible*/
+    bool barWidgetVisible() const;
 
 public Q_SLOTS:
     /**
@@ -602,7 +606,7 @@ public:
     void execute(const QString &text);
 
 public Q_SLOTS:
-    void showHelpPage();
+    static void showHelpPage();
 
 private:
     class KateCmdLineEdit *m_lineEdit;
@@ -655,21 +659,6 @@ private:
     class KateCmdLnWhatsThis *m_help;
 
     QTimer *m_hideTimer;
-};
-
-class KatePasteMenu : public KActionMenu
-{
-    Q_OBJECT
-
-public:
-    KatePasteMenu(const QString &text, KTextEditor::ViewPrivate *view);
-
-private:
-    KTextEditor::ViewPrivate *m_view;
-
-private Q_SLOTS:
-    void slotAboutToShow();
-    void paste();
 };
 
 class KateViewSchemaAction : public KActionMenu

@@ -613,13 +613,13 @@ bool KateSearchBar::findOrReplace(SearchDirection searchDirection, const QString
     if (askWrap) {
         QString question =
             searchDirection == SearchForward ? i18n("Bottom of file reached. Continue from top?") : i18n("Top of file reached. Continue from bottom?");
-        wrap = (KMessageBox::questionYesNo(nullptr,
-                                           question,
-                                           i18n("Continue search?"),
-                                           KStandardGuiItem::yes(),
-                                           KStandardGuiItem::no(),
-                                           QStringLiteral("DoNotShowAgainContinueSearchDialog"))
-                == KMessageBox::Yes);
+        wrap = (KMessageBox::questionTwoActions(nullptr,
+                                                question,
+                                                i18n("Continue search?"),
+                                                KStandardGuiItem::cont(),
+                                                KStandardGuiItem::cancel(),
+                                                QStringLiteral("DoNotShowAgainContinueSearchDialog"))
+                == KMessageBox::PrimaryAction);
     }
     if (wrap) {
         m_view->showSearchWrappedHint(searchDirection == SearchBackward);
@@ -843,6 +843,8 @@ void KateSearchBar::findOrReplaceAll()
 
                 // Replace
                 lastRange = match.replace(m_replacement, false, ++m_matchCounter);
+                // update working range as text must have changed now
+                workingRangeCopy = m_workingRange->toRange();
             } else {
                 lastRange = match.range();
                 ++m_matchCounter;
@@ -1253,6 +1255,11 @@ void KateSearchBar::onPowerModeChanged(int /*index*/)
     givePatternFeedback();
 }
 
+// static void addSecondarySelection(KTextEditor::ViewPrivate *view, KTextEditor::Range range)
+// {
+//     view->addSecondaryCursorWithSelection(range);
+// }
+
 void KateSearchBar::nextMatchForSelection(KTextEditor::ViewPrivate *view, SearchDirection searchDirection)
 {
     if (!view->selection()) {
@@ -1265,7 +1272,8 @@ void KateSearchBar::nextMatchForSelection(KTextEditor::ViewPrivate *view, Search
         }
     }
     if (view->selection()) {
-        const QString pattern = view->selectionText();
+        // We only want text of one of the selection ranges
+        const QString pattern = view->doc()->text(view->selectionRange());
 
         // How to find?
         SearchOptions enabledOptions(KTextEditor::Default);
@@ -1275,6 +1283,7 @@ void KateSearchBar::nextMatchForSelection(KTextEditor::ViewPrivate *view, Search
 
         // Where to find?
         const Range selRange = view->selectionRange();
+        //         const Range selRange = view->lastSelectionRange();
         Range inputRange;
         if (searchDirection == SearchForward) {
             inputRange.setRange(selRange.end(), view->doc()->documentEnd());
@@ -1288,6 +1297,7 @@ void KateSearchBar::nextMatchForSelection(KTextEditor::ViewPrivate *view, Search
 
         if (match.isValid()) {
             selectRange(view, match.range());
+            //             addSecondarySelection(view, match.range());
         } else {
             // Find, second try
             m_view->showSearchWrappedHint(searchDirection == SearchBackward);
@@ -1300,6 +1310,7 @@ void KateSearchBar::nextMatchForSelection(KTextEditor::ViewPrivate *view, Search
             match2.searchText(inputRange, pattern);
             if (match2.isValid()) {
                 selectRange(view, match2.range());
+                //                 addSecondarySelection(view, match2.range());
             }
         }
     }
@@ -1656,7 +1667,12 @@ void KateSearchBar::showEvent(QShowEvent *event)
         m_incInitCursor = m_view->cursorPosition();
     }
 
-    updateSelectionOnly();
+    // We don't want to update if a "findOrReplaceAll" is running
+    // other we end up deleting our working range and crash
+    if (m_cancelFindOrReplace) {
+        updateSelectionOnly();
+    }
+
     KateViewBarWidget::showEvent(event);
 }
 

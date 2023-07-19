@@ -1,4 +1,4 @@
-# SymbolsHelper-Confirmed: 5.85.0 alpha armel armhf hppa i386 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x
+# SymbolsHelper-Confirmed: 5.102.0 armel armhf hppa i386 mips64el mipsel ppc64 riscv64 s390x
 libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
 * Build-Depends-Package: libkf5texteditor-dev
  _ZN10KateBuffer10unwrapLineEi@Base 5.9.0
@@ -12,6 +12,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN10KateBuffer17respellCheckBlockEii@Base 5.9.0
  _ZN10KateBuffer18updateHighlightingEv@Base 5.78.0
  _ZN10KateBuffer22invalidateHighlightingEv@Base 5.9.0
+ _ZN10KateBuffer23isFoldingStartingOnLineEi@Base 5.102.0
  _ZN10KateBuffer31computeFoldingRangeForStartLineEi@Base 5.9.0
  _ZN10KateBuffer5clearEv@Base 5.9.0
  _ZN10KateBuffer7editEndEv@Base 5.9.0
@@ -55,6 +56,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor10MainWindow11hideViewBarEPNS_4ViewE@Base 5.9.0
  _ZN11KTextEditor10MainWindow11qt_metacallEN11QMetaObject4CallEiPPv@Base 5.9.0
  _ZN11KTextEditor10MainWindow11qt_metacastEPKc@Base 5.9.0
+ _ZN11KTextEditor10MainWindow11showMessageERK4QMapI7QString8QVariantE@Base 5.98.0
  _ZN11KTextEditor10MainWindow11showViewBarEPNS_4ViewE@Base 5.9.0
  _ZN11KTextEditor10MainWindow11viewChangedEPNS_4ViewE@Base 5.9.0
  _ZN11KTextEditor10MainWindow11viewCreatedEPNS_4ViewE@Base 5.9.0
@@ -76,6 +78,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor10MainWindow5viewsEv@Base 5.9.0
  _ZN11KTextEditor10MainWindow6windowEv@Base 5.9.0
  _ZN11KTextEditor10MainWindow7openUrlERK4QUrlRK7QString@Base 5.9.0
+ _ZN11KTextEditor10MainWindow9addWidgetEP7QWidget@Base 5.98.0
  _ZN11KTextEditor10MainWindow9closeViewEPNS_4ViewE@Base 5.9.0
  _ZN11KTextEditor10MainWindow9splitViewEN2Qt11OrientationE@Base 5.9.0
  _ZN11KTextEditor10MainWindowC1EP7QObject@Base 5.9.0
@@ -117,6 +120,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor11MovingRangeD2Ev@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate10capitalizeEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate10cursorLeftEv@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate10getEolMenuEv@Base 5.98.0
  _ZN11KTextEditor11ViewPrivate10iconBorderEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate10navigateUpEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate10paintEventEP11QPaintEvent@Base 5.9.0
@@ -124,6 +128,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor11ViewPrivate10scrollDownEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate10selectLineENS_6CursorE@Base 5.89.0
  _ZN11KTextEditor11ViewPrivate10selectWordENS_6CursorE@Base 5.89.0
+ _ZN11KTextEditor11ViewPrivate10setCursorsERK7QVectorINS_6CursorEE@Base 5.96.0
  _ZN11KTextEditor11ViewPrivate10unfoldLineEi@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate10updateViewEb@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate11cleanIndentEv@Base 5.9.0
@@ -136,14 +141,19 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor11ViewPrivate11setupLayoutEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate11shiftBottomEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate11shiftPageUpEv@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate11sortCursorsEv@Base 5.96.0
  _ZN11KTextEditor11ViewPrivate12bottomOfViewEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate12findPreviousEv@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate12formatIndentEv@Base 5.98.0
  _ZN11KTextEditor11ViewPrivate12lineSelectedEi@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate12navigateBackEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate12navigateDownEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate12navigateLeftEv@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate12newLineAboveEv@Base 5.93.0
+ _ZN11KTextEditor11ViewPrivate12newLineBelowEv@Base 5.93.0
+ _ZN11KTextEditor11ViewPrivate12paintCursorsEv@Base 5.96.0
  _ZN11KTextEditor11ViewPrivate12printPreviewEv@Base 5.9.0
- _ZN11KTextEditor11ViewPrivate12setInputModeENS_4View9InputModeE@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate12setInputModeENS_4View9InputModeEb@Base 5.93.0
  _ZN11KTextEditor11ViewPrivate12setSelectionERKNS_5RangeE@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate12setupActionsEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate12slotGotFocusEv@Base 5.9.0
@@ -161,6 +171,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor11ViewPrivate13messageWidgetEv@Base 5.42.0
  _ZN11KTextEditor11ViewPrivate13navigateRightEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate13setIconBorderEb@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate13setSelectionsERK7QVectorINS_5RangeEE@Base 5.96.0
  _ZN11KTextEditor11ViewPrivate13shiftPageDownEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate13shiftWordLeftEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate13slotHlChangedEv@Base 5.9.0
@@ -186,7 +197,6 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor11ViewPrivate14updateRangesInENS_9Attribute14ActivationTypeE@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate15abortCompletionEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate15clearHighlightsEv@Base 5.9.0
- _ZN11KTextEditor11ViewPrivate15currentTextLineEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate15deleteWordRightEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate15forceCompletionEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate15lineEndSelectedENS_6CursorE@Base 5.89.0
@@ -222,6 +232,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor11ViewPrivate16toggleIconBorderEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate17applyFoldingStateEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate17caretChangedRangeEPNS_4ViewE@Base 5.61.0
+ _ZN11KTextEditor11ViewPrivate17clearFoldingStateEv@Base 5.102.0
  _ZN11KTextEditor11ViewPrivate17completionAbortedEPNS_4ViewE@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate17dynWrapIndicatorsEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate17readSessionConfigERK12KConfigGroupRK4QSetI7QStringE@Base 5.9.0
@@ -233,6 +244,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor11ViewPrivate17swapWithClipboardEv@Base 5.78.0
  _ZN11KTextEditor11ViewPrivate17toMatchingBracketEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate17toggleDynWordWrapEv@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate18addSecondaryCursorERKNS_6CursorE@Base 5.98.0
  _ZN11KTextEditor11ViewPrivate18completionExecutedEPNS_4ViewERKNS_6CursorEPNS_19CodeCompletionModelERK11QModelIndex@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate18removeSelectedTextEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate18setAnnotationModelEPNS_15AnnotationModelE@Base 5.9.0
@@ -243,11 +255,14 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor11ViewPrivate19annotationActivatedEPNS_4ViewEi@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate19delayedUpdateOfViewEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate19displayRangeChangedEPS0_@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate19ensureUniqueCursorsEb@Base 5.93.0
  _ZN11KTextEditor11ViewPrivate19setFoldingMarkersOnEb@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate19setScrollBarMiniMapEb@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate19setSecondaryCursorsERK7QVectorINS_6CursorEE@Base 5.93.0
  _ZN11KTextEditor11ViewPrivate19toggleFoldingOfLineEi@Base 5.61.0
  _ZN11KTextEditor11ViewPrivate19toggleLineNumbersOnEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate19updateFoldingConfigEv@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate20addSecondaryCursorUpEv@Base 5.93.0
  _ZN11KTextEditor11ViewPrivate20findSelectedForwardsEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate20setDynWrapIndicatorsEi@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate20slotDocumentReloadedEv@Base 5.61.0
@@ -258,19 +273,23 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor11ViewPrivate20toggleScrollBarMarksEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate20updateDocumentConfigEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate20updateRendererConfigEv@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate21clearSecondaryCursorsEv@Base 5.93.0
  _ZN11KTextEditor11ViewPrivate21deactivateEditActionsEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate21exportHtmlToClipboardEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate21findSelectedBackwardsEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate21sendCompletionAbortedEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate21showSearchWrappedHintEb@Base 5.81.0
  _ZN11KTextEditor11ViewPrivate21slotFoldToplevelNodesEv@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate21toggleCamelCaseCursorEv@Base 5.93.0
  _ZN11KTextEditor11ViewPrivate21toggleFoldingsInRangeEi@Base 5.61.0
  _ZN11KTextEditor11ViewPrivate21userInvokedCompletionEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate22aboutToHideContextMenuEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate22aboutToShowContextMenuEv@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate22addSecondaryCursorDownEv@Base 5.93.0
  _ZN11KTextEditor11ViewPrivate22inlineNotesLineChangedEi@Base 5.50.0
  _ZN11KTextEditor11ViewPrivate22insertTemplateInternalENS_6CursorERK7QStringS4_@Base 5.89.0
  _ZN11KTextEditor11ViewPrivate22notifyAboutRangeChangeENS_9LineRangeEb@Base 5.79.0
+ _ZN11KTextEditor11ViewPrivate22removeSecondaryCursorsERKSt6vectorINS_6CursorESaIS2_EEb@Base 5.98.0
  _ZN11KTextEditor11ViewPrivate22sendCompletionExecutedENS_6CursorEPNS_19CodeCompletionModelERK11QModelIndex@Base 5.89.0
  _ZN11KTextEditor11ViewPrivate22setScrollBarMiniMapAllEb@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate22shiftToMatchingBracketEv@Base 5.9.0
@@ -282,6 +301,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor11ViewPrivate23setMouseTrackingEnabledEb@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate23slotDelayedUpdateOfViewEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate23slotExpandToplevelNodesEv@Base 5.27.0
+ _ZN11KTextEditor11ViewPrivate24clearSecondarySelectionsEv@Base 5.93.0
  _ZN11KTextEditor11ViewPrivate24registerTextHintProviderEPNS_16TextHintProviderE@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate24setScrollBarMiniMapWidthEi@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate24toggleOnTheFlySpellCheckEb@Base 5.9.0
@@ -292,18 +312,24 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor11ViewPrivate25slotToggleFoldingsInRangeEv@Base 5.61.0
  _ZN11KTextEditor11ViewPrivate25toggleScrollBarMiniMapAllEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate25unregisterCompletionModelEPNS_19CodeCompletionModelE@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate26findAllOccuruncesAndSelectEv@Base 5.93.0
+ _ZN11KTextEditor11ViewPrivate26findNextOccurunceAndSelectEv@Base 5.93.0
+ _ZN11KTextEditor11ViewPrivate26newSecondarySelectionRangeENS_5RangeE@Base 5.93.0
  _ZN11KTextEditor11ViewPrivate26notifyMousePositionChangedENS_6CursorE@Base 5.89.0
  _ZN11KTextEditor11ViewPrivate26registerInlineNoteProviderEPNS_18InlineNoteProviderE@Base 5.50.0
  _ZN11KTextEditor11ViewPrivate26setAnnotationBorderVisibleEb@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate26unregisterTextHintProviderEPNS_16TextHintProviderE@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate27goToPreviousEditingPositionEv@Base 5.9.0
- _ZN11KTextEditor11ViewPrivate27slotClipboardHistoryChangedEv@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate27removeCursorsFromEmptyLinesEv@Base 5.96.0
  _ZN11KTextEditor11ViewPrivate28unregisterInlineNoteProviderEPNS_18InlineNoteProviderE@Base 5.50.0
  _ZN11KTextEditor11ViewPrivate29selectionChangedForHighlightsEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate29setAnnotationUniformItemSizesEb@Base 5.53.0
  _ZN11KTextEditor11ViewPrivate29setAutomaticInvocationEnabledEb@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate29skipCurrentOccurunceSelectionEv@Base 5.98.0
  _ZN11KTextEditor11ViewPrivate2upEv@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate31createMultiCursorsFromSelectionEv@Base 5.93.0
  _ZN11KTextEditor11ViewPrivate31reflectOnTheFlySpellCheckStatusEb@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate32addSecondaryCursorsWithSelectionERK7QVectorINS0_20PlainSecondaryCursorEE@Base 5.93.0
  _ZN11KTextEditor11ViewPrivate32annotationContextMenuAboutToShowEPNS_4ViewEP5QMenui@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate33annotationBorderVisibilityChangedEPNS_4ViewEb@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate35setHorizontalScrollPositionInternalEi@Base 5.36.0
@@ -323,6 +349,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor11ViewPrivate6pageUpEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate6setEolEi@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate6tagAllEv@Base 5.9.0
+ _ZN11KTextEditor11ViewPrivate7alignOnEv@Base 5.98.0
  _ZN11KTextEditor11ViewPrivate7commentEv@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate7editEndEiib@Base 5.9.0
  _ZN11KTextEditor11ViewPrivate7gotoBarEv@Base 5.9.0
@@ -386,7 +413,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor13EditorPrivate12unitTestModeEv@Base 5.9.0
  _ZN11KTextEditor13EditorPrivate14createDocumentEP7QObject@Base 5.9.0
  _ZN11KTextEditor13EditorPrivate14deregisterViewEPNS_11ViewPrivateE@Base 5.9.0
- _ZN11KTextEditor13EditorPrivate15copyToClipboardERK7QString@Base 5.9.0
+ _ZN11KTextEditor13EditorPrivate15copyToClipboardERK7QStringS3_@Base 5.98.0
  _ZN11KTextEditor13EditorPrivate16registerDocumentEPNS_15DocumentPrivateE@Base 5.9.0
  _ZN11KTextEditor13EditorPrivate16staticMetaObjectE@Base 5.9.0
  _ZN11KTextEditor13EditorPrivate17emitConfigChangedEv@Base 5.79.0
@@ -398,6 +425,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor13EditorPrivate20triggerConfigChangedEv@Base 5.79.0
  _ZN11KTextEditor13EditorPrivate23clipboardHistoryChangedEv@Base 5.9.0
  _ZN11KTextEditor13EditorPrivate24variableExpansionManagerEv@Base 5.69.0
+ _ZN11KTextEditor13EditorPrivate26copyToMulticursorClipboardERK11QStringList@Base 5.93.0
  _ZN11KTextEditor13EditorPrivate30saveSearchReplaceHistoryModelsEv@Base 5.9.0
  _ZN11KTextEditor13EditorPrivate4selfEv@Base 5.9.0
  _ZN11KTextEditor13EditorPrivate6configEv@Base 5.50.0
@@ -441,6 +469,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor15DocumentPrivate10insertLineEiRK7QString@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate10insertTextERKNS_6CursorERK11QStringListb@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate10insertTextERKNS_6CursorERK7QStringb@Base 5.9.0
+ _ZN11KTextEditor15DocumentPrivate10multiPasteEPNS_11ViewPrivateERK11QStringList@Base 5.93.0
  _ZN11KTextEditor15DocumentPrivate10queryCloseEv@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate10rangeEmptyEPNS_11MovingRangeE@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate10removeLineEi@Base 5.9.0
@@ -492,6 +521,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor15DocumentPrivate13setDictionaryERK7QStringNS_5RangeEb@Base 5.90.0
  _ZN11KTextEditor15DocumentPrivate13setMarkPixmapENS_13MarkInterface9MarkTypesERK7QPixmap@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate13setWordWrapAtEj@Base 5.9.0
+ _ZN11KTextEditor15DocumentPrivate13skipAutoBraceE5QCharNS_6CursorE@Base 5.93.0
  _ZN11KTextEditor15DocumentPrivate13slotCompletedEv@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate13updateDocNameEv@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate13wrapParagraphEii@Base 5.61.0
@@ -503,6 +533,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor15DocumentPrivate14editRemoveLineEi@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate14editRemoveTextEiii@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate14editUnWrapLineEibi@Base 5.9.0
+ _ZN11KTextEditor15DocumentPrivate14getSaveFileUrlERK7QString@Base 5.93.0
  _ZN11KTextEditor15DocumentPrivate14inputMethodEndEv@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate14modifiedOnDiskEPNS_8DocumentEbNS_21ModificationInterface20ModifiedOnDiskReasonE@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate14newMovingRangeERKNS_5RangeE6QFlagsINS_11MovingRange14InsertBehaviorEENS5_13EmptyBehaviorE@Base 5.9.0
@@ -528,6 +559,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor15DocumentPrivate15transformCursorERNS_6CursorENS_12MovingCursor14InsertBehaviorExx@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate15transformCursorERiS1_NS_12MovingCursor14InsertBehaviorExx@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate16activateDirWatchERK7QString@Base 5.9.0
+ _ZN11KTextEditor15DocumentPrivate16commentSelectionENS_5RangeENS_6CursorEbNS0_11CommentTypeE@Base 5.98.0
  _ZN11KTextEditor15DocumentPrivate16createBackupFileEv@Base 5.26.0
  _ZN11KTextEditor15DocumentPrivate16decodeCharactersENS_5RangeER5QListI5QPairIiiEES6_@Base 5.90.0
  _ZN11KTextEditor15DocumentPrivate16inputMethodStartEv@Base 5.9.0
@@ -537,8 +569,10 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor15DocumentPrivate16slotAbortLoadingEv@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate16slotModOnHdDirtyERK7QString@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate16staticMetaObjectE@Base 5.9.0
+ _ZN11KTextEditor15DocumentPrivate16uniquifyDocNamesERKSt6vectorIPS0_SaIS2_EE@Base 5.93.0
  _ZN11KTextEditor15DocumentPrivate17aboutToRemoveTextENS_5RangeE@Base 5.90.0
  _ZN11KTextEditor15DocumentPrivate17autoReloadToggledEb@Base 5.61.0
+ _ZN11KTextEditor15DocumentPrivate17backspaceAtCursorEPNS_11ViewPrivateENS_6CursorE@Base 5.93.0
  _ZN11KTextEditor15DocumentPrivate17editLineUnWrappedEii@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate17internalHlChangedEv@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate17plainKateTextLineEi@Base 5.9.0
@@ -566,7 +600,6 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor15DocumentPrivate20clearEditingPosStackEv@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate20markToolTipRequestedEPNS_8DocumentENS_4MarkE6QPointRb@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate20refreshOnTheFlyCheckENS_5RangeE@Base 5.90.0
- _ZN11KTextEditor15DocumentPrivate20removeTrailingSpacesEv@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate20saveEditingPositionsENS_6CursorE@Base 5.89.0
  _ZN11KTextEditor15DocumentPrivate20setDefaultDictionaryERK7QString@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate20setUndoMergeAllEditsEb@Base 5.9.0
@@ -575,6 +608,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor15DocumentPrivate21handleMarkContextMenuEi6QPoint@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate21setDontChangeHlOnSaveEv@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate22annotationModelChangedEPNS_15AnnotationModelES2_@Base 5.9.0
+ _ZN11KTextEditor15DocumentPrivate22transformCursorOrRangeEPNS_11ViewPrivateENS_6CursorENS_5RangeENS0_13TextTransformE@Base 5.93.0
  _ZN11KTextEditor15DocumentPrivate23checkCursorForAutobraceEPNS_4ViewENS_6CursorE@Base 5.89.0
  _ZN11KTextEditor15DocumentPrivate23clearMisspellingForWordERK7QString@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate23dictionaryRangesPresentEb@Base 5.9.0
@@ -594,18 +628,19 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor15DocumentPrivate27replaceCharactersByEncodingENS_5RangeE@Base 5.90.0
  _ZN11KTextEditor15DocumentPrivate28onTheFlySpellCheckingEnabledEb@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate28showAndSetOpeningErrorAccessEv@Base 5.9.0
- _ZN11KTextEditor15DocumentPrivate30addStartLineCommentToSelectionEPNS_11ViewPrivateEi@Base 5.9.0
- _ZN11KTextEditor15DocumentPrivate30addStartStopCommentToSelectionEPNS_11ViewPrivateEi@Base 5.9.0
+ _ZN11KTextEditor15DocumentPrivate30addStartLineCommentToSelectionENS_5RangeEi@Base 5.93.0
+ _ZN11KTextEditor15DocumentPrivate30addStartStopCommentToSelectionENS_5RangeEbi@Base 5.93.0
  _ZN11KTextEditor15DocumentPrivate31addStartLineCommentToSingleLineEii@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate31addStartStopCommentToSingleLineEii@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate31openWithLineLengthLimitOverrideEv@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate32removeStartStopCommentFromRegionENS_6CursorES1_i@Base 5.89.0
  _ZN11KTextEditor15DocumentPrivate35aboutToDeleteMovingInterfaceContentEPNS_8DocumentE@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate35charactersSemiInteractivelyInsertedERKNS_6CursorERK7QString@Base 5.9.0
- _ZN11KTextEditor15DocumentPrivate35removeStartLineCommentFromSelectionEPNS_11ViewPrivateEi@Base 5.9.0
- _ZN11KTextEditor15DocumentPrivate35removeStartStopCommentFromSelectionEPNS_11ViewPrivateEi@Base 5.9.0
+ _ZN11KTextEditor15DocumentPrivate35removeStartLineCommentFromSelectionENS_5RangeEib@Base 5.93.0
+ _ZN11KTextEditor15DocumentPrivate35removeStartStopCommentFromSelectionENS_5RangeEi@Base 5.93.0
  _ZN11KTextEditor15DocumentPrivate36removeStartLineCommentFromSingleLineEii@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate36removeStartStopCommentFromSingleLineEii@Base 5.9.0
+ _ZN11KTextEditor15DocumentPrivate38removeTrailingSpacesAndAddNewLineAtEofEv@Base 5.93.0
  _ZN11KTextEditor15DocumentPrivate39aboutToInvalidateMovingInterfaceContentEPNS_8DocumentE@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate3delEPNS_11ViewPrivateENS_6CursorE@Base 5.89.0
  _ZN11KTextEditor15DocumentPrivate4markEi@Base 5.9.0
@@ -623,9 +658,10 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor15DocumentPrivate6widgetEv@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate7addMarkEij@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate7addViewEPNS_4ViewE@Base 5.9.0
- _ZN11KTextEditor15DocumentPrivate7commentEPNS_11ViewPrivateEjji@Base 5.9.0
+ _ZN11KTextEditor15DocumentPrivate7alignOnENS_5RangeERK7QStringb@Base 5.98.0
+ _ZN11KTextEditor15DocumentPrivate7commentEPNS_11ViewPrivateEjjNS0_11CommentTypeE@Base 5.98.0
  _ZN11KTextEditor15DocumentPrivate7editEndEv@Base 5.9.0
- _ZN11KTextEditor15DocumentPrivate7newLineEPNS_11ViewPrivateENS0_13NewLineIndentE@Base 5.61.0
+ _ZN11KTextEditor15DocumentPrivate7newLineEPNS_11ViewPrivateENS0_13NewLineIndentENS0_10NewLinePosE@Base 5.93.0
  _ZN11KTextEditor15DocumentPrivate7openUrlERK4QUrl@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate7setMarkEij@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate7setModeERK7QString@Base 5.9.0
@@ -639,7 +675,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor15DocumentPrivate8swapFileEv@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate8tagLinesENS_9LineRangeE@Base 5.79.0
  _ZN11KTextEditor15DocumentPrivate8wrapTextEii@Base 5.9.0
- _ZN11KTextEditor15DocumentPrivate9backspaceEPNS_11ViewPrivateENS_6CursorE@Base 5.89.0
+ _ZN11KTextEditor15DocumentPrivate9backspaceEPNS_11ViewPrivateE@Base 5.98.0
  _ZN11KTextEditor15DocumentPrivate9clearMarkEi@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate9editStartEv@Base 5.9.0
  _ZN11KTextEditor15DocumentPrivate9insertTabEPNS_11ViewPrivateENS_6CursorE@Base 5.89.0
@@ -761,12 +797,14 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor4View11qt_metacastEPKc@Base 5.9.0
  _ZN11KTextEditor4View12textInsertedEPS0_RKNS_6CursorERK7QString@Base 5.9.0
  _ZN11KTextEditor4View13configChangedEPS0_@Base 5.79.0
+ _ZN11KTextEditor4View13setSelectionsERK7QVectorINS_5RangeEE@Base 5.96.0
  _ZN11KTextEditor4View14insertTemplateERKNS_6CursorERK7QStringS6_@Base 5.9.0
  _ZN11KTextEditor4View15viewModeChangedEPS0_NS0_8ViewModeE@Base 5.9.0
  _ZN11KTextEditor4View16selectionChangedEPS0_@Base 5.9.0
  _ZN11KTextEditor4View16setViewInputModeENS0_9InputModeE@Base 5.54.0
  _ZN11KTextEditor4View16staticMetaObjectE@Base 5.9.0
  _ZN11KTextEditor4View17setScrollPositionERNS_6CursorE@Base 5.36.0
+ _ZN11KTextEditor4View18setCursorPositionsERK7QVectorINS_6CursorEE@Base 5.96.0
  _ZN11KTextEditor4View19setStatusBarEnabledEb@Base 5.9.0
  _ZN11KTextEditor4View20mousePositionChangedEPS0_RKNS_6CursorE@Base 5.9.0
  _ZN11KTextEditor4View20viewInputModeChangedEPS0_NS0_9InputModeE@Base 5.9.0
@@ -851,6 +889,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN11KTextEditor7MessageD0Ev@Base 5.9.0
  _ZN11KTextEditor7MessageD1Ev@Base 5.9.0
  _ZN11KTextEditor7MessageD2Ev@Base 5.9.0
+ _ZN11KTextEditor8Document11aboutToSaveEPS0_@Base 5.93.0
  _ZN11KTextEditor8Document11lineWrappedEPS0_RKNS_6CursorE@Base 5.9.0
  _ZN11KTextEditor8Document11modeChangedEPS0_@Base 5.9.0
  _ZN11KTextEditor8Document11qt_metacallEN11QMetaObject4CallEiPPv@Base 5.9.0
@@ -963,18 +1002,25 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN13KateSearchBarD0Ev@Base 5.9.0
  _ZN13KateSearchBarD1Ev@Base 5.9.0
  _ZN13KateSearchBarD2Ev@Base 5.9.0
+ _ZN14KateScriptView10searchTextERK8QJSValueRK7QStringb@Base 5.98.0
+ _ZN14KateScriptView10selectionsEv@Base 5.96.0
  _ZN14KateScriptView11qt_metacallEN11QMetaObject4CallEiPPv@Base 5.9.0
  _ZN14KateScriptView11qt_metacastEPKc@Base 5.9.0
  _ZN14KateScriptView12hasSelectionEv@Base 5.9.0
  _ZN14KateScriptView12selectedTextEv@Base 5.9.0
  _ZN14KateScriptView12setSelectionERK8QJSValue@Base 5.41.0
+ _ZN14KateScriptView13setSelectionsERK8QJSValue@Base 5.96.0
+ _ZN14KateScriptView14blockSelectionEv@Base 5.98.0
  _ZN14KateScriptView14clearSelectionEv@Base 5.9.0
  _ZN14KateScriptView14cursorPositionEv@Base 5.9.0
  _ZN14KateScriptView14executeCommandERK7QStringS2_RK8QJSValue@Base 5.50.0
+ _ZN14KateScriptView15cursorPositionsEv@Base 5.96.0
  _ZN14KateScriptView16staticMetaObjectE@Base 5.9.0
+ _ZN14KateScriptView17setBlockSelectionEb@Base 5.98.0
  _ZN14KateScriptView17setCursorPositionERK8QJSValue@Base 5.41.0
  _ZN14KateScriptView17setCursorPositionEii@Base 5.9.0
  _ZN14KateScriptView18removeSelectedTextEv@Base 5.9.0
+ _ZN14KateScriptView18setCursorPositionsERK8QJSValue@Base 5.96.0
  _ZN14KateScriptView21virtualCursorPositionEv@Base 5.9.0
  _ZN14KateScriptView24setVirtualCursorPositionERK8QJSValue@Base 5.41.0
  _ZN14KateScriptView24setVirtualCursorPositionEii@Base 5.9.0
@@ -983,6 +1029,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN14KateScriptView4viewEv@Base 5.9.0
  _ZN14KateScriptView5alignERK8QJSValue@Base 5.41.0
  _ZN14KateScriptView5pasteEv@Base 5.79.0
+ _ZN14KateScriptView7alignOnERK8QJSValueS2_@Base 5.98.0
  _ZN14KateScriptView7setViewEPN11KTextEditor11ViewPrivateE@Base 5.9.0
  _ZN14KateScriptView9selectAllEv@Base 5.9.0
  _ZN14KateScriptView9selectionEv@Base 5.9.0
@@ -1006,7 +1053,6 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN15KateUndoManager11qt_metacastEPKc@Base 5.9.0
  _ZN15KateUndoManager11setModifiedEb@Base 5.9.0
  _ZN15KateUndoManager11undoChangedEv@Base 5.9.0
- _ZN15KateUndoManager11viewCreatedEPN11KTextEditor8DocumentEPNS0_4ViewE@Base 5.9.0
  _ZN15KateUndoManager12updateConfigEv@Base 5.9.0
  _ZN15KateUndoManager13undoSafePointEv@Base 5.9.0
  _ZN15KateUndoManager14inputMethodEndEv@Base 5.9.0
@@ -1090,8 +1136,6 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN16KateRegExpSearch6searchERK7QStringN11KTextEditor5RangeEb6QFlagsIN18QRegularExpression13PatternOptionEE@Base 5.90.0
  _ZN16KateRegExpSearchC1EPKN11KTextEditor8DocumentE@Base 5.74.0
  _ZN16KateRegExpSearchC2EPKN11KTextEditor8DocumentE@Base 5.74.0
- _ZN16KateRegExpSearchD1Ev@Base 5.9.0
- _ZN16KateRegExpSearchD2Ev@Base 5.9.0
  _ZN16KateScriptEditor11qt_metacallEN11QMetaObject4CallEiPPv@Base 5.49.0
  _ZN16KateScriptEditor11qt_metacastEPKc@Base 5.49.0
  _ZN16KateScriptEditor16setClipboardTextERK7QString@Base 5.49.0
@@ -1126,7 +1170,8 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN16KateViewInternal12focusInEventEP11QFocusEvent@Base 5.88.0
  _ZN16KateViewInternal12scrollActionEi@Base 5.88.0
  _ZN16KateViewInternal12setSelectionEN11KTextEditor5RangeE@Base 5.90.0
- _ZN16KateViewInternal12updateCursorEN11KTextEditor6CursorEbbb@Base 5.89.0
+ _ZN16KateViewInternal12updateCursorEN11KTextEditor6CursorEbbbb@Base 5.102.0
+ _ZN16KateViewInternal13commitPreeditEv@Base 5.102.0
  _ZN16KateViewInternal13cursorTimeoutEv@Base 5.88.0
  _ZN16KateViewInternal13dragMoveEventEP14QDragMoveEvent@Base 5.88.0
  _ZN16KateViewInternal13dropEventPassEP10QDropEvent@Base 5.88.0
@@ -1135,6 +1180,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN16KateViewInternal13keyPressEventEP9QKeyEvent@Base 5.88.0
  _ZN16KateViewInternal13scrollColumnsEi@Base 5.88.0
  _ZN16KateViewInternal13scrollTimeoutEv@Base 5.88.0
+ _ZN16KateViewInternal14cursorForPointE6QPoint@Base 5.93.0
  _ZN16KateViewInternal14cursorNextCharEb@Base 5.88.0
  _ZN16KateViewInternal14cursorPrevCharEb@Base 5.88.0
  _ZN16KateViewInternal14dragEnterEventEP15QDragEnterEvent@Base 5.88.0
@@ -1149,6 +1195,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN16KateViewInternal14viewLineOffsetEN11KTextEditor6CursorEib@Base 5.89.0
  _ZN16KateViewInternal15beginSelectLineERK6QPoint@Base 5.88.0
  _ZN16KateViewInternal15keyReleaseEventEP9QKeyEvent@Base 5.88.0
+ _ZN16KateViewInternal15mergeSelectionsEv@Base 5.93.0
  _ZN16KateViewInternal15mousePressEventEP11QMouseEvent@Base 5.88.0
  _ZN16KateViewInternal15scrollViewLinesEi@Base 5.88.0
  _ZN16KateViewInternal15startDragScrollEv@Base 5.88.0
@@ -1162,6 +1209,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN16KateViewInternal16slotIncFontSizesEd@Base 5.88.0
  _ZN16KateViewInternal16staticMetaObjectE@Base 5.88.0
  _ZN16KateViewInternal16textHintsEnabledEv@Base 5.88.0
+ _ZN16KateViewInternal17isAcceptableInputEPK9QKeyEvent@Base 5.93.0
  _ZN16KateViewInternal17mouseReleaseEventEP11QMouseEvent@Base 5.88.0
  _ZN16KateViewInternal18scrollPrepareEventEP19QScrollPrepareEvent@Base 5.88.0
  _ZN16KateViewInternal18setAutoCenterLinesEib@Base 5.88.0
@@ -1170,21 +1218,25 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN16KateViewInternal18updateBracketMarksEv@Base 5.88.0
  _ZN16KateViewInternal19documentTextRemovedEPN11KTextEditor8DocumentENS0_5RangeERK7QString@Base 5.90.0
  _ZN16KateViewInternal19findMatchingBracketEv@Base 5.88.0
+ _ZN16KateViewInternal19moveCursorToLineEndEN11KTextEditor6CursorE@Base 5.93.0
  _ZN16KateViewInternal20documentTextInsertedEPN11KTextEditor8DocumentENS0_5RangeE@Base 5.90.0
  _ZN16KateViewInternal20viewSelectionChangedEv@Base 5.88.0
  _ZN16KateViewInternal21lineScrollingPossibleEv@Base 5.88.0
  _ZN16KateViewInternal21mouseDoubleClickEventEP11QMouseEvent@Base 5.88.0
+ _ZN16KateViewInternal21moveCursorToLineStartEN11KTextEditor6CursorE@Base 5.93.0
+ _ZN16KateViewInternal22updateSecondaryCursorsERK15QVarLengthArrayINS_10CursorPairELi16EEb@Base 5.93.0
  _ZN16KateViewInternal23columnScrollingPossibleEv@Base 5.88.0
  _ZN16KateViewInternal23cursorToMatchingBracketEb@Base 5.88.0
  _ZN16KateViewInternal23hideBracketMatchPreviewEv@Base 5.88.0
- _ZN16KateViewInternal23prepareForDynWrapChangeEv@Base 5.88.0
  _ZN16KateViewInternal23showBracketMatchPreviewEv@Base 5.88.0
  _ZN16KateViewInternal24registerTextHintProviderEPN11KTextEditor16TextHintProviderE@Base 5.88.0
+ _ZN16KateViewInternal24updateSecondarySelectionEiN11KTextEditor6CursorES1_@Base 5.93.0
  _ZN16KateViewInternal25findMatchingFoldingMarkerEN11KTextEditor6CursorEii@Base 5.89.0
- _ZN16KateViewInternal25moveCursorToSelectionEdgeEv@Base 5.88.0
+ _ZN16KateViewInternal25moveCursorToSelectionEdgeEb@Base 5.102.0
  _ZN16KateViewInternal26unregisterTextHintProviderEPN11KTextEditor16TextHintProviderE@Base 5.88.0
  _ZN16KateViewInternal27slotRegionVisibilityChangedEv@Base 5.88.0
  _ZN16KateViewInternal27updateBracketMarkAttributesEv@Base 5.88.0
+ _ZN16KateViewInternal28sendMouseEventToInputContextEP11QMouseEvent@Base 5.102.0
  _ZN16KateViewInternal30slotRegionBeginEndAddedRemovedEj@Base 5.88.0
  _ZN16KateViewInternal32updateFoldingMarkersHighlightingEv@Base 5.88.0
  _ZN16KateViewInternal3docEv@Base 5.88.0
@@ -1249,7 +1301,6 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN18KateDocumentConfig11writeConfigER12KConfigGroup@Base 5.9.0
  _ZN18KateDocumentConfig12updateConfigEv@Base 5.9.0
  _ZN18KateDocumentConfig8s_globalE@Base 5.9.0
- _ZN18KateDocumentConfig9eolStringEv@Base 5.9.0
  _ZN18KateDocumentConfigC1EPN11KTextEditor15DocumentPrivateE@Base 5.9.0
  _ZN18KateDocumentConfigC1Ev@Base 5.9.0
  _ZN18KateDocumentConfigC2EPN11KTextEditor15DocumentPrivateE@Base 5.9.0
@@ -1269,16 +1320,17 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN18KateRendererConfig18setBackgroundColorERK6QColor@Base 5.9.0
  _ZN18KateRendererConfig18setLineNumberColorERK6QColor@Base 5.9.0
  _ZN18KateRendererConfig20setModifiedLineColorERK6QColor@Base 5.9.0
+ _ZN18KateRendererConfig22animateBracketMatchingEv@Base 5.93.0
  _ZN18KateRendererConfig22setWordWrapMarkerColorERK6QColor@Base 5.9.0
  _ZN18KateRendererConfig23setHighlightedLineColorERK6QColor@Base 5.9.0
  _ZN18KateRendererConfig23setIndentationLineColorERK6QColor@Base 5.9.0
+ _ZN18KateRendererConfig23setLineHeightMultiplierEd@Base 5.93.0
  _ZN18KateRendererConfig23setSearchHighlightColorERK6QColor@Base 5.9.0
  _ZN18KateRendererConfig23setShowIndentationLinesEb@Base 5.9.0
  _ZN18KateRendererConfig24setReplaceHighlightColorERK6QColor@Base 5.9.0
  _ZN18KateRendererConfig25setAnimateBracketMatchingEb@Base 5.9.0
  _ZN18KateRendererConfig25setCurrentLineNumberColorERK6QColor@Base 5.9.0
  _ZN18KateRendererConfig26setHighlightedBracketColorERK6QColor@Base 5.9.0
- _ZN18KateRendererConfig27setFontWithDroppedStyleNameERK5QFont@Base 5.46.0
  _ZN18KateRendererConfig27setSpellingMistakeLineColorERK6QColor@Base 5.9.0
  _ZN18KateRendererConfig29setShowWholeBracketExpressionEb@Base 5.9.0
  _ZN18KateRendererConfig7setFontERK5QFont@Base 5.9.0
@@ -1412,42 +1464,34 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN18KateScriptDocumentC2EP9QJSEngineP7QObject@Base 5.41.0
  _ZN19KateCompletionModel10createItemERK24HierarchicalModelHandlerRK11QModelIndexb@Base 5.9.0
  _ZN19KateCompletionModel10debugStatsEv@Base 5.9.0
- _ZN19KateCompletionModel10fetchGroupEiRK7QStringb@Base 5.9.0
+ _ZN19KateCompletionModel10fetchGroupEib@Base 5.100.0
  _ZN19KateCompletionModel11clearGroupsEv@Base 5.9.0
  _ZN19KateCompletionModel11createItemsERK24HierarchicalModelHandlerRK11QModelIndexb@Base 5.9.0
  _ZN19KateCompletionModel11deleteItemsERK11QModelIndex@Base 5.9.0
  _ZN19KateCompletionModel11expandIndexERK11QModelIndex@Base 5.9.0
  _ZN19KateCompletionModel11qt_metacallEN11QMetaObject4CallEiPPv@Base 5.9.0
  _ZN19KateCompletionModel11qt_metacastEPKc@Base 5.9.0
- _ZN19KateCompletionModel11rowSelectedERK11QModelIndex@Base 5.9.0
  _ZN19KateCompletionModel12createGroupsEv@Base 5.9.0
+ _ZN19KateCompletionModel12modelRowPairERK11QModelIndex@Base 5.93.0
  _ZN19KateCompletionModel14slotModelResetEv@Base 5.9.0
  _ZN19KateCompletionModel15hideOrShowGroupEPNS_5GroupEb@Base 5.9.0
- _ZN19KateCompletionModel15setColumnMergesERK5QListIS0_IiEE@Base 5.9.0
  _ZN19KateCompletionModel15slotRowsRemovedERK11QModelIndexii@Base 5.9.0
  _ZN19KateCompletionModel16slotRowsInsertedERK11QModelIndexii@Base 5.9.0
  _ZN19KateCompletionModel16staticMetaObjectE@Base 5.9.0
- _ZN19KateCompletionModel17changeCompletionsEPNS_5GroupENS_11changeTypesEb@Base 5.9.0
- _ZN19KateCompletionModel17setGroupingMethodE6QFlagsINS_2gmEE@Base 5.9.0
+ _ZN19KateCompletionModel17changeCompletionsEPNS_5GroupE@Base 5.100.0
  _ZN19KateCompletionModel17updateBestMatchesEv@Base 5.9.0
  _ZN19KateCompletionModel18addCompletionModelEPN11KTextEditor19CodeCompletionModelE@Base 5.9.0
  _ZN19KateCompletionModel18setCompletionModelEPN11KTextEditor19CodeCompletionModelE@Base 5.9.0
- _ZN19KateCompletionModel18setGroupingEnabledEb@Base 5.9.0
- _ZN19KateCompletionModel19matchesAbbreviationERK7QStringS2_N2Qt15CaseSensitivityE@Base 5.61.0
+ _ZN19KateCompletionModel19matchesAbbreviationERK7QStringS2_Ri@Base 5.93.0
  _ZN19KateCompletionModel19setCompletionModelsERK5QListIPN11KTextEditor19CodeCompletionModelEE@Base 5.9.0
  _ZN19KateCompletionModel20argumentHintsChangedEv@Base 5.9.0
  _ZN19KateCompletionModel20makeGroupItemsUniqueEb@Base 5.9.0
- _ZN19KateCompletionModel20setCurrentCompletionEPN11KTextEditor19CodeCompletionModelERK7QString@Base 5.9.0
+ _ZN19KateCompletionModel20setCurrentCompletionE4QMapIPN11KTextEditor19CodeCompletionModelE7QStringE@Base 5.100.0
  _ZN19KateCompletionModel21clearCompletionModelsEv@Base 5.9.0
  _ZN19KateCompletionModel21removeCompletionModelEPN11KTextEditor19CodeCompletionModelE@Base 5.9.0
- _ZN19KateCompletionModel21setAccessIncludeConstEb@Base 5.9.0
- _ZN19KateCompletionModel22setAccessIncludeStaticEb@Base 5.9.0
- _ZN19KateCompletionModel23setColumnMergingEnabledEb@Base 5.9.0
- _ZN19KateCompletionModel26setAccessIncludeSignalSlotEb@Base 5.9.0
  _ZN19KateCompletionModel4Item5matchEv@Base 5.9.0
  _ZN19KateCompletionModel4ItemC1EbPS_RK24HierarchicalModelHandler5QPairIPN11KTextEditor19CodeCompletionModelE11QModelIndexE@Base 5.9.0
  _ZN19KateCompletionModel4ItemC2EbPS_RK24HierarchicalModelHandler5QPairIPN11KTextEditor19CodeCompletionModelE11QModelIndexE@Base 5.9.0
- _ZN19KateCompletionModel4sortEiN2Qt9SortOrderE@Base 5.9.0
  _ZN19KateCompletionModel5Group10removeItemERK5QPairIPN11KTextEditor19CodeCompletionModelE11QModelIndexE@Base 5.9.0
  _ZN19KateCompletionModel5Group5clearEv@Base 5.9.0
  _ZN19KateCompletionModel5Group6resortEv@Base 5.9.0
@@ -1455,6 +1499,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN19KateCompletionModel5GroupC1ERK7QStringiPS_@Base 5.13.0
  _ZN19KateCompletionModel5GroupC2ERK7QStringiPS_@Base 5.13.0
  _ZN19KateCompletionModel6resortEv@Base 5.9.0
+ _ZN19KateCompletionModel9countBitsEi@Base 5.93.0
  _ZN19KateCompletionModelC1EP20KateCompletionWidget@Base 5.9.0
  _ZN19KateCompletionModelC2EP20KateCompletionWidget@Base 5.9.0
  _ZN19KateCompletionModelD0Ev@Base 5.9.0
@@ -1463,13 +1508,12 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN19KatePlainTextSearch6searchERK7QStringN11KTextEditor5RangeEb@Base 5.90.0
  _ZN19KatePlainTextSearchC1EPKN11KTextEditor8DocumentEN2Qt15CaseSensitivityEb@Base 5.11.0
  _ZN19KatePlainTextSearchC2EPKN11KTextEditor8DocumentEN2Qt15CaseSensitivityEb@Base 5.11.0
- _ZN19KatePlainTextSearchD1Ev@Base 5.9.0
- _ZN19KatePlainTextSearchD2Ev@Base 5.9.0
  _ZN20KateCompletionWidget10cursorDownEv@Base 5.9.0
  _ZN20KateCompletionWidget10insertTextERKN11KTextEditor6CursorERK7QString@Base 5.9.0
  _ZN20KateCompletionWidget10modelResetEv@Base 5.9.0
  _ZN20KateCompletionWidget10navigateUpEv@Base 5.9.0
  _ZN20KateCompletionWidget10removeTextERKN11KTextEditor5RangeE@Base 5.9.0
+ _ZN20KateCompletionWidget10showDocTipERK11QModelIndex@Base 5.93.0
  _ZN20KateCompletionWidget10switchListEv@Base 5.9.0
  _ZN20KateCompletionWidget10unwrapLineEi@Base 5.9.0
  _ZN20KateCompletionWidget11eventFilterEP7QObjectP6QEvent@Base 5.9.0
@@ -1484,10 +1528,10 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN20KateCompletionWidget12viewFocusOutEv@Base 5.9.0
  _ZN20KateCompletionWidget13focusOutEventEP11QFocusEvent@Base 5.22.0
  _ZN20KateCompletionWidget13navigateRightEv@Base 5.9.0
+ _ZN20KateCompletionWidget13tabCompletionENS_9DirectionE@Base 5.100.0
  _ZN20KateCompletionWidget13updateAndShowEv@Base 5.9.0
  _ZN20KateCompletionWidget14modelDestroyedEP7QObject@Base 5.9.0
  _ZN20KateCompletionWidget14navigateAcceptEv@Base 5.9.0
- _ZN20KateCompletionWidget14toggleExpandedEbb@Base 5.9.0
  _ZN20KateCompletionWidget14updatePositionEb@Base 5.9.0
  _ZN20KateCompletionWidget15abortCompletionEv@Base 5.9.0
  _ZN20KateCompletionWidget15startCompletionEN11KTextEditor19CodeCompletionModel14InvocationTypeERK5QListIPS1_E@Base 5.9.0
@@ -1495,22 +1539,19 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN20KateCompletionWidget15startCompletionEN11KTextEditor5RangeERK5QListIPNS0_19CodeCompletionModelEENS3_14InvocationTypeE@Base 5.90.0
  _ZN20KateCompletionWidget16staticMetaObjectE@Base 5.9.0
  _ZN20KateCompletionWidget17waitForModelResetEv@Base 5.9.0
- _ZN20KateCompletionWidget18resetHadNavigationEv@Base 5.9.0
- _ZN20KateCompletionWidget18updatePositionSlotEv@Base 5.9.0
  _ZN20KateCompletionWidget19automaticInvocationEv@Base 5.9.0
  _ZN20KateCompletionWidget19modelContentChangedEv@Base 5.9.0
+ _ZN20KateCompletionWidget19toggleDocumentationEv@Base 5.93.0
  _ZN20KateCompletionWidget20argumentHintsChangedEb@Base 5.9.0
  _ZN20KateCompletionWidget20completionModelResetEv@Base 5.9.0
  _ZN20KateCompletionWidget21currentEmbeddedWidgetEv@Base 5.9.0
  _ZN20KateCompletionWidget21cursorPositionChangedEv@Base 5.9.0
  _ZN20KateCompletionWidget21userInvokedCompletionEv@Base 5.9.0
  _ZN20KateCompletionWidget22deleteCompletionRangesEv@Base 5.9.0
- _ZN20KateCompletionWidget22setCurrentItemExpandedEb@Base 5.9.0
  _ZN20KateCompletionWidget23registerCompletionModelEPN11KTextEditor19CodeCompletionModelE@Base 5.9.0
  _ZN20KateCompletionWidget25unregisterCompletionModelEPN11KTextEditor19CodeCompletionModelE@Base 5.9.0
  _ZN20KateCompletionWidget26updateArgumentHintGeometryEv@Base 5.9.0
  _ZN20KateCompletionWidget27setAutomaticInvocationDelayEi@Base 5.9.0
- _ZN20KateCompletionWidget3tabEb@Base 5.9.0
  _ZN20KateCompletionWidget3topEv@Base 5.9.0
  _ZN20KateCompletionWidget5clearEv@Base 5.9.0
  _ZN20KateCompletionWidget5modelEv@Base 5.9.0
@@ -1531,6 +1572,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN21KateAbstractInputMode15scrollViewLinesEi@Base 5.9.0
  _ZN21KateAbstractInputModeC1EP16KateViewInternal@Base 5.9.0
  _ZN21KateAbstractInputModeC2EP16KateViewInternal@Base 5.9.0
+ _ZN23KateWordCompletionModel10allMatchesEPN11KTextEditor4ViewERKNS0_5RangeE@Base 5.93.0
  _ZN23KateWordCompletionModel11qt_metacallEN11QMetaObject4CallEiPPv@Base 5.9.0
  _ZN23KateWordCompletionModel11qt_metacastEPKc@Base 5.9.0
  _ZN23KateWordCompletionModel11saveMatchesEPN11KTextEditor4ViewERKNS0_5RangeE@Base 5.9.0
@@ -1612,6 +1654,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN4Kate11TextFolding29updateFoldedRangesForNewRangeEPNS0_12FoldingRangeE@Base 5.9.0
  _ZN4Kate11TextFolding33updateFoldedRangesForRemovedRangeEPNS0_12FoldingRangeE@Base 5.9.0
  _ZN4Kate11TextFolding5clearEv@Base 5.9.0
+ _ZN4Kate11TextFolding7editEndEiiSt8functionIFbiEE@Base 5.102.0
  _ZN4Kate11TextFolding9debugDumpERK7QVectorIPNS0_12FoldingRangeEEb@Base 5.9.0
  _ZN4Kate11TextFolding9foldRangeEx@Base 5.9.0
  _ZN4Kate11TextFoldingC1ERNS_10TextBufferE@Base 5.9.0
@@ -1645,12 +1688,6 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN4Kate12ScriptHelper7_i18ncpERK7QStringS3_S3_i@Base 5.41.0
  _ZN4Kate12ScriptHelper7requireERK7QString@Base 5.41.0
  _ZN4Kate12TextLineData12addAttributeERKNS0_9AttributeE@Base 5.9.0
- _ZN4Kate12TextLineDataC1ERK7QString@Base 5.9.0
- _ZN4Kate12TextLineDataC1Ev@Base 5.9.0
- _ZN4Kate12TextLineDataC2ERK7QString@Base 5.9.0
- _ZN4Kate12TextLineDataC2Ev@Base 5.9.0
- _ZN4Kate12TextLineDataD1Ev@Base 5.9.0
- _ZN4Kate12TextLineDataD2Ev@Base 5.9.0
  _ZN4Kate6Script8readFileERK7QStringRS1_@Base 5.9.0
  _ZN4Kate9TextBlock10appendLineERK7QString@Base 5.9.0
  _ZN4Kate9TextBlock10clearLinesEv@Base 5.9.0
@@ -1689,6 +1726,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  (optional=templinst)_ZN5QTest8toStringIN11KTextEditor6CursorEEEPcRKT_@Base 5.9.0
  _ZN5QTest8toStringIN11KTextEditor9LineRangeEEEPcRKT_@Base 5.79.0
  _ZN6KateVi11GlobalState10readConfigEPK7KConfig@Base 5.9.0
+ _ZN6KateVi11GlobalState6configEv@Base 5.93.0
  _ZN6KateVi11GlobalStateC1Ev@Base 5.9.0
  _ZN6KateVi11GlobalStateC2Ev@Base 5.9.0
  _ZN6KateVi11GlobalStateD1Ev@Base 5.9.0
@@ -1799,7 +1837,6 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN6KateVi12NormalViMode18commandReplayMacroEv@Base 5.9.0
  _ZN6KateVi12NormalViMode18executeKateCommandERK7QString@Base 5.9.0
  _ZN6KateVi12NormalViMode18findParagraphStartEv@Base 5.9.0
- _ZN6KateVi12NormalViMode18initializeCommandsEv@Base 5.9.0
  _ZN6KateVi12NormalViMode18motionHalfPageDownEv@Base 5.9.0
  _ZN6KateVi12NormalViMode18motionRepeatlastTFEv@Base 5.9.0
  _ZN6KateVi12NormalViMode18motionWORDBackwardEv@Base 5.9.0
@@ -1837,6 +1874,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN6KateVi12NormalViMode21commandSubstituteCharEv@Base 5.9.0
  _ZN6KateVi12NormalViMode21commandSubstituteLineEv@Base 5.9.0
  _ZN6KateVi12NormalViMode21commandSwitchToUpViewEv@Base 5.9.0
+ _ZN6KateVi12NormalViMode21cursorPosAtEndOfPasteEN11KTextEditor6CursorERK7QString@Base 5.93.0
  _ZN6KateVi12NormalViMode21motionToEndOfPrevWORDEv@Base 5.9.0
  _ZN6KateVi12NormalViMode21motionToEndOfPrevWordEv@Base 5.9.0
  _ZN6KateVi12NormalViMode22commandChangeCaseRangeEv@Base 5.9.0
@@ -1916,6 +1954,8 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN6KateVi12NormalViMode47commandEnterInsertModeBeforeFirstNonBlankInLineEv@Base 5.9.0
  _ZN6KateVi12NormalViMode5pasteENS0_13PasteLocationEbb@Base 5.9.0
  _ZN6KateVi12NormalViMode5resetEv@Base 5.9.0
+ _ZN6KateVi12NormalViMode7motionsEv@Base 5.94.0
+ _ZN6KateVi12NormalViMode8commandsEv@Base 5.94.0
  _ZN6KateVi12NormalViMode8motionUpEv@Base 5.9.0
  _ZN6KateVi12NormalViMode9undoEndedEv@Base 5.9.0
  _ZN6KateVi12NormalViModeC1EPNS_16InputModeManagerEPN11KTextEditor11ViewPrivateEP16KateViewInternal@Base 5.9.0
@@ -1976,7 +2016,6 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN6KateVi18EmulatedCommandBar42createAndInitExitStatusMessageDisplayTimerEv@Base 5.25.0
  _ZN6KateVi18EmulatedCommandBar4initENS0_4ModeERK7QString@Base 5.9.0
  _ZN6KateVi18EmulatedCommandBar6closedEv@Base 5.9.0
- _ZN6KateVi18EmulatedCommandBar8isActiveEv@Base 5.9.0
  _ZN6KateVi18EmulatedCommandBarC1EP15KateViInputModePNS_16InputModeManagerEP7QWidget@Base 5.25.0
  _ZN6KateVi18EmulatedCommandBarC2EP15KateViInputModePNS_16InputModeManagerEP7QWidget@Base 5.25.0
  _ZN6KateVi18EmulatedCommandBarD0Ev@Base 5.9.0
@@ -1996,16 +2035,17 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN6KateVi5RangeC2Ev@Base 5.9.0
  _ZN6KateVi6Macros10readConfigERK12KConfigGroup@Base 5.9.0
  _ZN6KateVi6Macros20readMacroCompletionsERK5QCharRK11QStringListi@Base 5.9.0
+ _ZN6KateVi6Macros30encodeMacroCompletionForConfigERKNS_10CompletionE@Base 5.93.0
  _ZN6KateVi6Macros31decodeMacroCompletionFromConfigERK7QString@Base 5.9.0
  _ZN6KateVi6Macros5clearEv@Base 5.9.0
- _ZN6KateVi6Macros5storeERK5QCharRK5QListI9QKeyEventERKS4_INS_10CompletionEE@Base 5.9.0
+ _ZN6KateVi6Macros5storeERK5QCharRK5QListINS_8KeyEventEERKS4_INS_10CompletionEE@Base 5.93.0
  _ZN6KateVi6Macros6removeERK5QChar@Base 5.9.0
  _ZN6KateVi6MacrosC1Ev@Base 5.9.0
  _ZN6KateVi6MacrosC2Ev@Base 5.9.0
  _ZN6KateVi6MacrosD1Ev@Base 5.9.0
  _ZN6KateVi6MacrosD2Ev@Base 5.9.0
- _ZN6KateVi6MotionC1EPNS_12NormalViModeERK7QStringMS1_FNS_5RangeEvEj@Base 5.9.0
- _ZN6KateVi6MotionC2EPNS_12NormalViModeERK7QStringMS1_FNS_5RangeEvEj@Base 5.9.0
+ _ZN6KateVi6MotionC1ERK7QStringMNS_12NormalViModeEFNS_5RangeEvEj@Base 5.94.0
+ _ZN6KateVi6MotionC2ERK7QStringMNS_12NormalViModeEFNS_5RangeEvEj@Base 5.94.0
  _ZN6KateVi7History5clearEv@Base 5.25.0
  _ZN6KateVi7History6appendERK7QString@Base 5.25.0
  _ZN6KateVi8Mappings10readConfigERK12KConfigGroup@Base 5.9.0
@@ -2036,6 +2076,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN6KateVi8ModeBase19startVisualLineModeEv@Base 5.9.0
  _ZN6KateVi8ModeBase20startVisualBlockModeEv@Base 5.9.0
  _ZN6KateVi8ModeBase22addToNumberUnderCursorEi@Base 5.9.0
+ _ZN6KateVi8ModeBase22getCharAtVirtualColumnERK7QStringii@Base 5.93.0
  _ZN6KateVi8ModeBase5errorERK7QString@Base 5.9.0
  _ZN6KateVi8ModeBase7goToPosERKNS_5RangeE@Base 5.9.0
  _ZN6KateVi8ModeBase7messageERK7QString@Base 5.9.0
@@ -2046,16 +2087,15 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZN6KateVi9KeyMapper14handleKeypressE5QChar@Base 5.9.0
  _ZN6KateVi9KeyMapper16staticMetaObjectE@Base 5.9.0
  _ZN6KateVi9KeyMapper17setMappingTimeoutEi@Base 5.9.0
- _ZN6KateVi9KeyMapper18isExecutingMappingEv@Base 5.9.0
  _ZN6KateVi9KeyMapper19mappingTimerTimeOutEv@Base 5.9.0
  _ZN6KateVi9KeyMapper20playBackRejectedKeysEv@Base 5.9.0
  _ZN6KateVi9KeyMapper23setDoNotMapNextKeypressEv@Base 5.9.0
- _ZN6KateVi9KeyMapper25isPlayingBackRejectedKeysEv@Base 5.9.0
  _ZN6KateVi9KeyMapperC1EPNS_16InputModeManagerEPN11KTextEditor15DocumentPrivateEPNS3_11ViewPrivateE@Base 5.9.0
  _ZN6KateVi9KeyMapperC2EPNS_16InputModeManagerEPN11KTextEditor15DocumentPrivateEPNS3_11ViewPrivateE@Base 5.9.0
  _ZN6KateVi9KeyParser10m_instanceE@Base 5.9.0
  _ZN6KateVi9KeyParser13initKeyTablesEv@Base 5.9.0
  _ZN6KateVi9KeyParser15KeyEventToQCharERK9QKeyEvent@Base 5.9.0
+ _ZN6KateVi9KeyParser15KeyEventToQCharERKNS_8KeyEventE@Base 5.93.0
  _ZN6KateVi9KeyParser4selfEv@Base 5.9.0
  _ZN6KateVi9KeyParserC1Ev@Base 5.9.0
  _ZN6KateVi9KeyParserC2Ev@Base 5.9.0
@@ -2094,6 +2134,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK11KTextEditor11ViewPrivate11contextMenuEv@Base 5.9.0
  _ZNK11KTextEditor11ViewPrivate11inlineNotesEi@Base 5.50.0
  _ZNK11KTextEditor11ViewPrivate13bottomViewBarEv@Base 5.9.0
+ _ZNK11KTextEditor11ViewPrivate13hasSelectionsEv@Base 5.98.0
  _ZNK11KTextEditor11ViewPrivate13selectionTextEv@Base 5.9.0
  _ZNK11KTextEditor11ViewPrivate13textHintDelayEv@Base 5.9.0
  _ZNK11KTextEditor11ViewPrivate13viewInputModeEv@Base 5.9.0
@@ -2104,8 +2145,10 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK11KTextEditor11ViewPrivate14selectionRangeEv@Base 5.9.0
  _ZNK11KTextEditor11ViewPrivate15annotationModelEv@Base 5.9.0
  _ZNK11KTextEditor11ViewPrivate15isOverwriteModeEv@Base 5.9.0
+ _ZNK11KTextEditor11ViewPrivate15selectionRangesEv@Base 5.96.0
  _ZNK11KTextEditor11ViewPrivate16completionWidgetEv@Base 5.9.0
  _ZNK11KTextEditor11ViewPrivate16currentInputModeEv@Base 5.9.0
+ _ZNK11KTextEditor11ViewPrivate16secondaryCursorsEv@Base 5.93.0
  _ZNK11KTextEditor11ViewPrivate18cursorToCoordinateERKNS_6CursorE@Base 5.9.0
  _ZNK11KTextEditor11ViewPrivate18defaultContextMenuEP5QMenu@Base 5.9.0
  _ZNK11KTextEditor11ViewPrivate18isCompletionActiveEv@Base 5.9.0
@@ -2117,7 +2160,9 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK11KTextEditor11ViewPrivate20textAreaRectInternalEv@Base 5.36.0
  _ZNK11KTextEditor11ViewPrivate21cursorPositionVirtualEv@Base 5.9.0
  _ZNK11KTextEditor11ViewPrivate21defaultStyleAttributeENS_12DefaultStyleE@Base 5.9.0
+ _ZNK11KTextEditor11ViewPrivate21plainSecondaryCursorsEv@Base 5.93.0
  _ZNK11KTextEditor11ViewPrivate22annotationItemDelegateEv@Base 5.53.0
+ _ZNK11KTextEditor11ViewPrivate23isMulticursorNotAllowedEv@Base 5.93.0
  _ZNK11KTextEditor11ViewPrivate25cursorPositionCoordinatesEv@Base 5.9.0
  _ZNK11KTextEditor11ViewPrivate25isAnnotationBorderVisibleEv@Base 5.9.0
  _ZNK11KTextEditor11ViewPrivate25lastDisplayedLineInternalENS_4View8LineTypeE@Base 5.36.0
@@ -2128,8 +2173,10 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK11KTextEditor11ViewPrivate28isAutomaticInvocationEnabledEv@Base 5.9.0
  _ZNK11KTextEditor11ViewPrivate4copyEv@Base 5.9.0
  _ZNK11KTextEditor11ViewPrivate6getEolEv@Base 5.9.0
+ _ZNK11KTextEditor11ViewPrivate7cursorsEv@Base 5.96.0
  _ZNK11KTextEditor11ViewPrivate8documentEv@Base 5.9.0
  _ZNK11KTextEditor11ViewPrivate8viewModeEv@Base 5.9.0
+ _ZNK11KTextEditor11ViewPrivate9isLineRTLEi@Base 5.93.0
  _ZNK11KTextEditor11ViewPrivate9selectionEv@Base 5.9.0
  _ZNK11KTextEditor12MovingCursor11atEndOfLineEv@Base 5.9.0
  _ZNK11KTextEditor12MovingCursor13atStartOfLineEv@Base 5.9.0
@@ -2139,6 +2186,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK11KTextEditor13EditorPrivate11commandListEv@Base 5.9.0
  _ZNK11KTextEditor13EditorPrivate11configPagesEv@Base 5.9.0
  _ZNK11KTextEditor13EditorPrivate12queryCommandERK7QString@Base 5.9.0
+ _ZNK11KTextEditor13EditorPrivate20multicursorClipboardEv@Base 5.93.0
  _ZNK11KTextEditor13EditorPrivate8commandsEv@Base 5.9.0
  _ZNK11KTextEditor14DocumentCursor11atEndOfLineEv@Base 5.9.0
  _ZNK11KTextEditor14DocumentCursor13atStartOfLineEv@Base 5.9.0
@@ -2216,6 +2264,8 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK11KTextEditor38CodeCompletionModelControllerInterface29shouldHideItemsWithEqualNamesEv@Base 5.9.0
  _ZNK11KTextEditor4View10metaObjectEv@Base 5.9.0
  _ZNK11KTextEditor4View12textAreaRectEv@Base 5.36.0
+ _ZNK11KTextEditor4View15cursorPositionsEv@Base 5.96.0
+ _ZNK11KTextEditor4View15selectionRangesEv@Base 5.96.0
  _ZNK11KTextEditor4View17lastDisplayedLineENS0_8LineTypeE@Base 5.36.0
  _ZNK11KTextEditor4View17maxScrollPositionEv@Base 5.36.0
  _ZNK11KTextEditor4View18firstDisplayedLineENS0_8LineTypeE@Base 5.36.0
@@ -2259,7 +2309,8 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK11KTextEditor9Attribute4nameEv@Base 5.9.0
  _ZNK11KTextEditor9Attribute7outlineEv@Base 5.9.0
  _ZNK11KTextEditor9Attribute8fontBoldEv@Base 5.9.0
- (optional=templinst|arch=amd64 arm64 hppa x32)_ZNK12KConfigGroup9readEntryI5QFontEET_PKcRKS2_@Base 5.9.0
+ (optional=templinst|arch=!amd64 !arm64 !x32)_ZNK12KConfigGroup9readEntryI10QByteArrayEET_PKcRKS2_@Base 5.90.0
+ (optional=templinst)_ZNK12KConfigGroup9readEntryI5QFontEET_PKcRKS2_@Base 5.9.0
  (optional=templinst)_ZNK12KConfigGroup9readEntryI6QColorEET_PKcRKS2_@Base 5.9.0
  (optional=templinst)_ZNK12KConfigGroup9readEntryIbEE5QListIT_EPKcRKS3_@Base 5.9.0
  (optional=templinst)_ZNK12KConfigGroup9readEntryIbEET_PKcRKS1_@Base 5.9.0
@@ -2279,6 +2330,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK15KateModeManager13mimeTypesFindERK7QString@Base 5.86.0
  _ZNK15KateModeManager13wildcardsFindERK7QString@Base 5.86.0
  _ZNK15KateUndoManager10metaObjectEv@Base 5.9.0
+ _ZNK15KateUndoManager11viewCreatedEPN11KTextEditor8DocumentEPNS0_4ViewE@Base 5.93.0
  _ZNK15KateUndoManager14lastRedoCursorEv@Base 5.9.0
  _ZNK15KateUndoManager9redoCountEv@Base 5.9.0
  _ZNK15KateUndoManager9undoCountEv@Base 5.9.0
@@ -2295,21 +2347,19 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK16KateScriptEditor13clipboardTextEv@Base 5.49.0
  _ZNK16KateScriptEditor16clipboardHistoryEv@Base 5.49.0
  _ZNK16KateViewInternal10metaObjectEv@Base 5.88.0
- _ZNK16KateViewInternal10nextLayoutEv@Base 5.88.0
+ _ZNK16KateViewInternal10nextLayoutEN11KTextEditor6CursorE@Base 5.93.0
  _ZNK16KateViewInternal11attributeAtEN11KTextEditor6CursorE@Base 5.89.0
  _ZNK16KateViewInternal12inlineNoteAtERK6QPoint@Base 5.88.0
  _ZNK16KateViewInternal12toRealCursorEN11KTextEditor6CursorE@Base 5.89.0
- _ZNK16KateViewInternal13currentLayoutEv@Base 5.88.0
+ _ZNK16KateViewInternal13currentLayoutEN11KTextEditor6CursorE@Base 5.93.0
  _ZNK16KateViewInternal13textHintDelayEv@Base 5.88.0
  _ZNK16KateViewInternal14inlineNoteRectERK18KateInlineNoteData@Base 5.88.0
  _ZNK16KateViewInternal14linesDisplayedEv@Base 5.88.0
- _ZNK16KateViewInternal14previousLayoutEv@Base 5.88.0
- _ZNK16KateViewInternal15isUserSelectingEv@Base 5.88.0
+ _ZNK16KateViewInternal14previousLayoutEN11KTextEditor6CursorE@Base 5.93.0
  _ZNK16KateViewInternal15toVirtualCursorEN11KTextEditor6CursorE@Base 5.89.0
  _ZNK16KateViewInternal16inputMethodQueryEN2Qt16InputMethodQueryE@Base 5.88.0
  _ZNK16KateViewInternal16rangeAffectsViewEN11KTextEditor5RangeEb@Base 5.90.0
  _ZNK16KateViewInternal17cursorCoordinatesEb@Base 5.88.0
- _ZNK16KateViewInternal17isAcceptableInputEPK9QKeyEvent@Base 5.88.0
  _ZNK16KateViewInternal17yToKateTextLayoutEi@Base 5.88.0
  _ZNK16KateViewInternal18cursorToCoordinateEN11KTextEditor6CursorEbb@Base 5.89.0
  _ZNK16KateViewInternal19coordinatesToCursorERK6QPointb@Base 5.88.0
@@ -2323,6 +2373,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK17KateMessageWidget4textEv@Base 5.9.0
  _ZNK18KateCommandLineBar10metaObjectEv@Base 5.9.0
  _ZNK18KateDocumentConfig5codecEv@Base 5.9.0
+ _ZNK18KateDocumentConfig9eolStringEv@Base 5.93.0
  _ZNK18KateRendererConfig12foldingColorEv@Base 5.9.0
  _ZNK18KateRendererConfig12iconBarColorEv@Base 5.9.0
  _ZNK18KateRendererConfig14savedLineColorEv@Base 5.9.0
@@ -2340,7 +2391,6 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK18KateRendererConfig20searchHighlightColorEv@Base 5.9.0
  _ZNK18KateRendererConfig20showIndentationLinesEv@Base 5.9.0
  _ZNK18KateRendererConfig21replaceHighlightColorEv@Base 5.9.0
- _ZNK18KateRendererConfig22animateBracketMatchingEv@Base 5.9.0
  _ZNK18KateRendererConfig22currentLineNumberColorEv@Base 5.9.0
  _ZNK18KateRendererConfig23highlightedBracketColorEv@Base 5.9.0
  _ZNK18KateRendererConfig23templateBackgroundColorEv@Base 5.9.0
@@ -2358,29 +2408,20 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK19KateCompletionModel11indexForRowEPNS_5GroupEi@Base 5.9.0
  _ZNK19KateCompletionModel11indexIsItemERK11QModelIndex@Base 5.9.0
  _ZNK19KateCompletionModel11mapToSourceERK11QModelIndex@Base 5.9.0
- _ZNK19KateCompletionModel12columnMergesEv@Base 5.9.0
+ _ZNK19KateCompletionModel11rowSelectedERK11QModelIndex@Base 5.93.0
  _ZNK19KateCompletionModel12commonPrefixE11QModelIndex@Base 5.9.0
- _ZNK19KateCompletionModel12modelRowPairERK11QModelIndex@Base 5.9.0
  _ZNK19KateCompletionModel13groupForIndexERK11QModelIndex@Base 5.9.0
  _ZNK19KateCompletionModel13indexForGroupEPNS_5GroupE@Base 5.9.0
  _ZNK19KateCompletionModel13mapFromSourceERK11QModelIndex@Base 5.9.0
- _ZNK19KateCompletionModel14groupingMethodEv@Base 5.9.0
  _ZNK19KateCompletionModel15translateColumnEi@Base 5.9.0
  _ZNK19KateCompletionModel16completionModelsEv@Base 5.9.0
  _ZNK19KateCompletionModel17currentCompletionEPN11KTextEditor19CodeCompletionModelE@Base 5.9.0
  _ZNK19KateCompletionModel17filteredItemCountEv@Base 5.9.0
- _ZNK19KateCompletionModel17isGroupingEnabledEv@Base 5.9.0
- _ZNK19KateCompletionModel18accessIncludeConstEv@Base 5.9.0
  _ZNK19KateCompletionModel18groupingAttributesEi@Base 5.9.0
  _ZNK19KateCompletionModel18hasCompletionModelEv@Base 5.9.0
- _ZNK19KateCompletionModel19accessIncludeStaticEv@Base 5.9.0
  _ZNK19KateCompletionModel19contextMatchQualityERK11QModelIndex@Base 5.9.0
  _ZNK19KateCompletionModel19contextMatchQualityERK5QPairIPN11KTextEditor19CodeCompletionModelE11QModelIndexE@Base 5.9.0
  _ZNK19KateCompletionModel20commonPrefixInternalERK7QString@Base 5.9.0
- _ZNK19KateCompletionModel20matchCaseSensitivityEv@Base 5.9.0
- _ZNK19KateCompletionModel22isColumnMergingEnabledEv@Base 5.9.0
- _ZNK19KateCompletionModel23accessIncludeSignalSlotEv@Base 5.9.0
- _ZNK19KateCompletionModel25exactMatchCaseSensitivityEv@Base 5.61.0
  _ZNK19KateCompletionModel29shouldMatchHideCompletionListEv@Base 5.9.0
  _ZNK19KateCompletionModel4Item7isValidEv@Base 5.9.0
  _ZNK19KateCompletionModel4Item9isVisibleEv@Base 5.9.0
@@ -2397,20 +2438,17 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK19KateCompletionModel8hasIndexEiiRK11QModelIndex@Base 5.9.0
  _ZNK19KateCompletionModel8rowCountERK11QModelIndex@Base 5.9.0
  _ZNK19KateCompletionModel8treeViewEv@Base 5.9.0
- _ZNK19KateCompletionModel9countBitsEi@Base 5.9.0
  _ZNK19KateCompletionModel9hasGroupsEv@Base 5.9.0
  _ZNK20KateCompletionWidget10metaObjectEv@Base 5.9.0
  _ZNK20KateCompletionWidget10tailStringEv@Base 5.89.0
- _ZNK20KateCompletionWidget13hadNavigationEv@Base 5.9.0
  _ZNK20KateCompletionWidget13selectedIndexEv@Base 5.9.0
  _ZNK20KateCompletionWidget15completionRangeEPN11KTextEditor19CodeCompletionModelE@Base 5.9.0
  _ZNK20KateCompletionWidget16argumentHintTreeEv@Base 5.9.0
  _ZNK20KateCompletionWidget16completionRangesEv@Base 5.9.0
  _ZNK20KateCompletionWidget17argumentHintModelEv@Base 5.9.0
  _ZNK20KateCompletionWidget18isCompletionActiveEv@Base 5.9.0
- _ZNK20KateCompletionWidget20canExpandCurrentItemEv@Base 5.9.0
  _ZNK20KateCompletionWidget20codeCompletionModelsEv@Base 5.74.0
- _ZNK20KateCompletionWidget22canCollapseCurrentItemEv@Base 5.9.0
+ _ZNK20KateCompletionWidget22setIgnoreBufferSignalsEb@Base 5.100.0
  _ZNK20KateCompletionWidget24automaticInvocationDelayEv@Base 5.9.0
  _ZNK20KateCompletionWidget27isCompletionModelRegisteredEPN11KTextEditor19CodeCompletionModelE@Base 5.11.0
  _ZNK20KateCompletionWidget4viewEv@Base 5.9.0
@@ -2418,7 +2456,6 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK20KateCompletionWidget8treeViewEv@Base 5.9.0
  _ZNK21KateAbstractInputMode11layoutCacheEv@Base 5.9.0
  _ZNK21KateAbstractInputMode14linesDisplayedEv@Base 5.9.0
- _ZNK23KateWordCompletionModel10allMatchesEPN11KTextEditor4ViewERKNS0_5RangeE@Base 5.9.0
  _ZNK23KateWordCompletionModel10metaObjectEv@Base 5.9.0
  _ZNK23KateWordCompletionModel21executeCompletionItemEPN11KTextEditor4ViewERKNS0_5RangeERK11QModelIndex@Base 5.9.0
  _ZNK23KateWordCompletionModel29shouldHideItemsWithEqualNamesEv@Base 5.9.0
@@ -2470,14 +2507,12 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK4Kate9TextRange15insertBehaviorsEv@Base 5.9.0
  _ZNK4Kate9TextRange8documentEv@Base 5.9.0
  _ZNK6KateVi11GlobalState11writeConfigEP7KConfig@Base 5.9.0
- _ZNK6KateVi11GlobalState6configEv@Base 5.9.0
  _ZNK6KateVi12InsertViMode10metaObjectEv@Base 5.9.0
  _ZNK6KateVi12NormalViMode10metaObjectEv@Base 5.9.0
  _ZNK6KateVi12NormalViMode13reformatLinesEjj@Base 5.9.0
  _ZNK6KateVi12NormalViMode15textObjectCommaEb@Base 5.9.0
  _ZNK6KateVi12NormalViMode16getFirstNonBlankEi@Base 5.9.0
  _ZNK6KateVi12NormalViMode16getOperationModeEv@Base 5.9.0
- _ZNK6KateVi12NormalViMode21cursorPosAtEndOfPasteEN11KTextEditor6CursorERK7QString@Base 5.89.0
  _ZNK6KateVi12NormalViMode23shrinkRangeAroundCursorERNS_5RangeERKS1_@Base 5.9.0
  _ZNK6KateVi12NormalViMode25generateMatchingItemRegexEv@Base 5.9.0
  _ZNK6KateVi12NormalViMode9joinLinesEjj@Base 5.9.0
@@ -2492,12 +2527,12 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK6KateVi16InputModeManager23getCurrentViModeHandlerEv@Base 5.9.0
  _ZNK6KateVi16InputModeManager4viewEv@Base 5.9.0
  _ZNK6KateVi18EmulatedCommandBar10metaObjectEv@Base 5.9.0
+ _ZNK6KateVi18EmulatedCommandBar8isActiveEv@Base 5.93.0
  _ZNK6KateVi5Range13toEditorRangeEv@Base 5.9.0
  _ZNK6KateVi6Macros11writeConfigER12KConfigGroup@Base 5.9.0
  _ZNK6KateVi6Macros14getCompletionsERK5QChar@Base 5.9.0
- _ZNK6KateVi6Macros30encodeMacroCompletionForConfigERKNS_10CompletionE@Base 5.9.0
  _ZNK6KateVi6Macros3getERK5QChar@Base 5.9.0
- _ZNK6KateVi6Motion7executeEv@Base 5.9.0
+ _ZNK6KateVi6Motion7executeEPNS_12NormalViModeE@Base 5.94.0
  _ZNK6KateVi8Mappings11isRecursiveENS0_11MappingModeERK7QString@Base 5.9.0
  _ZNK6KateVi8Mappings11writeConfigER12KConfigGroup@Base 5.9.0
  _ZNK6KateVi8Mappings13writeMappingsER12KConfigGroupRK7QStringNS0_11MappingModeE@Base 5.9.0
@@ -2523,7 +2558,6 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK6KateVi8ModeBase18getCharUnderCursorEv@Base 5.9.0
  _ZNK6KateVi8ModeBase18getWordUnderCursorEv@Base 5.9.0
  _ZNK6KateVi8ModeBase21findSurroundingQuotesERK5QCharb@Base 5.9.0
- _ZNK6KateVi8ModeBase22getCharAtVirtualColumnERK7QStringii@Base 5.9.0
  _ZNK6KateVi8ModeBase23findSurroundingBracketsERK5QCharS3_bS3_S3_@Base 5.9.0
  _ZNK6KateVi8ModeBase23getWordRangeUnderCursorEv@Base 5.9.0
  _ZNK6KateVi8ModeBase25findLineStartingWitchCharERK5QCharib@Base 5.16.0
@@ -2531,7 +2565,10 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK6KateVi8ModeBase8getCountEv@Base 5.9.0
  _ZNK6KateVi8ModeBase8getRangeERNS_5RangeENS_13OperationModeE@Base 5.9.0
  _ZNK6KateVi9KeyMapper10metaObjectEv@Base 5.9.0
+ _ZNK6KateVi9KeyMapper18isExecutingMappingEv@Base 5.93.0
+ _ZNK6KateVi9KeyMapper25isPlayingBackRejectedKeysEv@Base 5.93.0
  _ZNK6KateVi9KeyParser10encoded2qtERK7QString@Base 5.9.0
+ _ZNK6KateVi9KeyParser15KeyEventToQCharEiRK7QString6QFlagsIN2Qt16KeyboardModifierEE@Base 5.93.0
  _ZNK6KateVi9KeyParser17decodeKeySequenceERK7QString@Base 5.9.0
  _ZNK6KateVi9KeyParser17encodeKeySequenceERK7QString@Base 5.9.0
  _ZNK6KateVi9KeyParser5qt2viEi@Base 5.9.0
@@ -2540,39 +2577,54 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZNK7KateCmd11fromHistoryEi@Base 5.9.0
  _ZNK7KateCmd12queryCommandERK7QString@Base 5.9.0
  _ZNK7KateCmd8commandsEv@Base 5.9.0
- (optional=templinst|subst)_ZNSt10_HashtableItSt4pairIKtsESaIS2_ENSt8__detail10_Select1stESt8equal_toItESt4hashItENS4_18_Mod_range_hashingENS4_20_Default_ranged_hashENS4_20_Prime_rehash_policyENS4_17_Hashtable_traitsILb0ELb0ELb1EEEE21_M_insert_unique_nodeEmmPNS4_10_Hash_nodeIS2_Lb0EEE{size_t}@Base 5.87.0
- _ZNSt6vectorI7QStringSaIS0_EE17_M_realloc_insertIJRKS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_@Base 5.84.0
+ (optional=templinst|subst)_ZNSt10_HashtableItSt4pairIKtsESaIS2_ENSt8__detail10_Select1stESt8equal_toItESt4hashItENS4_18_Mod_range_hashingENS4_20_Default_ranged_hashENS4_20_Prime_rehash_policyENS4_17_Hashtable_traitsILb0ELb0ELb1EEEE21_M_insert_unique_nodeE{size_t}{size_t}PNS4_10_Hash_nodeIS2_Lb0EEE{size_t}@Base 5.87.0
+ (optional=templinst|subst)_ZNSt17_Temporary_bufferIN9__gnu_cxx17__normal_iteratorIPN19KateCompletionModel4ItemESt6vectorIS3_SaIS3_EEEES3_EC1ES8_{ssize_t}@Base 5.102.0
+ (optional=templinst|subst)_ZNSt17_Temporary_bufferIN9__gnu_cxx17__normal_iteratorIPN19KateCompletionModel4ItemESt6vectorIS3_SaIS3_EEEES3_EC2ES8_{ssize_t}@Base 5.102.0
+ (optional=templinst)_ZNSt6vectorI7QStringSaIS0_EE17_M_realloc_insertIJRKS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_@Base 5.84.0
+ (optional=templinst)_ZNSt6vectorI7QStringSaIS0_EE17_M_realloc_insertIJS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_@Base 5.93.0
+ (optional=templinst)_ZNSt6vectorIN11KTextEditor11ViewPrivate15SecondaryCursorESaIS2_EE17_M_realloc_insertIJS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 5.93.0
+ (optional=templinst|arch=!i386 !mipsel !powerpc !ppc64 !s390x)_ZNSt6vectorIN11KTextEditor11ViewPrivate15SecondaryCursorESaIS2_EE8_M_eraseEN9__gnu_cxx17__normal_iteratorIPS2_S4_EES8_@Base 5.94.0
  (optional=templinst)_ZNSt6vectorIN11KTextEditor5RangeESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.54.0
- (optional=templinst|arch=!alpha !amd64 !arm64 !mips64el !ppc64 !ppc64el !riscv64 !s390x)_ZNSt6vectorIN19KSyntaxHighlighting6FormatESaIS1_EE17_M_default_appendEj@Base 5.51.0
- (optional=templinst|arch=alpha amd64 arm64 mips64el ppc64 ppc64el riscv64 s390x)_ZNSt6vectorIN19KSyntaxHighlighting6FormatESaIS1_EE17_M_default_appendEm@Base 5.50.0
+ (optional=templinst)_ZNSt6vectorIN11KTextEditor6CursorESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.93.0
+ (optional=templinst|arch-bits=32)_ZNSt6vectorIN19KSyntaxHighlighting6FormatESaIS1_EE17_M_default_appendEj@Base 5.51.0
+ (optional=templinst|arch-bits=64)_ZNSt6vectorIN19KSyntaxHighlighting6FormatESaIS1_EE17_M_default_appendEm@Base 5.50.0
  (optional=templinst)_ZNSt6vectorIN19KSyntaxHighlighting6FormatESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.50.0
- _ZNSt6vectorIN19KateCompletionModel4ItemESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.84.0
- _ZNSt6vectorIN19KateCompletionModel4ItemESaIS1_EE17_M_realloc_insertIJS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.84.0
- _ZNSt6vectorIN19KateCompletionModel4ItemESaIS1_EE6insertEN9__gnu_cxx17__normal_iteratorIPKS1_S3_EERS6_@Base 5.84.0
- (arch-bits=32)_ZNSt6vectorIN19KateCompletionModel4ItemESaIS1_EE7reserveEj@Base 5.84.0
- (arch-bits=64)_ZNSt6vectorIN19KateCompletionModel4ItemESaIS1_EE7reserveEm@Base 5.84.0
+ (optional=templinst)_ZNSt6vectorIN19KateCompletionModel4ItemESaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.84.0
+ (optional=templinst)_ZNSt6vectorIN19KateCompletionModel4ItemESaIS1_EE17_M_realloc_insertIJS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.84.0
+ (optional=templinst|arch=!i386 !mipsel !powerpc !ppc64 !s390x)_ZNSt6vectorIN19KateCompletionModel4ItemESaIS1_EE6insertEN9__gnu_cxx17__normal_iteratorIPKS1_S3_EERS6_@Base 5.94.0
+ (optional=templinst|arch-bits=32)_ZNSt6vectorIN19KateCompletionModel4ItemESaIS1_EE7reserveEj@Base 5.84.0
+ (optional=templinst|arch-bits=64)_ZNSt6vectorIN19KateCompletionModel4ItemESaIS1_EE7reserveEm@Base 5.84.0
  (optional=templinst)_ZNSt6vectorIN4Kate11TextHistory5EntryESaIS2_EE17_M_realloc_insertIJRKS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 5.54.0
  (optional=templinst)_ZNSt6vectorIN4Kate11TextHistory5EntryESaIS2_EE17_M_realloc_insertIJS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 5.54.0
- (optional=templinst|arch=armel armhf i386 mipsel powerpc)_ZNSt6vectorIN4Kate12TextLineData7FoldingESaIS2_EE17_M_realloc_insertIJRiS6_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 5.78.0
- (optional=templinst|arch=armel armhf i386 mipsel powerpc)_ZNSt6vectorIN6KateVi6MotionESaIS1_EE17_M_realloc_insertIJPNS0_12NormalViModeE7QStringMNS0_8ModeBaseEFNS0_5RangeEvENS0_12CommandFlagsEEEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.87.0-1~np2
- (optional=templinst|arch=armel armhf i386 mipsel powerpc)_ZNSt6vectorIN6KateVi6MotionESaIS1_EE17_M_realloc_insertIJPNS0_12NormalViModeE7QStringMS5_FNS0_5RangeEvENS0_12CommandFlagsEEEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.87.0-1~np2
- (optional=templinst|arch=armel armhf i386 mipsel powerpc)_ZNSt6vectorIN6KateVi6MotionESaIS1_EE17_M_realloc_insertIJPNS0_12NormalViModeE7QStringMS5_FNS0_5RangeEvEiEEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.87.0-1~np2
- (optional=templinst|arch=armel armhf i386 mipsel powerpc)_ZNSt6vectorIN6KateVi6MotionESaIS1_EE17_M_realloc_insertIJPNS0_12VisualViModeE7QStringMNS0_12NormalViModeEFNS0_5RangeEvENS0_12CommandFlagsEEEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.87.0-1~np2
- (optional=templinst|arch=armel armhf i386 mipsel powerpc)_ZNSt6vectorIN6KateVi6MotionESaIS1_EE17_M_realloc_insertIJPNS0_12VisualViModeE7QStringMNS0_12NormalViModeEFNS0_5RangeEvEiEEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.87.0-1~np2
- (optional=templinst|arch=armel armhf i386 mipsel powerpc)_ZNSt6vectorIN6KateVi6MotionESaIS1_EE17_M_realloc_insertIJPNS0_12VisualViModeE7QStringMNS0_8ModeBaseEFNS0_5RangeEvENS0_12CommandFlagsEEEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.87.0-1~np2
- _ZNSt6vectorIP7QActionSaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.83.0
- (subst)_ZNSt6vectorIPN4Kate9TextBlockESaIS2_EE17_M_default_appendE{size_t}@Base 5.79.0
- _ZNSt6vectorIPN4Kate9TextBlockESaIS2_EE17_M_realloc_insertIJRKS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 5.79.0
- _ZNSt6vectorIPN4Kate9TextRangeESaIS2_EE17_M_realloc_insertIJRKS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 5.79.0
- (subst)_ZNSt6vectorIPN4Kate9TextRangeESaIS2_EE7reserveE{size_t}@Base 5.79.0
- (subst)_ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EE{size_t}RKi@Base 5.83.0
+ (optional=templinst|arch=armel armhf hppa hurd-i386 i386 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sh4)_ZNSt6vectorIN4Kate12TextLineData7FoldingESaIS2_EE17_M_realloc_insertIJRiS6_S6_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 5.90.0
+ (optional=templinst)_ZNSt6vectorIP7QActionSaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.83.0
+ (optional=templinst)_ZNSt6vectorIP7QWidgetSaIS1_EE17_M_realloc_insertIJRKS1_EEEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EEDpOT_@Base 5.93.0
+ (optional=templinst)_ZNSt6vectorIPN11KTextEditor11ViewPrivateESaIS2_EE17_M_realloc_insertIJRKS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 5.94.0
+ (optional=templinst)_ZNSt6vectorIPN11KTextEditor15DocumentPrivateESaIS2_EE17_M_realloc_insertIJRKS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 5.93.0
+ (optional=templinst)_ZNSt6vectorIPN11KTextEditor15DocumentPrivateESaIS2_EE17_M_realloc_insertIJS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 5.93.0
+ (optional=templinst|subst)_ZNSt6vectorIPN4Kate9TextBlockESaIS2_EE17_M_default_appendE{size_t}@Base 5.79.0
+ (optional=templinst)_ZNSt6vectorIPN4Kate9TextBlockESaIS2_EE17_M_realloc_insertIJRKS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 5.79.0
+ (optional=templinst)_ZNSt6vectorIPN4Kate9TextRangeESaIS2_EE17_M_realloc_insertIJRKS2_EEEvN9__gnu_cxx17__normal_iteratorIPS2_S4_EEDpOT_@Base 5.79.0
+ (optional=templinst|subst)_ZNSt6vectorIPN4Kate9TextRangeESaIS2_EE7reserveE{size_t}@Base 5.79.0
+ (optional=templinst|subst)_ZNSt6vectorISt10shared_ptrIN4Kate12TextLineDataEESaIS3_EE17_M_default_appendE{size_t}@Base 5.101.0
+ (optional=templinst)_ZNSt6vectorISt10shared_ptrIN4Kate12TextLineDataEESaIS3_EE17_M_realloc_insertIJRKS3_EEEvN9__gnu_cxx17__normal_iteratorIPS3_S5_EEDpOT_@Base 5.101.0
+ (optional=templinst)_ZNSt6vectorISt10shared_ptrIN4Kate12TextLineDataEESaIS3_EE17_M_realloc_insertIJS3_EEEvN9__gnu_cxx17__normal_iteratorIPS3_S5_EEDpOT_@Base 5.101.0
+ (optional=templinst|subst)_ZNSt6vectorISt10shared_ptrIN4Kate12TextLineDataEESaIS3_EE7reserveE{size_t}@Base 5.101.0
+ (optional=templinst|arch=!i386 !mipsel !powerpc !ppc64 !s390x)_ZNSt6vectorISt10shared_ptrIN4Kate12TextLineDataEESaIS3_EE8_M_eraseEN9__gnu_cxx17__normal_iteratorIPS3_S5_EE@Base 5.101.0
+ (optional=templinst|subst)_ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EE{size_t}RKi@Base 5.83.0
  (optional=templinst)_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJRKiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_@Base 5.61.0
+ (optional=templinst)_ZNSt6vectorIiSaIiEE17_M_realloc_insertIJiEEEvN9__gnu_cxx17__normal_iteratorIPiS1_EEDpOT_@Base 5.93.0
+ (optional=templinst|subst)_ZNSt6vectorIiSaIiEE7reserveE{size_t}@Base 5.93.0
  (optional=templinst)_ZNSt8_Rb_treeI7QStringSt4pairIKS0_S0_ESt10_Select1stIS3_ESt4lessIS0_ESaIS3_EE11equal_rangeERS2_@Base 5.83.0
- _ZNSt8_Rb_treeI7QStringSt4pairIKS0_S0_ESt10_Select1stIS3_ESt4lessIS0_ESaIS3_EE24_M_get_insert_unique_posERS2_@Base 5.83.0
- _ZNSt8_Rb_treeI7QStringSt4pairIKS0_S0_ESt10_Select1stIS3_ESt4lessIS0_ESaIS3_EE29_M_get_insert_hint_unique_posESt23_Rb_tree_const_iteratorIS3_ERS2_@Base 5.83.0
- _ZNSt8_Rb_treeI7QStringSt4pairIKS0_S0_ESt10_Select1stIS3_ESt4lessIS0_ESaIS3_EE8_M_eraseEPSt13_Rb_tree_nodeIS3_E@Base 5.84.0
- (optional=templinst)_ZNSt8_Rb_treeIiSt4pairIKiN10KateConfig11ConfigEntryEESt10_Select1stIS4_ESt4lessIiESaIS4_EE17_M_emplace_uniqueIJRS1_RKS3_EEES0_ISt17_Rb_tree_iteratorIS4_EbEDpOT_@Base 5.74.0
+ (optional=templinst)_ZNSt8_Rb_treeI7QStringSt4pairIKS0_S0_ESt10_Select1stIS3_ESt4lessIS0_ESaIS3_EE24_M_get_insert_unique_posERS2_@Base 5.83.0
+ (optional=templinst)_ZNSt8_Rb_treeI7QStringSt4pairIKS0_S0_ESt10_Select1stIS3_ESt4lessIS0_ESaIS3_EE29_M_get_insert_hint_unique_posESt23_Rb_tree_const_iteratorIS3_ERS2_@Base 5.83.0
+ (optional=templinst)_ZNSt8_Rb_treeIPN19KateCompletionModel5GroupES2_St9_IdentityIS2_ESt4lessIS2_ESaIS2_EE16_M_insert_uniqueIRKS2_EESt4pairISt17_Rb_tree_iteratorIS2_EbEOT_@Base 5.94.0
+ (optional=templinst)_ZNSt8_Rb_treeIPN19KateCompletionModel5GroupES2_St9_IdentityIS2_ESt4lessIS2_ESaIS2_EE16_M_insert_uniqueIS2_EESt4pairISt17_Rb_tree_iteratorIS2_EbEOT_@Base 5.94.0
+ (optional=templinst)_ZNSt8_Rb_treeIPN19KateCompletionModel5GroupES2_St9_IdentityIS2_ESt4lessIS2_ESaIS2_EE24_M_get_insert_unique_posERKS2_@Base 5.94.0
+ (optional=templinst)_ZNSt8_Rb_treeIiSt4pairIKiN10KateConfig11ConfigEntryEESt10_Select1stIS4_ESt4lessIiESaIS4_EE22_M_emplace_hint_uniqueIJRS1_RKS3_EEESt17_Rb_tree_iteratorIS4_ESt23_Rb_tree_const_iteratorIS4_EDpOT_@Base 5.94.0
+ (optional=templinst|arch=amd64 arm64 armel armhf hppa mips64el ppc64el riscv64 sh4 x32)_ZNSt8_Rb_treeIiSt4pairIKiN10KateConfig11ConfigEntryEESt10_Select1stIS4_ESt4lessIiESaIS4_EE22_M_emplace_hint_uniqueIJRS1_RS3_EEESt17_Rb_tree_iteratorIS4_ESt23_Rb_tree_const_iteratorIS4_EDpOT_@Base 5.94.0
  (optional=templinst)_ZNSt8_Rb_treeIiSt4pairIKiN10KateConfig11ConfigEntryEESt10_Select1stIS4_ESt4lessIiESaIS4_EE24_M_get_insert_unique_posERS1_@Base 5.61.0
+ (optional=templinst)_ZNSt8_Rb_treeIiSt4pairIKiN10KateConfig11ConfigEntryEESt10_Select1stIS4_ESt4lessIiESaIS4_EE29_M_get_insert_hint_unique_posESt23_Rb_tree_const_iteratorIS4_ERS1_@Base 5.94.0
  _ZTI10KateBuffer@Base 5.9.0
  _ZTI10KateConfig@Base 5.61.0
  _ZTI11QSharedData@Base 5.9.0
@@ -2638,8 +2690,19 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZTIN6KateVi12InsertViModeE@Base 5.9.0
  _ZTIN6KateVi12NormalViModeE@Base 5.9.0
  _ZTIN6KateVi18EmulatedCommandBarE@Base 5.9.0
+ _ZTIN6KateVi6MotionE@Base 5.94.0
  _ZTIN6KateVi8ModeBaseE@Base 5.9.0
  _ZTIN6KateVi9KeyMapperE@Base 5.9.0
+ (arch=armel riscv64)_ZTIN9__gnu_cxx7__mutexE@Base 5.101.0
+ (arch=armel riscv64)_ZTISt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE1EE@Base 5.101.0
+ (arch=!armel !riscv64)_ZTISt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE2EE@Base 5.101.0
+ (arch=armel riscv64)_ZTISt15_Sp_counted_ptrIPN4Kate12TextLineDataELN9__gnu_cxx12_Lock_policyE1EE@Base 5.101.0
+ (arch=!armel !riscv64)_ZTISt15_Sp_counted_ptrIPN4Kate12TextLineDataELN9__gnu_cxx12_Lock_policyE2EE@Base 5.101.0
+ (arch=armel riscv64)_ZTISt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE1EE@Base 5.101.0
+ (arch=!armel !riscv64)_ZTISt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE@Base 5.101.0
+ (arch=armel armhf)_ZTISt19_Sp_make_shared_tag@Base 5.101.0
+ (arch=armel riscv64)_ZTISt23_Sp_counted_ptr_inplaceIN4Kate12TextLineDataESaIvELN9__gnu_cxx12_Lock_policyE1EE@Base 5.101.0
+ (arch=!armel !riscv64)_ZTISt23_Sp_counted_ptr_inplaceIN4Kate12TextLineDataESaIvELN9__gnu_cxx12_Lock_policyE2EE@Base 5.101.0
  _ZTS10KateBuffer@Base 5.9.0
  _ZTS10KateConfig@Base 5.61.0
  _ZTS11QSharedData@Base 5.9.0
@@ -2705,8 +2768,19 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZTSN6KateVi12InsertViModeE@Base 5.9.0
  _ZTSN6KateVi12NormalViModeE@Base 5.9.0
  _ZTSN6KateVi18EmulatedCommandBarE@Base 5.9.0
+ _ZTSN6KateVi6MotionE@Base 5.94.0
  _ZTSN6KateVi8ModeBaseE@Base 5.9.0
  _ZTSN6KateVi9KeyMapperE@Base 5.9.0
+ (arch=armel riscv64)_ZTSN9__gnu_cxx7__mutexE@Base 5.101.0
+ (arch=armel riscv64)_ZTSSt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE1EE@Base 5.101.0
+ (arch=!armel !riscv64)_ZTSSt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE2EE@Base 5.101.0
+ (arch=armel riscv64)_ZTSSt15_Sp_counted_ptrIPN4Kate12TextLineDataELN9__gnu_cxx12_Lock_policyE1EE@Base 5.101.0
+ (arch=!armel !riscv64)_ZTSSt15_Sp_counted_ptrIPN4Kate12TextLineDataELN9__gnu_cxx12_Lock_policyE2EE@Base 5.101.0
+ (arch=armel riscv64)_ZTSSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE1EE@Base 5.101.0
+ (arch=!armel !riscv64)_ZTSSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE@Base 5.101.0
+ _ZTSSt19_Sp_make_shared_tag@Base 5.101.0
+ (arch=armel riscv64)_ZTSSt23_Sp_counted_ptr_inplaceIN4Kate12TextLineDataESaIvELN9__gnu_cxx12_Lock_policyE1EE@Base 5.101.0
+ (arch=!armel !riscv64)_ZTSSt23_Sp_counted_ptr_inplaceIN4Kate12TextLineDataESaIvELN9__gnu_cxx12_Lock_policyE2EE@Base 5.101.0
  _ZTTN11KTextEditor15DocumentPrivateE@Base 5.9.0
  _ZTTN11KTextEditor8DocumentE@Base 5.9.0
  _ZTV10KateBuffer@Base 5.9.0
@@ -2769,10 +2843,16 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  _ZTVN6KateVi12InsertViModeE@Base 5.9.0
  _ZTVN6KateVi12NormalViModeE@Base 5.9.0
  _ZTVN6KateVi18EmulatedCommandBarE@Base 5.9.0
+ _ZTVN6KateVi6MotionE@Base 5.94.0
  _ZTVN6KateVi8ModeBaseE@Base 5.9.0
  _ZTVN6KateVi9KeyMapperE@Base 5.9.0
- (c++)"non-virtual thunk to KateViewInternal::~KateViewInternal()@Base" 5.88.0
+ (arch=armel riscv64)_ZTVSt15_Sp_counted_ptrIPN4Kate12TextLineDataELN9__gnu_cxx12_Lock_policyE1EE@Base 5.101.0
+ (arch=!armel !riscv64)_ZTVSt15_Sp_counted_ptrIPN4Kate12TextLineDataELN9__gnu_cxx12_Lock_policyE2EE@Base 5.101.0
+ (arch=armel riscv64)_ZTVSt23_Sp_counted_ptr_inplaceIN4Kate12TextLineDataESaIvELN9__gnu_cxx12_Lock_policyE1EE@Base 5.101.0
+ (arch=!armel !riscv64)_ZTVSt23_Sp_counted_ptr_inplaceIN4Kate12TextLineDataESaIvELN9__gnu_cxx12_Lock_policyE2EE@Base 5.101.0
+ _ZZNSt19_Sp_make_shared_tag5_S_tiEvE5__tag@Base 5.101.0
  _ZZZN10KAboutDataC4ERK7QStringS2_S2_S2_N13KAboutLicense10LicenseKeyES2_S2_S2_S2_Ed_NKUlvE_clEvE15qstring_literal@Base 5.9.0
+ _ZZZN14KateScriptView7alignOnERK8QJSValueS2_Ed_NKUlvE_clEvE15qstring_literal@Base 5.98.0
  (c++)"non-virtual thunk to KTextEditor::ConfigPage::~ConfigPage()@Base" 5.9.0
  (c++)"non-virtual thunk to KTextEditor::Document::~Document()@Base" 5.9.0
  (c++)"non-virtual thunk to KTextEditor::DocumentPrivate::addMark(int, unsigned int)@Base" 5.9.0
@@ -2848,6 +2928,7 @@ libKF5TextEditor.so.5 libkf5texteditor5 #MINVER#
  (c++)"non-virtual thunk to KateCompletionWidget::~KateCompletionWidget()@Base" 5.9.0
  (c++)"non-virtual thunk to KateSearchBar::~KateSearchBar()@Base" 5.9.0
  (c++)"non-virtual thunk to KateVi::EmulatedCommandBar::~EmulatedCommandBar()@Base" 5.9.0
+ (c++)"non-virtual thunk to KateViewInternal::~KateViewInternal()@Base" 5.88.0
  (c++)"non-virtual thunk to KateWordCompletionModel::matchingItem(QModelIndex const&)@Base" 5.9.0
  (c++)"non-virtual thunk to KateWordCompletionModel::shouldAbortCompletion(KTextEditor::View*, KTextEditor::Range const&, QString const&)@Base" 5.9.0
  (c++)"non-virtual thunk to KateWordCompletionModel::shouldHideItemsWithEqualNames() const@Base" 5.9.0

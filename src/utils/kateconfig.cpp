@@ -14,7 +14,6 @@
 #include "katesyntaxmanager.h"
 #include "kateview.h"
 
-#include <KCharsets>
 #include <KConfigGroup>
 
 #include <QGuiApplication>
@@ -40,8 +39,11 @@ void KateConfig::addConfigEntry(ConfigEntry &&entry)
     // shall only be called for toplevel config
     Q_ASSERT(isGlobal());
 
-    // there shall be no gaps in the entries
+    // There shall be no gaps in the entries; i.e. in KateViewConfig constructor
+    // addConfigEntry() is called on each value from the ConfigEntryTypes enum in
+    // the same order as the enumrators.
     // we might later want to use a vector
+    // qDebug() << m_configEntries.size() << entry.enumKey;
     Q_ASSERT(m_configEntries.size() == static_cast<size_t>(entry.enumKey));
 
     // add new element
@@ -215,9 +217,8 @@ KateRendererConfig *KateRendererConfig::s_global = nullptr;
  */
 static bool isEncodingOk(const QString &name)
 {
-    bool found = false;
-    auto codec = KCharsets::charsets()->codecForName(name, found);
-    return found && codec;
+    auto codec = QTextCodec::codecForName(name.toUtf8());
+    return codec;
 }
 
 static bool inBounds(const int min, const QVariant &value, const int max)
@@ -293,7 +294,11 @@ QTextCodec *KateGlobalConfig::fallbackCodec() const
     }
 
     // use configured encoding
-    return KCharsets::charsets()->codecForName(encoding);
+    auto codec = QTextCodec::codecForName(encoding.toUtf8());
+    if (codec) {
+        return codec;
+    }
+    return QTextCodec::codecForLocale();
 }
 // END
 
@@ -348,6 +353,15 @@ KateDocumentConfig::KateDocumentConfig()
     addConfigEntry(ConfigEntry(SwapFileSyncInterval, "Swap Sync Interval", QString(), 15));
     addConfigEntry(ConfigEntry(LineLengthLimit, "Line Length Limit", QString(), 10000));
     addConfigEntry(ConfigEntry(CamelCursor, "Camel Cursor", QString(), true));
+    addConfigEntry(ConfigEntry(AutoDetectIndent, "Auto Detect Indent", QString(), true));
+
+    // Auto save and co.
+    addConfigEntry(ConfigEntry(AutoSave, "Auto Save", QString(), false));
+    addConfigEntry(ConfigEntry(AutoSaveOnFocusOut, "Auto Save On Focus Out", QString(), false));
+    addConfigEntry(ConfigEntry(AutoSaveInteral, "Auto Save Interval", QString(), 0));
+
+    // Shall we do auto reloading for stuff e.g. in Git?
+    addConfigEntry(ConfigEntry(AutoReloadIfStateIsInVersionControl, "Auto Reload If State Is In Version Control", QString(), true));
 
     // finalize the entries, e.g. hashs them
     finalizeConfigEntries();
@@ -443,10 +457,14 @@ QTextCodec *KateDocumentConfig::codec() const
     }
 
     // use configured encoding
-    return KCharsets::charsets()->codecForName(encoding);
+    auto codec = QTextCodec::codecForName(encoding.toUtf8());
+    if (codec) {
+        return codec;
+    }
+    return QTextCodec::codecForName("UTF-8");
 }
 
-QString KateDocumentConfig::eolString()
+QString KateDocumentConfig::eolString() const
 {
     switch (eol()) {
     case KateDocumentConfig::eolDos:
@@ -470,13 +488,16 @@ KateViewConfig::KateViewConfig()
     // NOTE: Ensure to keep the same order as listed in enum ConfigEntryTypes or it will later assert!
     // addConfigEntry(ConfigEntry(<EnumKey>, <ConfigKey>, <CommandName>, <DefaultValue>,  [<ValidatorFunction>]))
     addConfigEntry(ConfigEntry(AllowMarkMenu, "Allow Mark Menu", QStringLiteral("allow-mark-menu"), true));
-    addConfigEntry(ConfigEntry(AutoBrackets, "Auto Brackets", QStringLiteral("auto-brackets"), false));
+    addConfigEntry(ConfigEntry(AutoBrackets, "Auto Brackets", QStringLiteral("auto-brackets"), true));
     addConfigEntry(ConfigEntry(AutoCenterLines, "Auto Center Lines", QStringLiteral("auto-center-lines"), 0));
     addConfigEntry(ConfigEntry(AutomaticCompletionInvocation, "Auto Completion", QString(), true));
     addConfigEntry(ConfigEntry(AutomaticCompletionPreselectFirst, "Auto Completion Preselect First Entry", QString(), true));
     addConfigEntry(ConfigEntry(BackspaceRemoveComposedCharacters, "Backspace Remove Composed Characters", QString(), false));
     addConfigEntry(ConfigEntry(BookmarkSorting, "Bookmark Menu Sorting", QString(), 0));
     addConfigEntry(ConfigEntry(CharsToEncloseSelection, "Chars To Enclose Selection", QStringLiteral("enclose-selection"), QStringLiteral("<>(){}[]'\"")));
+    addConfigEntry(ConfigEntry(ClipboardHistoryEntries, "Max Clipboard History Entries", QString(), 20, [](const QVariant &value) {
+        return inBounds(1, value, 999);
+    }));
     addConfigEntry(ConfigEntry(DefaultMarkType,
                                "Default Mark Type",
                                QStringLiteral("default-mark-type"),
@@ -508,6 +529,7 @@ KateViewConfig::KateViewConfig()
     }));
     addConfigEntry(ConfigEntry(ScrollPastEnd, "Scroll Past End", QString(), false));
     addConfigEntry(ConfigEntry(SearchFlags, "Search/Replace Flags", QString(), IncFromCursor | PowerMatchCase | PowerModePlainText));
+    addConfigEntry(ConfigEntry(TabCompletion, "Enable Tab completion", QString(), false));
     addConfigEntry(ConfigEntry(ShowBracketMatchPreview, "Bracket Match Preview", QStringLiteral("bracket-match-preview"), false));
     addConfigEntry(ConfigEntry(ShowFoldingBar, "Folding Bar", QStringLiteral("folding-bar"), true));
     addConfigEntry(ConfigEntry(ShowFoldingPreview, "Folding Preview", QStringLiteral("folding-preview"), true));
@@ -533,6 +555,20 @@ KateViewConfig::KateViewConfig()
         return inBounds(0, value, 99);
     }));
     addConfigEntry(ConfigEntry(WordCompletionRemoveTail, "Word Completion Remove Tail", QString(), true));
+    addConfigEntry(ConfigEntry(ShowFocusFrame, "Show Focus Frame Around Editor", QString(), true));
+    addConfigEntry(ConfigEntry(ShowDocWithCompletion, "Show Documentation With Completion", QString(), true));
+    addConfigEntry(ConfigEntry(MultiCursorModifier, "Multiple Cursor Modifier", QString(), (int)Qt::AltModifier));
+    addConfigEntry(ConfigEntry(ShowFoldingOnHoverOnly, "Show Folding Icons On Hover Only", QString(), true));
+
+    // Statusbar stuff
+    addConfigEntry(ConfigEntry(ShowStatusbarLineColumn, "Show Statusbar Line Column", QString(), true));
+    addConfigEntry(ConfigEntry(ShowStatusbarDictionary, "Show Statusbar Dictionary", QString(), true));
+    addConfigEntry(ConfigEntry(ShowStatusbarInputMode, "Show Statusbar Input Mode", QString(), true));
+    addConfigEntry(ConfigEntry(ShowStatusbarHighlightingMode, "Show Statusbar Highlighting Mode", QString(), true));
+    addConfigEntry(ConfigEntry(ShowStatusbarTabSettings, "Show Statusbar Tab Settings", QString(), true));
+    addConfigEntry(ConfigEntry(ShowStatusbarFileEncoding, "Show File Encoding", QString(), true));
+    addConfigEntry(ConfigEntry(StatusbarLineColumnCompact, "Statusbar Line Column Compact Mode", QString(), true));
+    addConfigEntry(ConfigEntry(ShowStatusbarEOL, "Shoe Line Ending Type in Statusbar", QString(), false));
 
     // Never forget to finalize or the <CommandName> becomes not available
     finalizeConfigEntries();
@@ -678,6 +714,7 @@ const char KEY_WORD_WRAP_MARKER[] = "Word Wrap Marker";
 const char KEY_SHOW_INDENTATION_LINES[] = "Show Indentation Lines";
 const char KEY_SHOW_WHOLE_BRACKET_EXPRESSION[] = "Show Whole Bracket Expression";
 const char KEY_ANIMATE_BRACKET_MATCHING[] = "Animate Bracket Matching";
+const char KEY_LINE_HEIGHT_MULTIPLIER[] = "Line Height Multiplier";
 }
 
 void KateRendererConfig::readConfig(const KConfigGroup &config)
@@ -687,8 +724,8 @@ void KateRendererConfig::readConfig(const KConfigGroup &config)
     // read generic entries
     readConfigEntries(config);
 
-    // read font, but drop all styles, else we have no bold/italic/... variants
-    setFontWithDroppedStyleName(config.readEntry(KEY_FONT, QFontDatabase::systemFont(QFontDatabase::FixedFont)));
+    // read font
+    setFont(config.readEntry(KEY_FONT, QFontDatabase::systemFont(QFontDatabase::FixedFont)));
 
     // setSchema will default to right theme
     setSchema(config.readEntry(KEY_COLOR_THEME, QString()));
@@ -700,6 +737,8 @@ void KateRendererConfig::readConfig(const KConfigGroup &config)
     setShowWholeBracketExpression(config.readEntry(KEY_SHOW_WHOLE_BRACKET_EXPRESSION, false));
 
     setAnimateBracketMatching(config.readEntry(KEY_ANIMATE_BRACKET_MATCHING, false));
+
+    setLineHeightMultiplier(config.readEntry<qreal>(KEY_LINE_HEIGHT_MULTIPLIER, 1.0));
 
     configEnd();
 }
@@ -720,6 +759,8 @@ void KateRendererConfig::writeConfig(KConfigGroup &config)
     config.writeEntry(KEY_SHOW_WHOLE_BRACKET_EXPRESSION, showWholeBracketExpression());
 
     config.writeEntry(KEY_ANIMATE_BRACKET_MATCHING, animateBracketMatching());
+
+    config.writeEntry<qreal>(KEY_LINE_HEIGHT_MULTIPLIER, lineHeightMultiplier());
 }
 
 void KateRendererConfig::updateConfig()
@@ -895,16 +936,9 @@ void KateRendererConfig::setFont(const QFont &font)
     }
 
     configStart();
-    setFontWithDroppedStyleName(font);
-    configEnd();
-}
-
-void KateRendererConfig::setFontWithDroppedStyleName(const QFont &font)
-{
-    // Drop styleName, otherwise stuff like bold/italic/... won't work as style!
     m_font = font;
-    m_font.setStyleName(QString());
     m_fontSet = true;
+    configEnd();
 }
 
 bool KateRendererConfig::wordWrapMarker() const
@@ -1377,6 +1411,13 @@ void KateRendererConfig::setReplaceHighlightColor(const QColor &col)
     configEnd();
 }
 
+void KateRendererConfig::setLineHeightMultiplier(qreal value)
+{
+    configStart();
+    m_lineHeightMultiplier = value;
+    configEnd();
+}
+
 bool KateRendererConfig::showIndentationLines() const
 {
     if (m_showIndentationLinesSet || isGlobal()) {
@@ -1423,7 +1464,7 @@ void KateRendererConfig::setShowWholeBracketExpression(bool on)
     configEnd();
 }
 
-bool KateRendererConfig::animateBracketMatching() const
+bool KateRendererConfig::animateBracketMatching()
 {
     return s_global->m_animateBracketMatching;
 }

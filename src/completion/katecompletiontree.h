@@ -8,14 +8,14 @@
 #ifndef KATECOMPLETIONTREE_H
 #define KATECOMPLETIONTREE_H
 
-#include "expandingtree/expandingtree.h"
+#include <QTreeView>
 
 class KateCompletionWidget;
 class KateCompletionModel;
 
 class QTimer;
 
-class KateCompletionTree : public ExpandingTree
+class KateCompletionTree final : public QTreeView
 {
     Q_OBJECT
 
@@ -26,6 +26,11 @@ public:
     KateCompletionModel *kateModel() const;
 
     void resizeColumns(bool firstShow = false, bool forceResize = false);
+
+    int sizeHintForColumn(int column) const override
+    {
+        return columnWidth(column);
+    }
 
     // Navigation
     bool nextCompletion();
@@ -39,16 +44,17 @@ public:
 
     void setScrollingEnabled(bool);
 
-    /// Returns the approximated viewport position of the text in the given column, skipping an eventual icon
-    int columnTextViewportPosition(int column) const;
-
 private Q_SLOTS:
     void resizeColumnsSlot();
 
 protected:
     void currentChanged(const QModelIndex &current, const QModelIndex &previous) override; /// Not available as a signal in this way
     void scrollContentsBy(int dx, int dy) override;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    void initViewItemOption(QStyleOptionViewItem *option) const override;
+#else
     QStyleOptionViewItem viewOptions() const override;
+#endif
 
 private:
     bool m_scrollingEnabled;

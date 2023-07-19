@@ -127,6 +127,7 @@ endmacro()
 ecm_add_tests(
   src/katetextbuffertest.cpp
   src/range_test.cpp
+  src/cursorwords_test.cpp
   src/undomanager_test.cpp
   src/plaintextsearch_test.cpp
   src/regexpsearch_test.cpp
@@ -151,6 +152,8 @@ ecm_add_tests(
   src/katetextblocktest.cpp
   src/camelcursortest.cpp
   src/encodingtest.cpp
+  src/indentdetect_test.cpp
+  src/multicursortest.cpp
   LINK_LIBRARIES ${KTEXTEDITOR_TEST_LINK_LIBS} Qt${QT_MAJOR_VERSION}::Test
 )
 
@@ -175,3 +178,6 @@ target_link_libraries(katemodemanager_benchmark ${KTEXTEDITOR_TEST_LINK_LIBS} Qt
 
 add_executable(bench_search src/benchmarks/bench_search.cpp)
 target_link_libraries(bench_search PRIVATE ${KTEXTEDITOR_TEST_LINK_LIBS})
+
+add_executable(example src/example.cpp)
+target_link_libraries(example PRIVATE ${KTEXTEDITOR_TEST_LINK_LIBS})

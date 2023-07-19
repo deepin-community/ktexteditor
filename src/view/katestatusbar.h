@@ -44,6 +44,11 @@ class StatusBarButton : public QPushButton
     Q_OBJECT
 public:
     explicit StatusBarButton(KateStatusBar *parent, const QString &text = QString());
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
+
+protected:
+    void paintEvent(QPaintEvent *) override;
 };
 
 class KateStatusBar : public KateViewBarWidget
@@ -67,8 +72,6 @@ public Q_SLOTS:
 
     void selectionChanged();
 
-    void modifiedChanged();
-
     void documentConfigChanged();
 
     void modeChanged();
@@ -81,6 +84,8 @@ public Q_SLOTS:
 
     void changeDictionary(QAction *action);
 
+    void updateEOL();
+
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
     void contextMenuEvent(QContextMenuEvent *event) override;
@@ -89,18 +94,17 @@ private:
     KTextEditor::ViewPrivate *const m_view;
     StatusBarButton *m_cursorPosition = nullptr;
     QString m_wordCount;
-    StatusBarButton *m_modified = nullptr;
     StatusBarButton *m_zoomLevel = nullptr;
     StatusBarButton *m_inputMode = nullptr;
     StatusBarButton *m_mode = nullptr;
     StatusBarButton *m_encoding = nullptr;
     StatusBarButton *m_tabsIndent = nullptr;
     StatusBarButton *m_dictionary = nullptr;
+    StatusBarButton *m_eol = nullptr;
     QActionGroup *m_dictionaryGroup = nullptr;
     KateStatusBarOpenUpMenu *m_dictionaryMenu = nullptr;
     QMenu *m_indentSettingsMenu;
     KateModeMenuList *m_modeMenuList = nullptr;
-    unsigned int m_modifiedStatus;
     unsigned int m_selectionMode;
     QActionGroup *m_tabGroup;
     QActionGroup *m_indentGroup;

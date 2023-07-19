@@ -471,18 +471,6 @@ void KateOnTheFlyChecker::rangeInvalid(KTextEditor::MovingRange *range)
     deleteMovingRange(range);
 }
 
-void KateOnTheFlyChecker::mouseEnteredRange(KTextEditor::MovingRange *range, KTextEditor::View *view)
-{
-    KTextEditor::ViewPrivate *kateView = static_cast<KTextEditor::ViewPrivate *>(view);
-    kateView->spellingMenu()->mouseEnteredMisspelledRange(range);
-}
-
-void KateOnTheFlyChecker::mouseExitedRange(KTextEditor::MovingRange *range, KTextEditor::View *view)
-{
-    KTextEditor::ViewPrivate *kateView = static_cast<KTextEditor::ViewPrivate *>(view);
-    kateView->spellingMenu()->mouseExitedMisspelledRange(range);
-}
-
 /**
  * It is not enough to use 'caret/Entered/ExitedRange' only as the cursor doesn't move when some
  * text has been selected.
@@ -619,12 +607,12 @@ void KateOnTheFlyChecker::spellCheckDone()
     }
 }
 
-QList<KTextEditor::MovingRange *> KateOnTheFlyChecker::installedMovingRanges(KTextEditor::Range range)
+QList<KTextEditor::MovingRange *> KateOnTheFlyChecker::installedMovingRanges(KTextEditor::Range range) const
 {
     ON_THE_FLY_DEBUG << range;
     MovingRangeList toReturn;
 
-    for (QList<SpellCheckItem>::iterator i = m_misspelledList.begin(); i != m_misspelledList.end(); ++i) {
+    for (QList<SpellCheckItem>::const_iterator i = m_misspelledList.begin(); i != m_misspelledList.end(); ++i) {
         KTextEditor::MovingRange *movingRange = (*i).first;
         if (movingRange->overlaps(range)) {
             toReturn.push_back(movingRange);

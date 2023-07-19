@@ -46,6 +46,7 @@
 #include <QActionGroup>
 #include <QBoxLayout>
 #include <QCursor>
+#include <QGuiApplication>
 #include <QKeyEvent>
 #include <QLinearGradient>
 #include <QMenu>
@@ -407,7 +408,7 @@ void KateScrollBar::showTextPreview()
         grooveRect = m_mapGroveRect;
     } else {
         QStyleOptionSlider opt;
-        opt.init(this);
+        opt.initFrom(this);
         opt.subControls = QStyle::SC_None;
         opt.activeSubControls = QStyle::SC_None;
         opt.orientation = orientation();
@@ -739,7 +740,7 @@ void KateScrollBar::miniMapPaintEvent(QPaintEvent *e)
     QPainter painter(this);
 
     QStyleOptionSlider opt;
-    opt.init(this);
+    opt.initFrom(this);
     opt.subControls = QStyle::SC_None;
     opt.activeSubControls = QStyle::SC_None;
     opt.orientation = orientation();
@@ -925,7 +926,7 @@ void KateScrollBar::normalPaintEvent(QPaintEvent *e)
     QPainter painter(this);
 
     QStyleOptionSlider opt;
-    opt.init(this);
+    opt.initFrom(this);
     opt.subControls = QStyle::SC_None;
     opt.activeSubControls = QStyle::SC_None;
     opt.orientation = orientation();
@@ -1083,7 +1084,7 @@ KateCommandLineBar::KateCommandLineBar(KTextEditor::ViewPrivate *view, QWidget *
 
 void KateCommandLineBar::showHelpPage()
 {
-    KHelpClient::invokeHelp(QStringLiteral("advanced-editing-tools-commandline"), QStringLiteral("kate"));
+    KHelpClient::invokeHelp(QStringLiteral("advanced-editing-tools-commandline"), QStringLiteral("katepart"));
 }
 
 KateCommandLineBar::~KateCommandLineBar() = default;
@@ -2012,7 +2013,7 @@ void KateIconBorder::paintBorder(int /*x*/, int y, int /*width*/, int height)
                 const uint mrk(m_doc->mark(realLine)); // call only once
                 if (mrk && lineLayout.startCol() == 0) {
                     for (uint bit = 0; bit < 32; bit++) {
-                        MarkInterface::MarkTypes markType = (MarkInterface::MarkTypes)(1 << bit);
+                        MarkInterface::MarkTypes markType = (MarkInterface::MarkTypes)(1U << bit);
                         if (mrk & markType) {
                             const QIcon markIcon = m_doc->markIcon(markType);
 
@@ -2146,13 +2147,14 @@ void KateIconBorder::paintBorder(int /*x*/, int y, int /*width*/, int height)
                             anyFolded = true;
                         }
                     }
-                    const Kate::TextLine tl = m_doc->kateTextLine(realLine);
-                    if (!startingRanges.isEmpty() || tl->markedAsFoldingStart()) {
-                        if (anyFolded) {
-                            paintTriangle(p, foldingColor, lnX, y, m_foldingAreaWidth, h, false);
-                        } else {
-                            // Don't try to use currentLineNumberColor, the folded icon gets also not highligted
-                            paintTriangle(p, lineNumberColor, lnX, y, m_foldingAreaWidth, h, true);
+                    if (!m_view->config()->showFoldingOnHoverOnly() || m_mouseOver) {
+                        if (!startingRanges.isEmpty() || m_doc->buffer().isFoldingStartingOnLine(realLine).first) {
+                            if (anyFolded) {
+                                paintTriangle(p, foldingColor, lnX, y, m_foldingAreaWidth, h, false);
+                            } else {
+                                // Don't try to use currentLineNumberColor, the folded icon gets also not highligted
+                                paintTriangle(p, lineNumberColor, lnX, y, m_foldingAreaWidth, h, true);
+                            }
                         }
                     }
                 }
@@ -2193,10 +2195,10 @@ void KateIconBorder::paintBorder(int /*x*/, int y, int /*width*/, int height)
             // Don't forget our "text-stuck-to-border" protector + border line
             lnX += 2 * m_separatorWidth;
             m_positionToArea.push_back(AreaPosition(lnX, None));
+
             // Now that we know our needed space, ensure we are painted properly
-            updateGeometry();
-            update();
-            return;
+            // we still keep painting to not have strange flicker
+            QTimer::singleShot(0, this, &KateIconBorder::delayedUpdateOfSizeWithRepaint);
         }
     }
 }
@@ -2344,10 +2346,25 @@ void KateIconBorder::hideFolding()
     delete m_foldingPreview;
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void KateIconBorder::enterEvent(QEnterEvent *event)
+#else
+void KateIconBorder::enterEvent(QEvent *event)
+#endif
+{
+    m_mouseOver = true;
+    if (m_view->config()->showFoldingOnHoverOnly())
+        repaint();
+    QWidget::enterEvent(event);
+}
+
 void KateIconBorder::leaveEvent(QEvent *event)
 {
+    m_mouseOver = false;
     hideFolding();
     removeAnnotationHovering();
+    if (m_view->config()->showFoldingOnHoverOnly())
+        repaint();
 
     QWidget::leaveEvent(event);
 }
@@ -2410,8 +2427,9 @@ void KateIconBorder::mouseReleaseEvent(QMouseEvent *e)
                     KateViewConfig *config = m_view->config();
                     const uint editBits = m_doc->editableMarks();
                     // is the default or the only editable mark
-                    const uint singleMark = qPopulationCount(editBits) > 1 ? editBits & config->defaultMarkType() : editBits;
-                    if (singleMark) {
+                    bool ctrlPressed = QGuiApplication::keyboardModifiers() == Qt::KeyboardModifier::ControlModifier;
+                    if (qPopulationCount(editBits) == 1 || ctrlPressed) {
+                        const uint singleMark = (qPopulationCount(editBits) > 1) ? (editBits & config->defaultMarkType()) : editBits;
                         if (m_doc->mark(cursorOnLine) & singleMark) {
                             m_doc->removeMark(cursorOnLine, singleMark);
                         } else {
@@ -2529,7 +2547,7 @@ void KateIconBorder::showMarkMenu(uint line, const QPoint &pos)
     int i = 1;
 
     for (uint bit = 0; bit < 32; bit++) {
-        MarkInterface::MarkTypes markType = (MarkInterface::MarkTypes)(1 << bit);
+        MarkInterface::MarkTypes markType = (MarkInterface::MarkTypes)(1U << bit);
         if (!(m_doc->editableMarks() & markType)) {
             continue;
         }
@@ -2632,15 +2650,22 @@ void KateIconBorder::setAnnotationItemDelegate(KTextEditor::AbstractAnnotationIt
     connect(m_annotationItemDelegate, &AbstractAnnotationItemDelegate::sizeHintChanged, this, &KateIconBorder::updateAnnotationBorderWidth);
 
     if (m_annotationBorderOn) {
-        updateGeometry();
-
-        QTimer::singleShot(0, this, SLOT(update()));
+        QTimer::singleShot(0, this, &KateIconBorder::delayedUpdateOfSizeWithRepaint);
     }
 }
 
 void KateIconBorder::handleDestroyedAnnotationItemDelegate()
 {
     setAnnotationItemDelegate(nullptr);
+}
+
+void KateIconBorder::delayedUpdateOfSizeWithRepaint()
+{
+    // ensure we update size + repaint at once to avoid flicker, see bug 435361
+    setUpdatesEnabled(false);
+    updateGeometry();
+    repaint();
+    setUpdatesEnabled(true);
 }
 
 void KateIconBorder::initStyleOption(KTextEditor::StyleOptionAnnotationItem *styleOption) const
@@ -2852,37 +2877,30 @@ void KateViewEncodingAction::setEncoding(const QString &e)
     view->reloadFile();
 }
 
-int KateViewEncodingAction::mibForName(const QString &codecName, bool *ok) const
+int KateViewEncodingAction::mibForName(const QString &codecName, bool *ok)
 {
     // FIXME logic is good but code is ugly
-
-    bool success = false;
-    int mib = MIB_DEFAULT;
     KCharsets *charsets = KCharsets::charsets();
 
-    QTextCodec *codec = charsets->codecForName(codecName, success);
-    if (!success) {
+    QTextCodec *codec = QTextCodec::codecForName(codecName.toUtf8());
+    if (!codec) {
         // Maybe we got a description name instead
-        codec = charsets->codecForName(charsets->encodingForName(codecName), success);
-    }
-
-    if (codec) {
-        mib = codec->mibEnum();
+        codec = QTextCodec::codecForName(charsets->encodingForName(codecName).toUtf8());
     }
 
     if (ok) {
-        *ok = success;
+        *ok = bool(codec);
     }
 
-    if (success) {
-        return mib;
+    if (codec) {
+        return codec->mibEnum();
     }
 
     qCWarning(LOG_KTE) << "Invalid codec name: " << codecName;
     return MIB_DEFAULT;
 }
 
-QTextCodec *KateViewEncodingAction::codecForMib(int mib) const
+QTextCodec *KateViewEncodingAction::codecForMib(int mib)
 {
     if (mib == MIB_DEFAULT) {
         // FIXME offer to change the default codec
@@ -2913,7 +2931,7 @@ bool KateViewEncodingAction::setCurrentCodec(QTextCodec *codec)
                     continue;
                 }
 
-                if (codec == KCharsets::charsets()->codecForName(actions().at(i)->menu()->actions().at(j)->text())) {
+                if (codec == QTextCodec::codecForName(actions().at(i)->menu()->actions().at(j)->text().toUtf8())) {
                     d->currentSubAction = actions().at(i)->menu()->actions().at(j);
                     d->currentSubAction->setChecked(true);
                 } else {
@@ -2934,7 +2952,11 @@ QString KateViewEncodingAction::currentCodecName() const
 
 bool KateViewEncodingAction::setCurrentCodec(const QString &codecName)
 {
-    return setCurrentCodec(KCharsets::charsets()->codecForName(codecName));
+    auto codec = QTextCodec::codecForName(codecName.toUtf8());
+    if (!codec) {
+        codec = QTextCodec::codecForLocale();
+    }
+    return setCurrentCodec(codec);
 }
 
 int KateViewEncodingAction::currentCodecMib() const
@@ -3023,9 +3045,7 @@ void KateViewBar::addPermanentBarWidget(KateViewBarWidget *barWidget)
     Q_ASSERT(barWidget);
     Q_ASSERT(!m_permanentBarWidget);
 
-    m_stack->addWidget(barWidget);
-    m_stack->setCurrentWidget(barWidget);
-    m_stack->show();
+    m_layout->addWidget(barWidget);
     m_permanentBarWidget = barWidget;
     m_permanentBarWidget->show();
 
@@ -3037,21 +3057,13 @@ void KateViewBar::removePermanentBarWidget(KateViewBarWidget *barWidget)
     Q_ASSERT(m_permanentBarWidget == barWidget);
     Q_UNUSED(barWidget);
 
-    const bool hideBar = m_stack->currentWidget() == m_permanentBarWidget;
-
     m_permanentBarWidget->hide();
-    m_stack->removeWidget(m_permanentBarWidget);
+    m_layout->removeWidget(m_permanentBarWidget);
     m_permanentBarWidget = nullptr;
 
-    if (hideBar) {
-        m_stack->hide();
+    if (!barWidgetVisible()) {
         setViewBarVisible(false);
     }
-}
-
-bool KateViewBar::hasPermanentWidget(KateViewBarWidget *barWidget) const
-{
-    return (m_permanentBarWidget == barWidget);
 }
 
 void KateViewBar::showBarWidget(KateViewBarWidget *barWidget)
@@ -3063,6 +3075,7 @@ void KateViewBar::showBarWidget(KateViewBarWidget *barWidget)
     }
 
     // raise correct widget
+    m_stack->addWidget(barWidget);
     m_stack->setCurrentWidget(barWidget);
     barWidget->show();
     barWidget->setFocus(Qt::ShortcutFocusReason);
@@ -3079,15 +3092,13 @@ void KateViewBar::hideCurrentBarWidget()
 {
     KateViewBarWidget *current = qobject_cast<KateViewBarWidget *>(m_stack->currentWidget());
     if (current) {
+        m_stack->removeWidget(current);
         current->closed();
     }
 
-    // if we have any permanent widget, make it visible again
-    if (m_permanentBarWidget) {
-        m_stack->setCurrentWidget(m_permanentBarWidget);
-    } else {
-        // else: hide the bar
-        m_stack->hide();
+    // hide the bar
+    m_stack->hide();
+    if (!m_permanentBarWidget) {
         setViewBarVisible(false);
     }
 
@@ -3107,13 +3118,10 @@ void KateViewBar::setViewBarVisible(bool visible)
     }
 }
 
-bool KateViewBar::hiddenOrPermanent() const
+bool KateViewBar::barWidgetVisible() const
 {
     KateViewBarWidget *current = qobject_cast<KateViewBarWidget *>(m_stack->currentWidget());
-    if (!isVisible() || (m_permanentBarWidget && m_permanentBarWidget == current)) {
-        return true;
-    }
-    return false;
+    return current && current->isVisible();
 }
 
 void KateViewBar::keyPressEvent(QKeyEvent *event)
@@ -3133,48 +3141,6 @@ void KateViewBar::hideEvent(QHideEvent *event)
 }
 
 // END KateViewBar related classes
-
-KatePasteMenu::KatePasteMenu(const QString &text, KTextEditor::ViewPrivate *view)
-    : KActionMenu(text, view)
-    , m_view(view)
-{
-    connect(menu(), &QMenu::aboutToShow, this, &KatePasteMenu::slotAboutToShow);
-}
-
-void KatePasteMenu::slotAboutToShow()
-{
-    menu()->clear();
-
-    // insert complete paste history
-    int i = 0;
-    for (const QString &text : KTextEditor::EditorPrivate::self()->clipboardHistory()) {
-        // get text for the menu ;)
-        QString leftPart = (text.size() > 48) ? (text.left(48) + QLatin1String("...")) : text;
-        QAction *a = menu()->addAction(leftPart.replace(QLatin1Char('\n'), QLatin1Char(' ')), this, SLOT(paste()));
-        a->setData(i++);
-    }
-}
-
-void KatePasteMenu::paste()
-{
-    if (!sender()) {
-        return;
-    }
-
-    QAction *action = qobject_cast<QAction *>(sender());
-    if (!action) {
-        return;
-    }
-
-    // get index
-    int i = action->data().toInt();
-    if (i >= KTextEditor::EditorPrivate::self()->clipboardHistory().size()) {
-        return;
-    }
-
-    // paste
-    m_view->paste(&KTextEditor::EditorPrivate::self()->clipboardHistory()[i]);
-}
 
 // BEGIN SCHEMA ACTION -- the 'View->Color theme' menu action
 void KateViewSchemaAction::init()

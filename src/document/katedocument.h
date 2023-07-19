@@ -68,13 +68,13 @@ class KToggleAction;
  * @warning This file is @e private API and not part of the public
  *          KTextEditor interfaces.
  */
-class KTEXTEDITOR_EXPORT KTextEditor::DocumentPrivate : public KTextEditor::Document,
-                                                        public KTextEditor::MarkInterfaceV2,
-                                                        public KTextEditor::ModificationInterface,
-                                                        public KTextEditor::ConfigInterface,
-                                                        public KTextEditor::AnnotationInterface,
-                                                        public KTextEditor::MovingInterface,
-                                                        private KTextEditor::MovingRangeFeedback
+class KTEXTEDITOR_EXPORT KTextEditor::DocumentPrivate final : public KTextEditor::Document,
+                                                              public KTextEditor::MarkInterfaceV2,
+                                                              public KTextEditor::ModificationInterface,
+                                                              public KTextEditor::ConfigInterface,
+                                                              public KTextEditor::AnnotationInterface,
+                                                              public KTextEditor::MovingInterface,
+                                                              private KTextEditor::MovingRangeFeedback
 {
     Q_OBJECT
     Q_INTERFACES(KTextEditor::MarkInterface)
@@ -416,6 +416,14 @@ private:
      * Return a widget suitable to be used as a dialog parent.
      */
     QWidget *dialogParent();
+
+    /**
+     * Wrapper around QFileDialog::getSaveFileUrl, will use proper dialogParent
+     * and try it's best to find a good directory as start
+     * @param dialogTitle dialog title string
+     * @return url to save to or empty url if aborted
+     */
+    QUrl getSaveFileUrl(const QString &dialogTitle);
 
     /*
      * Access to the mode/highlighting subsystem
@@ -841,18 +849,34 @@ public:
     int fromVirtualColumn(const KTextEditor::Cursor) const;
 
     enum NewLineIndent { Indent, NoIndent };
+    enum NewLinePos { Normal, Above, Below };
 
-    void newLine(KTextEditor::ViewPrivate *view, NewLineIndent indent = NewLineIndent::Indent); // Changes input
-    void backspace(KTextEditor::ViewPrivate *view, const KTextEditor::Cursor);
+    void newLine(KTextEditor::ViewPrivate *view, NewLineIndent indent = NewLineIndent::Indent, NewLinePos newLinePos = Normal); // Changes input
+    void backspace(KTextEditor::ViewPrivate *view);
     void del(KTextEditor::ViewPrivate *view, const KTextEditor::Cursor);
     void transpose(const KTextEditor::Cursor);
     void swapTextRanges(KTextEditor::Range firstWord, KTextEditor::Range secondWord);
+    bool multiPaste(KTextEditor::ViewPrivate *view, const QStringList &texts);
     void paste(KTextEditor::ViewPrivate *view, const QString &text);
 
 public:
+    enum CommentType {
+        UnComment = -1,
+        ToggleComment = 0,
+        Comment = 1,
+    };
+
+private:
+    // Helper function for use with multiple cursors
+    KTextEditor::Cursor backspaceAtCursor(KTextEditor::ViewPrivate *v, KTextEditor::Cursor c);
+    void commentSelection(KTextEditor::Range selection, KTextEditor::Cursor c, bool blockSelect, CommentType changeType);
+    bool skipAutoBrace(QChar closingBracket, KTextEditor::Cursor pos);
+
+public:
     void indent(KTextEditor::Range range, int change);
-    void comment(KTextEditor::ViewPrivate *view, uint line, uint column, int change);
+    void comment(KTextEditor::ViewPrivate *view, uint line, uint column, CommentType change);
     void align(KTextEditor::ViewPrivate *view, KTextEditor::Range range);
+    void alignOn(KTextEditor::Range range, const QString &pattern, bool blockwise);
     void insertTab(KTextEditor::ViewPrivate *view, const KTextEditor::Cursor);
 
     enum TextTransform { Uppercase, Lowercase, Capitalize };
@@ -864,13 +888,15 @@ public:
       lowercase the character right of the cursor is transformed, for capitalize
       the word under the cursor is transformed.
     */
-    void transform(KTextEditor::ViewPrivate *view, const KTextEditor::Cursor, TextTransform);
+    void transform(KTextEditor::ViewPrivate *view, KTextEditor::Cursor, TextTransform);
     /**
       Unwrap a range of lines.
     */
     void joinLines(uint first, uint last);
 
 private:
+    void transformCursorOrRange(KTextEditor::ViewPrivate *view, const KTextEditor::Cursor, KTextEditor::Range selection, TextTransform);
+
     bool removeStringFromBeginning(int line, const QString &str);
     bool removeStringFromEnd(int line, const QString &str);
 
@@ -929,11 +955,11 @@ private:
      * Add a comment marker as defined by the language providing the attribute
      * @p attrib to each line in the selection.
      */
-    void addStartStopCommentToSelection(KTextEditor::ViewPrivate *view, int attrib = 0);
+    void addStartStopCommentToSelection(KTextEditor::Range, bool blockSelection, int attrib = 0);
     /**
      * @see addStartStopCommentToSelection.
      */
-    void addStartLineCommentToSelection(KTextEditor::ViewPrivate *view, int attrib = 0);
+    void addStartLineCommentToSelection(KTextEditor::Range, int attrib = 0);
 
     /**
      * Removes comment markers relevant to the language providing
@@ -941,11 +967,11 @@ private:
      *
      * @return whether the operation succeeded.
      */
-    bool removeStartStopCommentFromSelection(KTextEditor::ViewPrivate *view, int attrib = 0);
+    bool removeStartStopCommentFromSelection(KTextEditor::Range, int attrib = 0);
     /**
      * @see removeStartStopCommentFromSelection.
      */
-    bool removeStartLineCommentFromSelection(KTextEditor::ViewPrivate *view, int attrib = 0);
+    bool removeStartLineCommentFromSelection(KTextEditor::Range, int attrib, bool toggleComment);
 
 public:
     KTextEditor::Range findMatchingBracket(const KTextEditor::Cursor start, int maxLines);
@@ -958,6 +984,7 @@ public:
 
 private:
     void updateDocName();
+    static void uniquifyDocNames(const std::vector<KTextEditor::DocumentPrivate *> &docs);
 
 public:
     /**
@@ -1067,9 +1094,10 @@ private:
     QString reasonedMOHString() const;
 
     /**
-     * Removes all trailing whitespace in the document.
+     * Removes all trailing whitespace in the document and add new line at eof
+     * if configured that way.
      */
-    void removeTrailingSpaces();
+    void removeTrailingSpacesAndAddNewLineAtEof();
 
 public:
     /**
@@ -1259,6 +1287,10 @@ public:
     QString defaultDictionary() const;
     QList<QPair<KTextEditor::MovingRange *, QString>> dictionaryRanges() const;
     bool isOnTheFlySpellCheckingEnabled() const;
+    KateOnTheFlyChecker *onTheFlySpellChecker() const
+    {
+        return m_onTheFlyChecker;
+    }
 
     QString dictionaryForMisspelledRange(KTextEditor::Range range) const;
     void clearMisspellingForWord(const QString &word);
@@ -1280,7 +1312,7 @@ public:
 
     typedef QList<QPair<int, int>> OffsetList;
 
-    int computePositionWrtOffsets(const OffsetList &offsetList, int pos);
+    static int computePositionWrtOffsets(const OffsetList &offsetList, int pos);
 
     /**
      * The first OffsetList is from decoded to encoded, and the second OffsetList from
@@ -1450,6 +1482,8 @@ private:
     // To calculate a QHash.keys() is quite expensive,
     // better keep a copy of that list updated when a view is added or removed.
     QList<KTextEditor::View *> m_viewsCache;
+
+    QTimer m_autoSaveTimer;
 };
 
 #endif

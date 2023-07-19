@@ -33,7 +33,7 @@ namespace Kate
 {
 class TextFolding;
 class TextLineData;
-typedef QSharedPointer<TextLineData> TextLine;
+typedef std::shared_ptr<TextLineData> TextLine;
 }
 
 class KateTextLayout;
@@ -233,9 +233,9 @@ public:
     /**
      * Change to a different font (soon to be font set?)
      */
-    void increaseFontSizes(qreal step = 1.0);
-    void decreaseFontSizes(qreal step = 1.0);
-    void resetFontSizes();
+    void increaseFontSizes(qreal step = 1.0) const;
+    void decreaseFontSizes(qreal step = 1.0) const;
+    void resetFontSizes() const;
 
     /**
      * Access currently used font.
@@ -283,18 +283,14 @@ public:
      * (see https://bugs.kde.org/show_bug.cgi?id=178594). As this function is internal
      * the way it work will probably change between releases. Be warned!
      */
-    bool isLineRightToLeft(KateLineLayoutPtr lineLayout) const;
+    static bool isLineRightToLeft(KateLineLayoutPtr lineLayout);
 
     /**
      * The ultimate decoration creation function.
      *
      * \param selectionsOnly return decorations for selections and/or dynamic highlighting.
      */
-    QVector<QTextLayout::FormatRange> decorationsForLine(const Kate::TextLine &textLine,
-                                                         int line,
-                                                         bool selectionsOnly = false,
-                                                         bool completionHighlight = false,
-                                                         bool completionSelected = false) const;
+    QVector<QTextLayout::FormatRange> decorationsForLine(const Kate::TextLine &textLine, int line, bool selectionsOnly = false) const;
 
     // Width calculators
     qreal spaceWidth() const;
@@ -377,6 +373,8 @@ public:
      */
     void paintTextLineBackground(QPainter &paint, KateLineLayoutPtr layout, int currentViewLine, int xStart, int xEnd);
 
+    void paintTextLineSelection(QPainter &paint, KateLineLayoutPtr layout, const QVector<QTextLayout::FormatRange> &selRanges);
+
     /**
      * This takes an in index, and returns all the attributes for it.
      * For example, if you have a ktextline, and want the KTextEditor::Attribute
@@ -406,16 +404,16 @@ private:
     /**
      * Paint a trailing space on position (x, y).
      */
-    void paintSpace(QPainter &paint, qreal x, qreal y);
+    void paintSpace(QPainter &paint, qreal x, qreal y) const;
     /**
      * Paint a tab stop marker on position (x, y).
      */
-    void paintTabstop(QPainter &paint, qreal x, qreal y);
+    void paintTabstop(QPainter &paint, qreal x, qreal y) const;
 
     /**
      * Paint a non-breaking space marker on position (x, y).
      */
-    void paintNonBreakSpace(QPainter &paint, qreal x, qreal y);
+    void paintNonBreakSpace(QPainter &paint, qreal x, qreal y) const;
 
     /**
      * Paint non printable spaces bounding box
@@ -425,10 +423,14 @@ private:
     /** Paint a SciTE-like indent marker. */
     void paintIndentMarker(QPainter &paint, uint x, int line);
 
-    void assignSelectionBrushesFromAttribute(QTextLayout::FormatRange &target, const KTextEditor::Attribute &attribute) const;
+    static void assignSelectionBrushesFromAttribute(QTextLayout::FormatRange &target, const KTextEditor::Attribute &attribute);
+
+    void paintCaret(const KTextEditor::Cursor &cursor, const KateLineLayoutPtr &range, QPainter &paint, int xStart, int xEnd);
 
     // update font height
     void updateFontHeight();
+
+    bool hasCustomLineHeight() const;
 
     KTextEditor::DocumentPrivate *const m_doc;
     Kate::TextFolding &m_folding;

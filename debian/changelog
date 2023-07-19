@@ -1,10 +1,161 @@
-ktexteditor (5.90.0-1deepin1) unstable; urgency=medium
+ktexteditor (5.103.0-1.1) unstable; urgency=medium
 
-  * Update symbols for RISC-V GCC 12
+  * Non-maintainer upload.
+  * Add missing Breaks/Replaces of ktexteditor-data against
+    libkf5texteditor-dev. Closes: #1034951
 
- -- Clansty <i@gao4.pw>  Thu, 12 Jan 2023 16:48:00 +0800
+ -- Andreas Metzler <ametzler@debian.org>  Thu, 18 May 2023 18:20:13 +0200
 
-ktexteditor (5.90.0-1) experimental; urgency=medium
+ktexteditor (5.103.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.103.0).
+  * Update build-deps and deps with the info from cmake.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Sun, 12 Feb 2023 21:44:34 +0100
+
+ktexteditor (5.102.0-2) unstable; urgency=medium
+
+  * Team upload.
+  * Update the symbols files from the logs of buildds.
+
+ -- Pino Toscano <pino@debian.org>  Tue, 24 Jan 2023 20:05:35 +0100
+
+ktexteditor (5.102.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.102.0).
+  * Update build-deps and deps with the info from cmake.
+  * Bump Standards-Version to 4.6.2, no change required.
+  * Update symbols from build for 5.102.0.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Sun, 22 Jan 2023 21:35:12 +0100
+
+ktexteditor (5.101.0-2) unstable; urgency=medium
+
+  * Team upload.
+  * Modernize the building more:
+    - add the dh-sequence-pkgkde-symbolshelper build dependency to use the
+      pkgkde_symbolshelper automatically, removing pkg-kde-tools
+    - drop the manually specified pkgkde_symbolshelper addon for dh
+  * Update the symbols files from the logs of buildds.
+
+ -- Pino Toscano <pino@debian.org>  Fri, 16 Dec 2022 10:11:37 +0100
+
+ktexteditor (5.101.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.101.0).
+  * Update build-deps and deps with the info from cmake.
+  * Update symbols from build for 5.101.0.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Tue, 13 Dec 2022 07:40:39 +0100
+
+ktexteditor (5.100.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.99.0).
+  * Update build-deps and deps with the info from cmake.
+  * Update the list of installed files from build logs.
+  * Update symbols from build for 5.99.0.
+  * New upstream release (5.100.0).
+  * Update build-deps and deps with the info from cmake.
+  * Update symbols from build for 5.100.0.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Sat, 19 Nov 2022 23:19:08 +0100
+
+ktexteditor (5.98.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.98.0).
+  * Update build-deps and deps with the info from cmake.
+  * Update symbols from build for 5.98.0.
+  * Add lintian override for false positive about
+    src/script/data/commands/utils.js not being the source.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Sun, 18 Sep 2022 23:13:28 +0200
+
+ktexteditor (5.97.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.97.0).
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Sun, 14 Aug 2022 18:55:43 +0200
+
+ktexteditor (5.96.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.96.0).
+  * Update symbols from build for 5.96.0.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Sun, 31 Jul 2022 13:33:12 +0200
+
+ktexteditor (5.94.0-4) unstable; urgency=medium
+
+  * Team upload.
+  * Update symbols file from the logs of buildds.
+
+ -- Pino Toscano <pino@debian.org>  Tue, 26 Jul 2022 19:30:00 +0200
+
+ktexteditor (5.94.0-3) unstable; urgency=medium
+
+  * Team upload.
+  * Update symbols file. (Closes: #1012965)
+  * Update lintian overrides.
+
+ -- Pino Toscano <pino@debian.org>  Mon, 25 Jul 2022 22:40:16 +0200
+
+ktexteditor (5.94.0-2) unstable; urgency=medium
+
+  * Team upload.
+  * Update symbols file.
+
+ -- Pino Toscano <pino@debian.org>  Thu, 26 May 2022 22:49:48 +0200
+
+ktexteditor (5.94.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.94.0).
+  * Update symbols from build for 5.94.0.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Thu, 19 May 2022 23:59:08 +0200
+
+ktexteditor (5.93.0-2) unstable; urgency=medium
+
+  * Team upload.
+  * Bump Standards-Version to 4.6.1, no changes required.
+  * Modernize building:
+    - add the dh-sequence-kf5 build dependency to use the kf5 addon
+      automatically
+    - drop all the manually specified addons and buildsystem for dh
+  * Remove inactive Uploaders.
+  * Update symbols file.
+
+ -- Pino Toscano <pino@debian.org>  Sun, 15 May 2022 09:15:40 +0200
+
+ktexteditor (5.93.0-1) unstable; urgency=medium
+
+  [ Aurélien COUDERC ]
+  * New upstream release (5.93.0). (Closes: #1010180 and CVE-2022-23853)
+  * Update the list of installed files from build logs.
+  * Update symbols from build for 5.93.0.
+
+ -- Aurélien COUDERC <coucouf@debian.org>  Wed, 11 May 2022 23:22:49 +0200
+
+ktexteditor (5.90.0-2) unstable; urgency=medium
+
+  * Team upload.
+  * CI: enable again blhc, as it works fine now with blhc 0.13.
+  * Update symbols files from the logs of buildds.
+  * Remove 3 obsolete maintscript entries in 1 files.
+  * Drop the libqt5xmlpatterns5-dev, and qtscript5-dev build dependencies,
+    no more needed now.
+  * Mark the xauth, and xvfb build dependencies as !nocheck, as they are needed
+    only during dh_auto_test.
+
+ -- Pino Toscano <pino@debian.org>  Sat, 26 Feb 2022 12:12:24 +0100
+
+ktexteditor (5.90.0-1) unstable; urgency=medium
 
   [ Norbert Preining ]
   * New upstream release (5.89.0).

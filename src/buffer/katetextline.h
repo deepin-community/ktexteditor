@@ -103,23 +103,22 @@ public:
     /**
      * Flags of TextLineData
      */
-    enum Flags { flagAutoWrapped = 1, flagFoldingStartAttribute = 2, flagFoldingStartIndentation = 4, flagLineModified = 8, flagLineSavedOnDisk = 16 };
+    enum Flags { flagAutoWrapped = 1, flagFoldingStartAttribute = 2, flagLineModified = 4, flagLineSavedOnDisk = 8 };
 
     /**
      * Construct an empty text line.
      */
-    TextLineData();
+    TextLineData() = default;
 
     /**
      * Construct an text line with given text.
      * @param text text to use for this line
      */
-    explicit TextLineData(const QString &text);
-
-    /**
-     * Destruct the text line
-     */
-    ~TextLineData();
+    explicit TextLineData(const QString &text)
+        : m_text(text)
+        , m_flags(0)
+    {
+    }
 
     /**
      * Accessor to the text contained in this line.
@@ -167,21 +166,7 @@ public:
     inline QChar at(int column) const
     {
         if (column >= 0 && column < m_text.length()) {
-            return m_text[column];
-        }
-
-        return QChar();
-    }
-
-    /**
-     * Same as at().
-     * @param column column you want char for
-     * @return char at given column or QChar()
-     */
-    inline QChar operator[](int column) const
-    {
-        if (column >= 0 && column < m_text.length()) {
-            return m_text[column];
+            return m_text.at(column);
         }
 
         return QChar();
@@ -218,20 +203,11 @@ public:
     }
 
     /**
-     * Is on this line a folding start?
-     * @return folding start line or not?
-     */
-    bool markedAsFoldingStart() const
-    {
-        return m_flags & (flagFoldingStartAttribute | flagFoldingStartIndentation);
-    }
-
-    /**
      * Clear folding start status.
      */
     void clearMarkedAsFoldingStart()
     {
-        m_flags &= ~(flagFoldingStartAttribute | flagFoldingStartIndentation);
+        m_flags &= ~flagFoldingStartAttribute;
     }
 
     /**
@@ -244,30 +220,11 @@ public:
     }
 
     /**
-     * Is on this line a folding start per indentation?
-     * @return folding start line per indentation? or not?
-     */
-    bool markedAsFoldingStartIndentation() const
-    {
-        return m_flags & flagFoldingStartIndentation;
-    }
-
-    /**
      * Mark as folding start line of an attribute based folding.
      */
     void markAsFoldingStartAttribute()
     {
-        clearMarkedAsFoldingStart();
         m_flags |= flagFoldingStartAttribute;
-    }
-
-    /**
-     * Mark as folding start line of an indentation based folding.
-     */
-    void markAsFoldingStartIndentation()
-    {
-        clearMarkedAsFoldingStart();
-        m_flags |= flagFoldingStartIndentation;
     }
 
     /**
@@ -286,15 +243,6 @@ public:
     bool isAutoWrapped() const
     {
         return m_flags & flagAutoWrapped;
-    }
-
-    /**
-     * Returns the complete text line (as a QString reference).
-     * @return text of this line, read-only
-     */
-    const QString &string() const
-    {
-        return m_text;
     }
 
     /**
@@ -482,8 +430,7 @@ private:
 /**
  * The normal world only accesses the text lines with shared pointers.
  */
-typedef QSharedPointer<TextLineData> TextLine;
-
+typedef std::shared_ptr<TextLineData> TextLine;
 }
 
 #endif

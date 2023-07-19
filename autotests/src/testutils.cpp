@@ -158,9 +158,19 @@ void KateViewObject::type(const QString &str)
     view()->doc()->typeChars(view(), str);
 }
 
+void KateViewObject::paste(const QString &str)
+{
+    view()->doc()->paste(view(), str);
+}
+
 void KateViewObject::setAutoBrackets(bool enable)
 {
     view()->config()->setValue(KateViewConfig::AutoBrackets, enable);
+}
+
+void KateViewObject::replaceTabs(bool enable)
+{
+    view()->doc()->config()->setValue(KateDocumentConfig::ReplaceTabsWithSpaces, enable);
 }
 
 #define ALIAS(alias, func)                                                                                                                                     \

@@ -61,12 +61,12 @@ void KateExporter::exportData(const bool useSelection, QTextStream &output)
         return;
     }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     output.setCodec(QTextCodec::codecForName("UTF-8"));
+#endif
 
     /// TODO: add more exporters
-    QScopedPointer<AbstractExporter> exporter;
-
-    exporter.reset(new HTMLExporter(m_view, output, !useSelection));
+    std::unique_ptr<AbstractExporter> exporter = std::make_unique<HTMLExporter>(m_view, output, !useSelection);
 
     const KTextEditor::Attribute::Ptr noAttrib(nullptr);
 

@@ -47,8 +47,16 @@ inline static bool overlapScrollBar()
 }
 }
 
-void KateModeMenuList::init(const SearchBarPosition searchBarPos)
+void KateModeMenuList::init()
 {
+    connect(this, &QMenu::aboutToShow, this, &KateModeMenuList::onAboutToShowMenu);
+}
+
+void KateModeMenuList::onAboutToShowMenu()
+{
+    if (m_initialized) {
+        return;
+    }
     /*
      * Fix font size & font style: display the font correctly when changing it from the
      * KDE Plasma preferences. For example, the font type "Menu" is displayed, but "font()"
@@ -164,13 +172,8 @@ void KateModeMenuList::init(const SearchBarPosition searchBarPos)
     }
 
     layoutSearchBar->addWidget(m_searchBar);
-    if (searchBarPos == Top) {
-        layoutContainer->addLayout(layoutSearchBar);
-    }
     layoutContainer->addLayout(m_layoutList);
-    if (searchBarPos == Bottom) {
-        layoutContainer->addLayout(layoutSearchBar);
-    }
+    layoutContainer->addLayout(layoutSearchBar);
 
     QWidgetAction *widAct = new QWidgetAction(this);
     widAct->setDefaultWidget(container);
@@ -181,10 +184,17 @@ void KateModeMenuList::init(const SearchBarPosition searchBarPos)
      * This also applies to double-clicks.
      */
     connect(m_list, &KateModeMenuListData::ListView::clicked, this, &KateModeMenuList::selectHighlighting);
+
+    m_initialized = true;
 }
 
 void KateModeMenuList::reloadItems()
 {
+    // We aren't initialized, nothing to reload
+    if (!m_initialized) {
+        return;
+    }
+
     const QString searchText = m_searchBar->text().trimmed();
     m_searchBar->m_bestResults.clear();
     if (!isHidden()) {
@@ -731,7 +741,7 @@ bool KateModeMenuListData::ListItem::matchExtension(const QString &text) const
         } else if (text.length() != ext.length() || ext.endsWith(QLatin1Char('*'))) {
             continue;
             // Full name
-        } else if (text.compare(&ext, Qt::CaseInsensitive) == 0) {
+        } else if (text.compare(ext, Qt::CaseInsensitive) == 0) {
             return true;
         }
     }
@@ -983,8 +993,8 @@ void KateModeMenuListData::SearchLine::updateSearch(const QString &s)
          * be displayed, as it isn't necessary.
          */
         if (!bNotShowBestResults
-            && (item->getSearchName().compare(&searchText, m_caseSensitivity) == 0
-                || (bExactMatch && item->getMode()->nameTranslated().compare(&searchText, m_caseSensitivity) == 0))) {
+            && (item->getSearchName().compare(searchText, m_caseSensitivity) == 0
+                || (bExactMatch && item->getMode()->nameTranslated().compare(searchText, m_caseSensitivity) == 0))) {
             if (lastItem == -1) {
                 bNotShowBestResults = true;
             } else {

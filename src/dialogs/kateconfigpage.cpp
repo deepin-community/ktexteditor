@@ -11,10 +11,10 @@
 
 #include <QAbstractButton>
 #include <QAbstractSlider>
-#include <QAbstractSpinBox>
 #include <QComboBox>
 #include <QGroupBox>
 #include <QLineEdit>
+#include <QSpinBox>
 
 KateConfigPage::KateConfigPage(QWidget *parent, const char *)
     : KTextEditor::ConfigPage(parent)
@@ -26,47 +26,52 @@ KateConfigPage::~KateConfigPage()
 {
 }
 
-void KateConfigPage::observeChanges(KateConfigPage *page)
+void KateConfigPage::observeChanges(KateConfigPage *page) const
 {
     connect(page, &KateConfigPage::changed, this, &KateConfigPage::slotChanged);
 }
 
-void KateConfigPage::observeChanges(KUrlRequester *requester)
+void KateConfigPage::observeChanges(KUrlRequester *requester) const
 {
     connect(requester, &KUrlRequester::textChanged, this, &KateConfigPage::slotChanged);
 }
 
-void KateConfigPage::observeChanges(QAbstractButton *button)
+void KateConfigPage::observeChanges(QAbstractButton *button) const
 {
     connect(button, &QAbstractButton::toggled, this, &KateConfigPage::slotChanged);
 }
 
-void KateConfigPage::observeChanges(QAbstractSlider *slider)
+void KateConfigPage::observeChanges(QAbstractSlider *slider) const
 {
     connect(slider, &QAbstractSlider::valueChanged, this, &KateConfigPage::slotChanged);
 }
 
-void KateConfigPage::observeChanges(QAbstractSpinBox *spinBox)
+void KateConfigPage::observeChanges(QSpinBox *spinBox) const
 {
-    connect(spinBox, &QAbstractSpinBox::editingFinished, this, &KateConfigPage::slotChanged);
+    connect(spinBox, &QSpinBox::textChanged, this, &KateConfigPage::slotChanged);
 }
 
-void KateConfigPage::observeChanges(QComboBox *comboBox)
+void KateConfigPage::observeChanges(QDoubleSpinBox *spinBox) const
+{
+    connect(spinBox, &QDoubleSpinBox::textChanged, this, &KateConfigPage::slotChanged);
+}
+
+void KateConfigPage::observeChanges(QComboBox *comboBox) const
 {
     connect(comboBox, qOverload<int>(&QComboBox::currentIndexChanged), this, &KateConfigPage::slotChanged);
 }
 
-void KateConfigPage::observeChanges(QGroupBox *groupBox)
+void KateConfigPage::observeChanges(QGroupBox *groupBox) const
 {
     connect(groupBox, &QGroupBox::toggled, this, &KateConfigPage::slotChanged);
 }
 
-void KateConfigPage::observeChanges(QLineEdit *lineEdit)
+void KateConfigPage::observeChanges(QLineEdit *lineEdit) const
 {
     connect(lineEdit, &QLineEdit::textChanged, this, &KateConfigPage::slotChanged);
 }
 
-void KateConfigPage::observeChanges(KFontRequester *chooser)
+void KateConfigPage::observeChanges(KFontRequester *chooser) const
 {
     connect(chooser, &KFontRequester::fontSelected, this, &KateConfigPage::slotChanged);
 }

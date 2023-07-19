@@ -24,6 +24,7 @@ namespace KTextEditor
 {
 class Document;
 class View;
+class ViewPrivate;
 class Cursor;
 }
 
@@ -193,10 +194,10 @@ private Q_SLOTS:
     void updateModified();
 
     void undoCancel();
-    void viewCreated(KTextEditor::Document *, KTextEditor::View *newView);
+    void viewCreated(KTextEditor::Document *, KTextEditor::View *newView) const;
 
 private:
-    KTextEditor::View *activeView();
+    KTextEditor::ViewPrivate *activeView();
 
 private:
     KTextEditor::DocumentPrivate *m_document = nullptr;
@@ -211,6 +212,11 @@ private:
     KateUndoGroup *lastRedoGroupWhenSaved = nullptr;
     bool docWasSavedWhenUndoWasEmpty = true;
     bool docWasSavedWhenRedoWasEmpty = true;
+
+    // saved undo items that are used to restore state on doc reload
+    QList<KateUndoGroup *> savedUndoItems;
+    QList<KateUndoGroup *> savedRedoItems;
+    QByteArray docChecksumBeforeReload;
 };
 
 #endif

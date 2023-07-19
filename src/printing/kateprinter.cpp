@@ -103,6 +103,7 @@ bool KatePrinterPrivate::print(QPrinter *printer)
     m_painter.setPrintLineNumbers(kpts->printLineNumbers());
 
     m_painter.setColorScheme(kpl->colorScheme());
+    m_painter.setTextFont(kpl->textFont());
     m_painter.setUseBackground(kpl->useBackground());
     m_painter.setUseBox(kpl->useBox());
     m_painter.setBoxMargin(kpl->boxMargin());
@@ -186,7 +187,7 @@ bool KatePrinter::printPreview(KTextEditor::ViewPrivate *view)
     QPrinter printer;
     KatePrinterPrivate p(view->doc(), view);
     p.setColorScheme(QStringLiteral("Printing"));
-    QPrintPreviewDialog preview(&printer);
+    QPrintPreviewDialog preview(&printer, view);
     QObject::connect(&preview, &QPrintPreviewDialog::paintRequested, &p, &KatePrinterPrivate::paint);
     return preview.exec();
 }

@@ -32,17 +32,21 @@ public:
     ~KateSpellingMenu() override;
 
     bool isEnabled() const;
+    bool isVisible() const;
 
     void createActions(KActionCollection *ac);
 
     /**
      * This method has to be called before the menu is shown in response to a context
-     * menu event. It will trigger that the misspelled range located under the mouse pointer
-     * is considered for the spelling suggestions.
+     * menu event. Ensure contextMenu is valid pointer!
      **/
-    void setUseMouseForMisspelledRange(bool b);
+    void prepareToBeShown(QMenu *contextMenu);
 
-public Q_SLOTS:
+    /**
+     * This method has to be called after a context menu event.
+     **/
+    void cleanUpAfterShown();
+
     void setEnabled(bool b);
     void setVisible(bool b);
 
@@ -50,11 +54,17 @@ protected:
     KTextEditor::ViewPrivate *m_view;
     KActionMenu *m_spellingMenuAction;
     QAction *m_ignoreWordAction, *m_addToDictionaryAction;
+    QActionGroup *m_dictionaryGroup;
+    QList<QAction *> m_menuOnTopSuggestionList;
     QMenu *m_spellingMenu;
     KTextEditor::MovingRange *m_currentMisspelledRange;
-    KTextEditor::MovingRange *m_currentMouseMisspelledRange;
-    KTextEditor::MovingRange *m_currentCaretMisspelledRange;
-    bool m_useMouseForMisspelledRange;
+    /**
+     * Set to true when a word was selected. Needed because in such case we got no "exited-notification"
+     * and end up with an always active m_currentMisspelledRange
+     **/
+    bool m_currentMisspelledRangeNeedCleanUp = false;
+    KTextEditor::Range m_selectedRange;
+    QString m_currentDictionary;
     QStringList m_currentSuggestions;
 
     // These methods are called from KateOnTheFlyChecker to inform about events involving
@@ -62,8 +72,6 @@ protected:
     void rangeDeleted(KTextEditor::MovingRange *range);
     void caretEnteredMisspelledRange(KTextEditor::MovingRange *range);
     void caretExitedMisspelledRange(KTextEditor::MovingRange *range);
-    void mouseEnteredMisspelledRange(KTextEditor::MovingRange *range);
-    void mouseExitedMisspelledRange(KTextEditor::MovingRange *range);
 
 protected Q_SLOTS:
     void populateSuggestionsMenu();

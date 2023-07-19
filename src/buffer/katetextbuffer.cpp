@@ -6,7 +6,6 @@
 #include "config.h"
 #include "kateglobal.h"
 
-#include "katesecuretextbuffer_p.h"
 #include "katetextbuffer.h"
 #include "katetextloader.h"
 
@@ -15,6 +14,7 @@
 // this is unfortunate, but needed for performance
 #include "katepartdebug.h"
 #include "kateview.h"
+
 
 #ifndef Q_OS_WIN
 #include <cerrno>
@@ -30,6 +30,12 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTemporaryFile>
+
+#if HAVE_KAUTH
+#include "katesecuretextbuffer_p.h"
+#include <KAuth/Action>
+#include <KAuth/ExecuteJob>
+#endif
 
 #if 0
 #define BUFFER_DEBUG qCDebug(LOG_KTE)
@@ -59,7 +65,6 @@ TextBuffer::TextBuffer(KTextEditor::DocumentPrivate *parent, int blockSize, bool
     , m_textCodec(nullptr)
     , m_generateByteOrderMark(false)
     , m_endOfLineMode(eolUnix)
-    , m_newLineAtEof(false)
     , m_lineLengthLimit(4096)
     , m_alwaysUseKAuthForSave(alwaysUseKAuth)
 {
@@ -411,7 +416,7 @@ int TextBuffer::blockForLine(int line) const
 {
     // only allow valid lines
     if ((line < 0) || (line >= lines())) {
-        qFatal("out of range line requested in text buffer (%d out of [0, %d[)", line, lines());
+        qFatal("out of range line requested in text buffer (%d out of [0, %d])", line, lines());
     }
 
     // we need blocks and last used block should not be negative
@@ -750,15 +755,7 @@ bool TextBuffer::save(const QString &filename)
 
 bool TextBuffer::saveBuffer(const QString &filename, KCompressionDevice &saveFile)
 {
-    // construct stream + disable Unicode headers
-    QTextStream stream(&saveFile);
-    stream.setCodec(QTextCodec::codecForName("UTF-16"));
-
-    // set the correct codec
-    stream.setCodec(m_textCodec);
-
-    // generate byte order mark?
-    stream.setGenerateByteOrderMark(generateByteOrderMark());
+    std::unique_ptr<QTextEncoder> encoder(m_textCodec->makeEncoder(generateByteOrderMark() ? QTextCodec::DefaultConversion : QTextCodec::IgnoreHeader));
 
     // our loved eol string ;)
     QString eol = QStringLiteral("\n");
@@ -771,38 +768,21 @@ bool TextBuffer::saveBuffer(const QString &filename, KCompressionDevice &saveFil
     // just dump the lines out ;)
     for (int i = 0; i < m_lines; ++i) {
         // dump current line
-        stream << line(i)->text();
+        saveFile.write(encoder->fromUnicode(line(i)->text()));
 
         // append correct end of line string
         if ((i + 1) < m_lines) {
-            stream << eol;
+            saveFile.write(encoder->fromUnicode(eol));
         }
 
         // early out on stream errors
-        if (stream.status() != QTextStream::Ok) {
+        if (saveFile.error() != QFileDevice::NoError) {
             return false;
         }
     }
 
-    // do we need to add a trailing newline char?
-    if (m_newLineAtEof) {
-        Q_ASSERT(m_lines > 0); // see .h file
-        const Kate::TextLine lastLine = line(m_lines - 1);
-        const int firstChar = lastLine->firstChar();
-        if (firstChar > -1 || lastLine->length() > 0) {
-            stream << eol;
-        }
-    }
-
-    // flush stream
-    // TODO: QTextStream::flush only writes bytes when it contains text. This is a fine optimization for most cases, but this makes saving
+    // TODO: this only writes bytes when there is text. This is a fine optimization for most cases, but this makes saving
     // an empty file with the BOM set impossible (results to an empty file with 0 bytes, no BOM)
-    stream.flush();
-
-    // only finalize if stream status == OK
-    if (stream.status() != QTextStream::Ok) {
-        return false;
-    }
 
     // close the file, we might want to read from underlying buffer below
     saveFile.close();
@@ -826,7 +806,7 @@ TextBuffer::SaveResult TextBuffer::saveBufferUnprivileged(const QString &filenam
     // construct correct filter device
     // we try to use the same compression as for opening
     const KCompressionDevice::CompressionType type = KCompressionDevice::compressionTypeForMimeType(m_mimeTypeForFilterDev);
-    QScopedPointer<KCompressionDevice> saveFile(new KCompressionDevice(filename, type));
+    auto saveFile = std::make_unique<KCompressionDevice>(filename, type);
 
     if (!saveFile->open(QIODevice::WriteOnly)) {
 #ifdef CAN_USE_ERRNO
@@ -846,13 +826,14 @@ TextBuffer::SaveResult TextBuffer::saveBufferUnprivileged(const QString &filenam
 
 bool TextBuffer::saveBufferEscalated(const QString &filename)
 {
+#if HAVE_KAUTH
     // construct correct filter device
     // we try to use the same compression as for opening
     const KCompressionDevice::CompressionType type = KCompressionDevice::compressionTypeForMimeType(m_mimeTypeForFilterDev);
-    QScopedPointer<KCompressionDevice> saveFile(new KCompressionDevice(filename, type));
+    auto saveFile = std::make_unique<KCompressionDevice>(filename, type);
     uint ownerId = -2;
     uint groupId = -2;
-    QScopedPointer<QIODevice> temporaryBuffer;
+    std::unique_ptr<QIODevice> temporaryBuffer;
 
     // Memorize owner and group.
     const QFileInfo fileInfo(filename);
@@ -863,7 +844,7 @@ bool TextBuffer::saveBufferEscalated(const QString &filename)
 
     // if that fails we need more privileges to save this file
     // -> we write to a temporary file and then send its path to KAuth action for privileged save
-    temporaryBuffer.reset(new QBuffer());
+    temporaryBuffer = std::make_unique<QBuffer>();
 
     // open buffer for write and read (read is used for checksum computing and writing to temporary file)
     if (!temporaryBuffer->open(QIODevice::ReadWrite)) {
@@ -871,7 +852,7 @@ bool TextBuffer::saveBufferEscalated(const QString &filename)
     }
 
     // we are now saving to a temporary buffer with potential compression proxy
-    saveFile.reset(new KCompressionDevice(temporaryBuffer.data(), false, type));
+    saveFile = std::make_unique<KCompressionDevice>(temporaryBuffer.get(), false, type);
     if (!saveFile->open(QIODevice::WriteOnly)) {
         return false;
     }
@@ -931,6 +912,10 @@ bool TextBuffer::saveBufferEscalated(const QString &filename)
     }
 
     return true;
+#else
+    Q_UNUSED(filename);
+    return false;
+#endif
 }
 
 void TextBuffer::notifyAboutRangeChange(KTextEditor::View *view, KTextEditor::LineRange lineRange, bool needsRepaint)

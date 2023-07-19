@@ -8,8 +8,8 @@
 #include "katecompletiontree.h"
 
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QHeaderView>
+#include <QScreen>
 #include <QScrollBar>
 #include <QTimer>
 #include <QVector>
@@ -19,12 +19,13 @@
 #include "katerenderer.h"
 #include "kateview.h"
 
+#include "documentation_tip.h"
 #include "katecompletiondelegate.h"
 #include "katecompletionmodel.h"
 #include "katecompletionwidget.h"
 
 KateCompletionTree::KateCompletionTree(KateCompletionWidget *parent)
-    : ExpandingTree(parent)
+    : QTreeView(parent)
 {
     m_scrollingEnabled = true;
     header()->hide();
@@ -33,6 +34,9 @@ KateCompletionTree::KateCompletionTree(KateCompletionWidget *parent)
     setFrameStyle(QFrame::NoFrame);
     setAllColumnsShowFocus(true);
     setAlternatingRowColors(true);
+    setUniformRowHeights(true);
+    header()->setMinimumSectionSize(0);
+
     // We need ScrollPerItem, because ScrollPerPixel is too slow with a very large completion-list(see KDevelop).
     setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
 
@@ -42,7 +46,7 @@ KateCompletionTree::KateCompletionTree(KateCompletionWidget *parent)
     connect(m_resizeTimer, &QTimer::timeout, this, &KateCompletionTree::resizeColumnsSlot);
 
     // Provide custom highlighting to completion entries
-    setItemDelegate(new KateCompletionDelegate(widget()->model(), widget()));
+    setItemDelegate(new KateCompletionDelegate(this));
     // make sure we adapt to size changes when the model got reset
     // this is important for delayed creation of groups, without this
     // the first column would never get resized to the correct size
@@ -55,8 +59,12 @@ KateCompletionTree::KateCompletionTree(KateCompletionWidget *parent)
 
 void KateCompletionTree::currentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
+    // If config is enabled OR the tip is already visible => show / update it
+    if (widget()->view()->config()->showDocWithCompletion() || widget()->docTip()->isVisible()) {
+        widget()->showDocTip(current);
+    }
     widget()->model()->rowSelected(current);
-    ExpandingTree::currentChanged(current, previous);
+    QTreeView::currentChanged(current, previous);
 }
 
 void KateCompletionTree::setScrollingEnabled(bool enabled)
@@ -75,26 +83,6 @@ void KateCompletionTree::scrollContentsBy(int dx, int dy)
     }
 }
 
-int KateCompletionTree::columnTextViewportPosition(int column) const
-{
-    int ret = columnViewportPosition(column);
-    QModelIndex i = model()->index(0, column, QModelIndex());
-    QModelIndex base = model()->index(0, 0, QModelIndex());
-
-    // If it's just a group header, use the first child
-    if (base.isValid() && model()->rowCount(base)) {
-        i = model()->index(0, column, base);
-    }
-
-    if (i.isValid()) {
-        QIcon icon = i.data(Qt::DecorationRole).value<QIcon>();
-        if (!icon.isNull()) {
-            ret += icon.actualSize(sizeHintForIndex(i)).width();
-        }
-    }
-    return ret;
-}
-
 KateCompletionWidget *KateCompletionTree::widget() const
 {
     return static_cast<KateCompletionWidget *>(const_cast<QObject *>(parent()));
@@ -104,6 +92,10 @@ void KateCompletionTree::resizeColumnsSlot()
 {
     if (model()) {
         resizeColumns();
+
+        if (!widget()->docTip()->isHidden()) {
+            widget()->docTip()->updatePosition();
+        }
     }
 }
 
@@ -183,7 +175,7 @@ void KateCompletionTree::resizeColumns(bool firstShow, bool forceResize)
     const int numColumns = model()->columnCount();
     QVarLengthArray<int, 8> columnSize(numColumns);
     for (int i = 0; i < numColumns; ++i) {
-        columnSize[i] = 5;
+        columnSize[i] = 0;
     }
     QModelIndex current = indexAt(QPoint(1, 1));
     //    const bool changed = current.isValid();
@@ -193,7 +185,7 @@ void KateCompletionTree::resizeColumns(bool firstShow, bool forceResize)
     auto totalColumnsWidth = 0;
     auto originalViewportWidth = viewport()->width();
 
-    int maxWidth = (QApplication::desktop()->screenGeometry(widget()->view()).width()) / 2;
+    const int maxWidth = (widget()->view()->screen()->availableGeometry().width()) / 2;
 
     /// Step 2: Update column-sizes
     // This contains several hacks to reduce the amount of resizing that happens. Generally,
@@ -302,12 +294,20 @@ void KateCompletionTree::resizeColumns(bool firstShow, bool forceResize)
     preventRecursion = false;
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void KateCompletionTree::initViewItemOption(QStyleOptionViewItem *option) const
+{
+    QTreeView::initViewItemOption(option);
+    option->font = widget()->view()->renderer()->currentFont();
+}
+#else
 QStyleOptionViewItem KateCompletionTree::viewOptions() const
 {
     QStyleOptionViewItem opt = QTreeView::viewOptions();
     opt.font = widget()->view()->renderer()->currentFont();
     return opt;
 }
+#endif
 
 KateCompletionModel *KateCompletionTree::kateModel() const
 {

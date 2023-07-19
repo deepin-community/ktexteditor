@@ -440,6 +440,38 @@ void TextFolding::debugPrint(const QString &title) const
     printf("%s\n    %s\n", qPrintable(title), qPrintable(debugDump()));
 }
 
+void TextFolding::editEnd(int startLine, int endLine, std::function<bool(int)> isLineFoldingStart)
+{
+    // search upper bound, index to item with start line higher than our one
+    auto foldIt = std::upper_bound(m_foldedFoldingRanges.begin(), m_foldedFoldingRanges.end(), startLine, compareRangeByStartWithLine);
+    if (foldIt != m_foldedFoldingRanges.begin()) {
+        --foldIt;
+    }
+
+    // handle all ranges until we go behind the last line
+    bool anyUpdate = false;
+    while (foldIt != m_foldedFoldingRanges.end() && (*foldIt)->start->line() <= endLine) {
+        // shall we keep this folding?
+        if (isLineFoldingStart((*foldIt)->start->line())) {
+            ++foldIt;
+            continue;
+        }
+
+        // else kill it
+        m_foldingRanges.removeOne(*foldIt);
+        m_idToFoldingRange.remove((*foldIt)->id);
+        delete *foldIt;
+        foldIt = m_foldedFoldingRanges.erase(foldIt);
+        anyUpdate = true;
+    }
+
+    // ensure we do the proper updates outside
+    // we might change some range outside of the lines we edited
+    if (anyUpdate) {
+        Q_EMIT foldingRangesChanged();
+    }
+}
+
 QString TextFolding::debugDump(const TextFolding::FoldingRange::Vector &ranges, bool recurse)
 {
     // dump all ranges recursively
@@ -692,10 +724,13 @@ void TextFolding::appendFoldedRanges(TextFolding::FoldingRange::Vector &newFolde
 
 QJsonDocument TextFolding::exportFoldingRanges() const
 {
+    QJsonObject obj;
     QJsonArray array;
     exportFoldingRanges(m_foldingRanges, array);
+    obj.insert(QStringLiteral("ranges"), array);
+    obj.insert(QStringLiteral("checksum"), QString::fromLocal8Bit(m_buffer.digest().toHex()));
     QJsonDocument folds;
-    folds.setArray(array);
+    folds.setObject(obj);
     return folds;
 }
 
@@ -721,8 +756,13 @@ void TextFolding::importFoldingRanges(const QJsonDocument &folds)
 {
     clearFoldingRanges();
 
+    const auto checksum = QByteArray::fromHex(folds.object().value(QStringLiteral("checksum")).toString().toLocal8Bit());
+    if (checksum != m_buffer.digest()) {
+        return;
+    }
+
     // try to create all folding ranges
-    const auto jsonRanges = folds.array();
+    const auto jsonRanges = folds.object().value(QStringLiteral("ranges")).toArray();
     for (const auto &rangeVariant : jsonRanges) {
         // get map
         const auto rangeMap = rangeVariant.toObject();

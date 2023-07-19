@@ -71,6 +71,7 @@ class OpenSaveConfigWidget;
 class OpenSaveConfigAdvWidget;
 class CompletionConfigTab;
 class SpellCheckConfigWidget;
+class StatusbarConfigWidget;
 }
 
 class KateGotoBar : public KateViewBarWidget
@@ -217,6 +218,8 @@ public:
 private:
     Ui::NavigationConfigWidget *ui;
 
+    void initMulticursorModifierComboBox();
+
 public Q_SLOTS:
     void apply() override;
     void reload() override;
@@ -301,6 +304,7 @@ public Q_SLOTS:
 private:
     Ui::TextareaAppearanceConfigWidget *const textareaUi;
     Ui::BordersAppearanceConfigWidget *const bordersUi;
+    Ui::StatusbarConfigWidget *const statusBarUi;
 };
 
 class KateSaveConfigTab : public KateConfigPage
@@ -376,6 +380,7 @@ private:
     KTextEditor::DocumentPrivate *m_doc;
     QPointer<KTextEditor::Message> m_message;
     KTextEditor::ModificationInterface::ModifiedOnDiskReason m_modtype;
+    QString m_fullDiffPath;
     KProcess *m_proc;
     QTemporaryFile *m_diffFile;
     QAction *m_diffAction;

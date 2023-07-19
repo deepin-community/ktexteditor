@@ -17,6 +17,8 @@
 #include "expandingtree/expandingwidgetmodel.h"
 #include <ktexteditor_export.h>
 
+#include <set>
+
 class KateCompletionWidget;
 class KateArgumentHintModel;
 namespace KTextEditor
@@ -39,6 +41,10 @@ class KTEXTEDITOR_EXPORT KateCompletionModel : public ExpandingWidgetModel
     Q_OBJECT
 
 public:
+    enum InternalRole {
+        IsNonEmptyGroup = KTextEditor::CodeCompletionModel::LastExtraItemDataRole + 1,
+    };
+
     explicit KateCompletionModel(KateCompletionWidget *parent = nullptr);
     ~KateCompletionModel() override;
 
@@ -53,10 +59,7 @@ public:
     KateCompletionWidget *widget() const;
 
     QString currentCompletion(KTextEditor::CodeCompletionModel *model) const;
-    void setCurrentCompletion(KTextEditor::CodeCompletionModel *model, const QString &completion);
-
-    Qt::CaseSensitivity matchCaseSensitivity() const;
-    Qt::CaseSensitivity exactMatchCaseSensitivity() const;
+    void setCurrentCompletion(QMap<KTextEditor::CodeCompletionModel *, QString> currentMatch);
 
     int translateColumn(int sourceColumn) const;
 
@@ -64,7 +67,7 @@ public:
     /// If there is no common prefix, extracts the next useful prefix for the selected index
     QString commonPrefix(QModelIndex selectedIndex) const;
 
-    void rowSelected(const QModelIndex &row) override;
+    void rowSelected(const QModelIndex &row) const;
 
     bool indexIsItem(const QModelIndex &index) const override;
 
@@ -80,18 +83,11 @@ public:
     QModelIndex parent(const QModelIndex &index) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 
-    // Disabled in case of bugs, reenable once fully debugged.
-    // virtual QModelIndex sibling ( int row, int column, const QModelIndex & index ) const;
-    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
-
     /// Maps from this display-model into the appropriate source code-completion model
     virtual QModelIndex mapToSource(const QModelIndex &proxyIndex) const;
 
     /// Maps from an index in a source-model to the index of the item in this display-model
     virtual QModelIndex mapFromSource(const QModelIndex &sourceIndex) const;
-
-    // Grouping
-    bool isGroupingEnabled() const;
 
     enum gm { ScopeType = 0x1, Scope = 0x2, AccessType = 0x4, ItemType = 0x8 };
 
@@ -104,22 +100,6 @@ public:
     static const int ScopeTypeMask = 0x380000;
     static const int AccessTypeMask = 0x7;
     static const int ItemTypeMask = 0xfe0;
-
-    GroupingMethods groupingMethod() const;
-    void setGroupingMethod(GroupingMethods m);
-
-    bool accessIncludeConst() const;
-    void setAccessIncludeConst(bool include);
-    bool accessIncludeStatic() const;
-    void setAccessIncludeStatic(bool include);
-    bool accessIncludeSignalSlot() const;
-    void setAccessIncludeSignalSlot(bool include);
-
-    // Column merging
-    bool isColumnMergingEnabled() const;
-
-    const QList<QList<int>> &columnMerges() const;
-    void setColumnMerges(const QList<QList<int>> &columnMerges);
 
     void debugStats();
 
@@ -135,10 +115,6 @@ Q_SIGNALS:
     void expandIndex(const QModelIndex &index);
     // Emitted whenever something has changed about the group of argument-hints
     void argumentHintsChanged();
-
-public Q_SLOTS:
-    void setGroupingEnabled(bool enable);
-    void setColumnMergingEnabled(bool enable);
 
 private Q_SLOTS:
     void slotRowsInserted(const QModelIndex &parent, int start, int end);
@@ -158,7 +134,7 @@ private:
     QTreeView *treeView() const override;
 
     friend class KateArgumentHintModel;
-    ModelRow modelRowPair(const QModelIndex &index) const;
+    static ModelRow modelRowPair(const QModelIndex &index);
 
     // Represents a source row; provides sorting method
     class Item
@@ -169,10 +145,6 @@ private:
         bool isValid() const;
         // Returns true if the item is not filtered and matches the current completion string
         bool isVisible() const;
-        // Returns whether the item is filtered or not
-        bool isFiltered() const;
-        // Returns whether the item matches the current completion string
-        bool isMatching() const;
 
         enum MatchType { NoMatch = 0, PerfectMatch, StartsWithMatch, AbbreviationMatch, ContainsMatch };
         MatchType match();
@@ -201,7 +173,7 @@ private:
         KateCompletionModel *model;
         ModelRow m_sourceRow;
 
-        mutable QString m_nameColumn;
+        QString m_nameColumn;
 
         int inheritanceDepth;
 
@@ -251,6 +223,8 @@ public:
         int customSortingKey;
     };
 
+    typedef std::set<Group *> GroupSet;
+
     bool hasGroups() const;
 
 private:
@@ -259,16 +233,16 @@ private:
     void createGroups();
     /// Creates all sub-items of index i, or the item corresponding to index i. Returns the affected groups.
     /// i must be an index in the source model
-    QSet<Group *> createItems(const HierarchicalModelHandler &, const QModelIndex &i, bool notifyModel = false);
+    GroupSet createItems(const HierarchicalModelHandler &, const QModelIndex &i, bool notifyModel = false);
     /// Deletes all sub-items of index i, or the item corresponding to index i. Returns the affected groups.
     /// i must be an index in the source model
-    QSet<Group *> deleteItems(const QModelIndex &i);
+    GroupSet deleteItems(const QModelIndex &i);
     Group *createItem(const HierarchicalModelHandler &, const QModelIndex &i, bool notifyModel = false);
     /// @note Make sure you're in a {begin,end}ResetModel block when calling this!
     void clearGroups();
     void hideOrShowGroup(Group *g, bool notifyModel = false);
     /// When forceGrouping is enabled, all given attributes will be used for grouping, regardless of the completion settings.
-    Group *fetchGroup(int attribute, const QString &scope = QString(), bool forceGrouping = false);
+    Group *fetchGroup(int attribute, bool forceGrouping = false);
     // If this returns nonzero on an index, the index is the header of the returned group
     Group *groupForIndex(const QModelIndex &index) const;
     inline Group *groupOfParent(const QModelIndex &child) const
@@ -281,17 +255,17 @@ private:
     enum changeTypes { Broaden, Narrow, Change };
 
     // Returns whether the model needs to be reset
-    void changeCompletions(Group *g, changeTypes changeType, bool notifyModel);
+    void changeCompletions(Group *g);
 
     bool hasCompletionModel() const;
 
     /// Removes attributes not used in grouping from the input \a attribute
     int groupingAttributes(int attribute) const;
-    int countBits(int value) const;
+    static int countBits(int value);
 
     void resort();
 
-    static bool matchesAbbreviation(const QString &word, const QString &typed, Qt::CaseSensitivity caseSensitive);
+    static bool matchesAbbreviation(const QString &word, const QString &typed, int &score);
 
     bool m_hasGroups = false;
 
@@ -316,19 +290,6 @@ private:
     QMultiHash<int, Group *> m_groupHash;
     // Maps custom group-names to their specific groups
     QHash<QString, Group *> m_customGroupHash;
-
-    // ### Configurable state
-    // Matching
-    Qt::CaseSensitivity m_matchCaseSensitivity = Qt::CaseInsensitive;
-    Qt::CaseSensitivity m_exactMatchCaseSensitivity = Qt::CaseInsensitive; // Must be equal to or stricter than m_matchCaseSensitivity.
-
-    // Grouping
-    bool m_groupingEnabled = false;
-    GroupingMethods m_groupingMethod;
-    bool m_accessConst = false, m_accessStatic = false, m_accesSignalSlot = false;
-
-    // Column merging
-    bool m_columnMergingEnabled = false /*, m_haveExactMatch*/;
 
     friend class CompletionTest;
 };

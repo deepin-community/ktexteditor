@@ -7,13 +7,14 @@
 #ifndef KATEARGUMENTHINTTREE_H
 #define KATEARGUMENTHINTTREE_H
 
-#include "expandingtree/expandingtree.h"
+#include <QTextDocument>
+#include <QTreeView>
 
 class KateCompletionWidget;
 class KateArgumentHintModel;
 class QRect;
 
-class KateArgumentHintTree : public ExpandingTree
+class KateArgumentHintTree : public QTreeView
 {
     Q_OBJECT
 public:
@@ -35,15 +36,14 @@ public Q_SLOTS:
     void updateGeometry();
     void updateGeometry(QRect rect);
 
+    KateArgumentHintModel *model() const;
+
 protected:
     void paintEvent(QPaintEvent *event) override;
     void rowsInserted(const QModelIndex &parent, int start, int end) override;
-    void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>()) override;
-    void currentChanged(const QModelIndex &current, const QModelIndex &previous) override;
 
 private:
     uint rowHeight(const QModelIndex &index) const;
-    KateArgumentHintModel *model() const;
     int sizeHintForColumn(int column) const override;
 
     KateCompletionWidget *m_parent;

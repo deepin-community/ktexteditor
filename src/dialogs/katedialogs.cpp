@@ -38,10 +38,11 @@
 #include "ui_opensaveconfigadvwidget.h"
 #include "ui_opensaveconfigwidget.h"
 #include "ui_spellcheckconfigwidget.h"
+#include "ui_statusbarconfigwidget.h"
 #include "ui_textareaappearanceconfigwidget.h"
 
 #include <KIO/Job>
-#include <KIO/JobUiDelegate>
+#include <KIO/JobUiDelegateFactory>
 #include <KIO/OpenUrlJob>
 
 #include "kateabstractinputmodefactory.h"
@@ -102,6 +103,7 @@ KateIndentConfigTab::KateIndentConfigTab(QWidget *parent)
 
     reload();
 
+    observeChanges(ui->chkAutoDetectIndent);
     observeChanges(ui->chkBackspaceUnindents);
     observeChanges(ui->chkIndentPaste);
     observeChanges(ui->chkKeepExtraSpaces);
@@ -158,6 +160,7 @@ void KateIndentConfigTab::apply()
     KateDocumentConfig::global()->setKeepExtraSpaces(ui->chkKeepExtraSpaces->isChecked());
     KateDocumentConfig::global()->setReplaceTabsDyn(ui->rbIndentWithSpaces->isChecked());
     KateDocumentConfig::global()->setTabWidth(ui->sbTabWidth->value());
+    KateDocumentConfig::global()->setAutoDetectIndent(ui->chkAutoDetectIndent->isChecked());
 
     if (ui->rbTabAdvances->isChecked()) {
         KateDocumentConfig::global()->setTabHandling(KateDocumentConfig::tabInsertsTab);
@@ -176,6 +179,7 @@ void KateIndentConfigTab::reload()
     ui->chkIndentPaste->setChecked(KateDocumentConfig::global()->indentPastedText());
     ui->chkKeepExtraSpaces->setChecked(KateDocumentConfig::global()->keepExtraSpaces());
 
+    ui->chkAutoDetectIndent->setChecked(KateDocumentConfig::global()->autoDetectIndent());
     ui->sbIndentWidth->setSuffix(ki18np(" character", " characters"));
     ui->sbIndentWidth->setValue(KateDocumentConfig::global()->indentationWidth());
     ui->sbTabWidth->setSuffix(ki18np(" character", " characters"));
@@ -225,7 +229,9 @@ KateCompletionConfigTab::KateCompletionConfigTab(QWidget *parent)
 
     observeChanges(ui->chkAutoCompletionEnabled);
     observeChanges(ui->chkAutoSelectFirstEntry);
+    observeChanges(ui->chkTabCompletion);
     observeChanges(ui->gbKeywordCompletion);
+    observeChanges(ui->gbShowDoc);
     observeChanges(ui->gbWordCompletion);
     observeChanges(ui->minimalWordLength);
     observeChanges(ui->removeTail);
@@ -255,10 +261,12 @@ void KateCompletionConfigTab::apply()
 
     KateViewConfig::global()->setValue(KateViewConfig::AutomaticCompletionInvocation, ui->chkAutoCompletionEnabled->isChecked());
     KateViewConfig::global()->setValue(KateViewConfig::AutomaticCompletionPreselectFirst, ui->chkAutoSelectFirstEntry->isChecked());
+    KateViewConfig::global()->setValue(KateViewConfig::TabCompletion, ui->chkTabCompletion->isChecked());
     KateViewConfig::global()->setValue(KateViewConfig::KeywordCompletion, ui->gbKeywordCompletion->isChecked());
     KateViewConfig::global()->setValue(KateViewConfig::WordCompletion, ui->gbWordCompletion->isChecked());
     KateViewConfig::global()->setValue(KateViewConfig::WordCompletionMinimalWordLength, ui->minimalWordLength->value());
     KateViewConfig::global()->setValue(KateViewConfig::WordCompletionRemoveTail, ui->removeTail->isChecked());
+    KateViewConfig::global()->setValue(KateViewConfig::ShowDocWithCompletion, ui->gbShowDoc->isChecked());
 
     KateViewConfig::global()->configEnd();
 }
@@ -267,9 +275,11 @@ void KateCompletionConfigTab::reload()
 {
     ui->chkAutoCompletionEnabled->setChecked(KateViewConfig::global()->automaticCompletionInvocation());
     ui->chkAutoSelectFirstEntry->setChecked(KateViewConfig::global()->automaticCompletionPreselectFirst());
+    ui->chkTabCompletion->setChecked(KateViewConfig::global()->tabCompletion());
 
     ui->gbKeywordCompletion->setChecked(KateViewConfig::global()->keywordCompletion());
     ui->gbWordCompletion->setChecked(KateViewConfig::global()->wordCompletion());
+    ui->gbShowDoc->setChecked(KateViewConfig::global()->showDocWithCompletion());
 
     ui->minimalWordLength->setValue(KateViewConfig::global()->wordCompletionMinimalWordLength());
     ui->removeTail->setChecked(KateViewConfig::global()->wordCompletionRemoveTail());
@@ -361,6 +371,8 @@ KateNavigationConfigTab::KateNavigationConfigTab(QWidget *parent)
     ui = new Ui::NavigationConfigWidget();
     ui->setupUi(newWidget);
 
+    initMulticursorModifierComboBox();
+
     // "What's This?" help can be found in the ui file
 
     reload();
@@ -372,6 +384,7 @@ KateNavigationConfigTab::KateNavigationConfigTab(QWidget *parent)
     observeChanges(ui->chkSmartHome);
     observeChanges(ui->sbAutoCenterCursor);
     observeChanges(ui->chkCamelCursor);
+    observeChanges(ui->cmbMultiCursorModifier);
 
     layout->addWidget(newWidget);
 }
@@ -379,6 +392,29 @@ KateNavigationConfigTab::KateNavigationConfigTab(QWidget *parent)
 KateNavigationConfigTab::~KateNavigationConfigTab()
 {
     delete ui;
+}
+
+void KateNavigationConfigTab::initMulticursorModifierComboBox()
+{
+    // On macOS, the ControlModifier value corresponds to the Command keys on the
+    // keyboard, and the MetaModifier value corresponds to the Control keys.
+    auto *c = ui->cmbMultiCursorModifier;
+
+#ifndef Q_OS_DARWIN
+    c->insertItem(0, i18n("Alt"), (int)Qt::ALT);
+    c->insertItem(1, i18n("Ctrl"), (int)Qt::CTRL);
+    c->insertItem(2, i18n("Meta"), (int)Qt::META);
+    c->insertItem(3, i18n("Ctrl + Alt"), (int)(Qt::CTRL | Qt::ALT));
+    c->insertItem(4, i18n("Meta + Alt"), (int)(Qt::META | Qt::ALT));
+    c->insertItem(5, i18n("Ctrl + Meta"), (int)(Qt::CTRL | Qt::META));
+#else
+    c->insertItem(0, i18n("Alt"), (int)Qt::ALT);
+    c->insertItem(1, i18n("Cmd"), (int)Qt::CTRL);
+    c->insertItem(2, i18n("Ctrl"), (int)Qt::META);
+    c->insertItem(3, i18n("Cmd + Alt"), (int)(Qt::CTRL | Qt::ALT));
+    c->insertItem(4, i18n("Ctrl + Alt"), (int)(Qt::META | Qt::ALT));
+    c->insertItem(5, i18n("Cmd + Ctrl"), (int)(Qt::CTRL | Qt::META));
+#endif
 }
 
 void KateNavigationConfigTab::apply()
@@ -401,6 +437,9 @@ void KateNavigationConfigTab::apply()
     KateViewConfig::global()->setValue(KateViewConfig::PersistentSelection, ui->cbTextSelectionMode->currentIndex() == 1);
     KateViewConfig::global()->setValue(KateViewConfig::ScrollPastEnd, ui->chkScrollPastEnd->isChecked());
 
+    const int modifers = ui->cmbMultiCursorModifier->currentData().toInt();
+    KateViewConfig::global()->setMultiCursorModifiers(Qt::KeyboardModifiers(modifers));
+
     KateDocumentConfig::global()->configEnd();
     KateViewConfig::global()->configEnd();
 }
@@ -416,6 +455,16 @@ void KateNavigationConfigTab::reload()
     ui->chkCamelCursor->setChecked(KateDocumentConfig::global()->camelCursor());
 
     ui->sbAutoCenterCursor->setValue(KateViewConfig::global()->autoCenterLines());
+
+    const int mods = KateViewConfig::global()->multiCursorModifiers();
+    const auto count = ui->cmbMultiCursorModifier->count();
+    for (int i = 0; i < count; ++i) {
+        int idxMods = ui->cmbMultiCursorModifier->itemData(i).toInt();
+        if (idxMods == mods) {
+            ui->cmbMultiCursorModifier->setCurrentIndex(i);
+            break;
+        }
+    }
 }
 
 QString KateNavigationConfigTab::name() const
@@ -447,6 +496,7 @@ KateEditGeneralConfigTab::KateEditGeneralConfigTab(QWidget *parent)
     observeChanges(ui->chkShowStaticWordWrapMarker);
     observeChanges(ui->chkTextDragAndDrop);
     observeChanges(ui->chkSmartCopyCut);
+    observeChanges(ui->sbClipboardHistoryEntries);
     observeChanges(ui->chkStaticWordWrap);
     observeChanges(ui->cmbEncloseSelection);
     ui->lblBracketHelp->setFont(QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont));
@@ -503,6 +553,7 @@ void KateEditGeneralConfigTab::apply()
     KateViewConfig::global()->setValue(KateViewConfig::MousePasteAtCursorPosition, ui->chkMousePasteAtCursorPosition->isChecked());
     KateViewConfig::global()->setValue(KateViewConfig::TextDragAndDrop, ui->chkTextDragAndDrop->isChecked());
     KateViewConfig::global()->setValue(KateViewConfig::SmartCopyCut, ui->chkSmartCopyCut->isChecked());
+    KateViewConfig::global()->setValue(KateViewConfig::ClipboardHistoryEntries, ui->sbClipboardHistoryEntries->value());
 
     KateDocumentConfig::global()->configEnd();
     KateViewConfig::global()->configEnd();
@@ -516,6 +567,7 @@ void KateEditGeneralConfigTab::reload()
     ui->chkTextDragAndDrop->setChecked(KateViewConfig::global()->textDragAndDrop());
     ui->chkSmartCopyCut->setChecked(KateViewConfig::global()->smartCopyCut());
     ui->chkStaticWordWrap->setChecked(KateDocumentConfig::global()->wordWrap());
+    ui->sbClipboardHistoryEntries->setValue(KateViewConfig::global()->clipboardHistoryEntries());
 
     ui->sbWordWrap->setSuffix(ki18ncp("Wrap words at (value is at 20 or larger)", " character", " characters"));
     ui->sbWordWrap->setValue(KateDocumentConfig::global()->wordWrapAt());
@@ -664,6 +716,7 @@ KateViewDefaultsConfig::KateViewDefaultsConfig(QWidget *parent)
     : KateConfigPage(parent)
     , textareaUi(new Ui::TextareaAppearanceConfigWidget())
     , bordersUi(new Ui::BordersAppearanceConfigWidget())
+    , statusBarUi(new Ui::StatusbarConfigWidget())
 {
     QLayout *layout = new QVBoxLayout(this);
     QTabWidget *tabWidget = new QTabWidget(this);
@@ -677,6 +730,10 @@ KateViewDefaultsConfig::KateViewDefaultsConfig(QWidget *parent)
     QWidget *bordersTab = new QWidget(tabWidget);
     bordersUi->setupUi(bordersTab);
     tabWidget->addTab(bordersTab, i18n("Borders"));
+
+    QWidget *statusbarTab = new QWidget(tabWidget);
+    statusBarUi->setupUi(statusbarTab);
+    tabWidget->addTab(statusbarTab, i18n("Statusbar"));
 
     textareaUi->cmbDynamicWordWrapIndicator->addItem(i18n("Off"));
     textareaUi->cmbDynamicWordWrapIndicator->addItem(i18n("Follow Line Numbers"));
@@ -700,6 +757,8 @@ KateViewDefaultsConfig::KateViewDefaultsConfig(QWidget *parent)
     observeChanges(textareaUi->chkShowWordCount);
     observeChanges(textareaUi->cmbDynamicWordWrapIndicator);
     observeChanges(textareaUi->cbxWordWrap);
+    observeChanges(textareaUi->chkFocusFrame);
+    observeChanges(textareaUi->spbLineHeightMultiplier);
     auto a = [ui = textareaUi, cbx = textareaUi->cbxWordWrap]() {
         ui->chkDynWrapAtStaticMarker->setEnabled(cbx->isChecked());
         ui->chkDynWrapAnywhere->setEnabled(cbx->isChecked());
@@ -732,12 +791,23 @@ KateViewDefaultsConfig::KateViewDefaultsConfig(QWidget *parent)
     observeChanges(bordersUi->rbSortBookmarksByCreation);
     observeChanges(bordersUi->rbSortBookmarksByPosition);
     observeChanges(bordersUi->spBoxMiniMapWidth);
+    observeChanges(bordersUi->cmbFoldingArrowVisiblity);
+
+    // statusBarUi
+    observeChanges(statusBarUi->cbShowActiveDictionary);
+    observeChanges(statusBarUi->cbShowHighlightingMode);
+    observeChanges(statusBarUi->cbShowInputMode);
+    observeChanges(statusBarUi->cbShowLineColumn);
+    observeChanges(statusBarUi->cbShowTabSetting);
+    observeChanges(statusBarUi->cbShowEncoding);
+    observeChanges(statusBarUi->cbShowEOL);
 }
 
 KateViewDefaultsConfig::~KateViewDefaultsConfig()
 {
     delete bordersUi;
     delete textareaUi;
+    delete statusBarUi;
 }
 
 void KateViewDefaultsConfig::apply()
@@ -759,6 +829,7 @@ void KateViewDefaultsConfig::apply()
     KateRendererConfig::global()->setAnimateBracketMatching(textareaUi->chkAnimateBracketMatching->isChecked());
     KateRendererConfig::global()->setShowIndentationLines(textareaUi->chkShowIndentationLines->isChecked());
     KateRendererConfig::global()->setShowWholeBracketExpression(textareaUi->chkShowWholeBracketExpression->isChecked());
+    KateRendererConfig::global()->setLineHeightMultiplier(textareaUi->spbLineHeightMultiplier->value());
 
     KateViewConfig::global()->setDynWordWrap(textareaUi->cbxWordWrap->isChecked());
     KateViewConfig::global()->setShowWordCount(textareaUi->chkShowWordCount->isChecked());
@@ -774,6 +845,7 @@ void KateViewDefaultsConfig::apply()
     KateViewConfig::global()->setValue(KateViewConfig::FoldFirstLine, textareaUi->chkFoldFirstLine->isChecked());
     KateViewConfig::global()->setValue(KateViewConfig::ScrollBarMiniMapWidth, bordersUi->spBoxMiniMapWidth->value());
     KateViewConfig::global()->setValue(KateViewConfig::ShowBracketMatchPreview, textareaUi->chkShowBracketMatchPreview->isChecked());
+    KateViewConfig::global()->setValue(KateViewConfig::ShowFocusFrame, textareaUi->chkFocusFrame->isChecked());
     KateViewConfig::global()->setValue(KateViewConfig::ShowFoldingBar, bordersUi->chkShowFoldingMarkers->isChecked());
     KateViewConfig::global()->setValue(KateViewConfig::ShowFoldingPreview, bordersUi->chkShowFoldingPreview->isChecked());
     KateViewConfig::global()->setValue(KateViewConfig::ShowIconBar, bordersUi->chkIconBorder->isChecked());
@@ -785,6 +857,17 @@ void KateViewDefaultsConfig::apply()
     KateViewConfig::global()->setValue(KateViewConfig::ShowScrollBarMiniMapAll, bordersUi->chkScrollbarMiniMapAll->isChecked());
     KateViewConfig::global()->setValue(KateViewConfig::ShowScrollBarPreview, bordersUi->chkScrollbarPreview->isChecked());
     KateViewConfig::global()->setValue(KateViewConfig::ShowScrollbars, bordersUi->cmbShowScrollbars->currentIndex());
+    bool showOnHoverOnly = bordersUi->cmbFoldingArrowVisiblity->currentIndex() == 0;
+    KateViewConfig::global()->setValue(KateViewConfig::ShowFoldingOnHoverOnly, showOnHoverOnly);
+
+    // Statusbar stuff
+    KateViewConfig::global()->setValue(KateViewConfig::ShowStatusbarDictionary, statusBarUi->cbShowActiveDictionary->isChecked());
+    KateViewConfig::global()->setValue(KateViewConfig::ShowStatusbarHighlightingMode, statusBarUi->cbShowHighlightingMode->isChecked());
+    KateViewConfig::global()->setValue(KateViewConfig::ShowStatusbarInputMode, statusBarUi->cbShowInputMode->isChecked());
+    KateViewConfig::global()->setValue(KateViewConfig::ShowStatusbarLineColumn, statusBarUi->cbShowLineColumn->isChecked());
+    KateViewConfig::global()->setValue(KateViewConfig::ShowStatusbarTabSettings, statusBarUi->cbShowTabSetting->isChecked());
+    KateViewConfig::global()->setValue(KateViewConfig::ShowStatusbarFileEncoding, statusBarUi->cbShowEncoding->isChecked());
+    KateViewConfig::global()->setValue(KateViewConfig::ShowStatusbarEOL, statusBarUi->cbShowEOL->isChecked());
 
     KateRendererConfig::global()->configEnd();
     KateViewConfig::global()->configEnd();
@@ -805,6 +888,7 @@ void KateViewDefaultsConfig::reload()
     bordersUi->rbSortBookmarksByCreation->setChecked(KateViewConfig::global()->bookmarkSort() == 1);
     bordersUi->rbSortBookmarksByPosition->setChecked(KateViewConfig::global()->bookmarkSort() == 0);
     bordersUi->spBoxMiniMapWidth->setValue(KateViewConfig::global()->scrollBarMiniMapWidth());
+    bordersUi->cmbFoldingArrowVisiblity->setCurrentIndex(KateViewConfig::global()->showFoldingOnHoverOnly() ? 0 : 1);
 
     textareaUi->kfontrequester->setFont(KateRendererConfig::global()->baseFont());
 
@@ -824,6 +908,16 @@ void KateViewDefaultsConfig::reload()
     textareaUi->sbDynamicWordWrapDepth->setValue(KateViewConfig::global()->dynWordWrapAlignIndent());
     textareaUi->sliSetMarkerSize->setValue(KateDocumentConfig::global()->markerSize());
     textareaUi->spacesComboBox->setCurrentIndex(KateDocumentConfig::global()->showSpaces());
+    textareaUi->chkFocusFrame->setChecked(KateViewConfig::global()->showFocusFrame());
+    textareaUi->spbLineHeightMultiplier->setValue(KateRendererConfig::global()->lineHeightMultiplier());
+
+    statusBarUi->cbShowLineColumn->setChecked(KateViewConfig::global()->value(KateViewConfig::ShowStatusbarLineColumn).toBool());
+    statusBarUi->cbShowActiveDictionary->setChecked(KateViewConfig::global()->value(KateViewConfig::ShowStatusbarDictionary).toBool());
+    statusBarUi->cbShowTabSetting->setChecked(KateViewConfig::global()->value(KateViewConfig::ShowStatusbarTabSettings).toBool());
+    statusBarUi->cbShowHighlightingMode->setChecked(KateViewConfig::global()->value(KateViewConfig::ShowStatusbarHighlightingMode).toBool());
+    statusBarUi->cbShowInputMode->setChecked(KateViewConfig::global()->value(KateViewConfig::ShowStatusbarInputMode).toBool());
+    statusBarUi->cbShowEncoding->setChecked(KateViewConfig::global()->value(KateViewConfig::ShowStatusbarFileEncoding).toBool());
+    statusBarUi->cbShowEOL->setChecked(KateViewConfig::global()->value(KateViewConfig::ShowStatusbarEOL).toBool());
 }
 
 void KateViewDefaultsConfig::reset()
@@ -890,6 +984,11 @@ KateSaveConfigTab::KateSaveConfigTab(QWidget *parent)
     observeChanges(ui->cmbEncodingDetection);
     observeChanges(ui->cmbEncodingFallback);
     observeChanges(ui->lineLengthLimit);
+    observeChanges(ui->gbAutoSave);
+    observeChanges(ui->cbAutoSaveOnFocus);
+    observeChanges(ui->spbAutoSaveInterval);
+
+    observeChanges(uiadv->chkAutoReloadVersionControl);
 
     observeChanges(uiadv->chkBackupLocalFiles);
     observeChanges(uiadv->chkBackupRemoteFiles);
@@ -1000,6 +1099,12 @@ void KateSaveConfigTab::apply()
 
     KateDocumentConfig::global()->setLineLengthLimit(ui->lineLengthLimit->value());
 
+    KateDocumentConfig::global()->setValue(KateDocumentConfig::AutoSave, ui->gbAutoSave->isChecked());
+    KateDocumentConfig::global()->setValue(KateDocumentConfig::AutoSaveOnFocusOut, ui->cbAutoSaveOnFocus->isChecked());
+    KateDocumentConfig::global()->setValue(KateDocumentConfig::AutoSaveInteral, ui->spbAutoSaveInterval->value());
+
+    KateDocumentConfig::global()->setValue(KateDocumentConfig::AutoReloadIfStateIsInVersionControl, uiadv->chkAutoReloadVersionControl->isChecked());
+
     KateDocumentConfig::global()->configEnd();
     KateGlobalConfig::global()->configEnd();
 }
@@ -1014,10 +1119,9 @@ void KateSaveConfigTab::reload()
     QStringList encodings(KCharsets::charsets()->descriptiveEncodingNames());
     int insert = 0;
     for (int i = 0; i < encodings.count(); i++) {
-        bool found = false;
-        QTextCodec *codecForEnc = KCharsets::charsets()->codecForName(KCharsets::charsets()->encodingForName(encodings[i]), found);
+        QTextCodec *codecForEnc = QTextCodec::codecForName(KCharsets::charsets()->encodingForName(encodings[i]).toUtf8());
 
-        if (found) {
+        if (codecForEnc) {
             ui->cmbEncoding->addItem(encodings[i]);
             ui->cmbEncodingFallback->addItem(encodings[i]);
 
@@ -1067,6 +1171,12 @@ void KateSaveConfigTab::reload()
     uiadv->kurlSwapDirectory->setUrl(QUrl::fromLocalFile(KateDocumentConfig::global()->swapDirectory()));
     uiadv->spbSwapFileSync->setValue(KateDocumentConfig::global()->swapSyncInterval());
     swapFileModeChanged(KateDocumentConfig::global()->swapFileMode());
+
+    ui->gbAutoSave->setChecked(KateDocumentConfig::global()->autoSave());
+    ui->cbAutoSaveOnFocus->setChecked(KateDocumentConfig::global()->autoSaveOnFocusOut());
+    ui->spbAutoSaveInterval->setValue(KateDocumentConfig::global()->autoSaveInterval());
+
+    uiadv->chkAutoReloadVersionControl->setChecked(KateDocumentConfig::global()->value(KateDocumentConfig::AutoReloadIfStateIsInVersionControl).toBool());
 }
 
 void KateSaveConfigTab::reset()
@@ -1204,7 +1314,11 @@ bool KateGotoBar::eventFilter(QObject *object, QEvent *event)
 void KateGotoBar::gotoClipboard()
 {
     static const QRegularExpression rx(QStringLiteral("-?\\d+"));
-    const int lineNo = rx.match(QApplication::clipboard()->text(QClipboard::Selection)).captured().toInt();
+    bool ok = false;
+    const int lineNo = rx.match(QApplication::clipboard()->text(QClipboard::Selection)).captured().toInt(&ok);
+    if (!ok) {
+        return;
+    }
     if (lineNo >= m_gotoRange->minimum() && lineNo <= m_gotoRange->maximum()) {
         m_gotoRange->setValue(lineNo);
         gotoLine();
@@ -1314,6 +1428,7 @@ KateModOnHdPrompt::KateModOnHdPrompt(KTextEditor::DocumentPrivate *doc, KTextEdi
     : QObject(doc)
     , m_doc(doc)
     , m_modtype(modtype)
+    , m_fullDiffPath(QStandardPaths::findExecutable(QStringLiteral("diff")))
     , m_proc(nullptr)
     , m_diffFile(nullptr)
     , m_diffAction(nullptr)
@@ -1331,7 +1446,7 @@ KateModOnHdPrompt::KateModOnHdPrompt(KTextEditor::DocumentPrivate *doc, KTextEdi
         m_message->addAction(aAutoReload, false);
         connect(aAutoReload, &QAction::triggered, this, &KateModOnHdPrompt::autoReloadTriggered);
 
-        if (!QStandardPaths::findExecutable(QStringLiteral("diff")).isEmpty()) {
+        if (!m_fullDiffPath.isEmpty()) {
             m_diffAction = new QAction(i18n("View &Difference"), this);
             m_diffAction->setIcon(QIcon::fromTheme(QStringLiteral("document-multiple")));
             m_diffAction->setToolTip(i18n("Shows a diff of the changes"));
@@ -1385,13 +1500,13 @@ void KateModOnHdPrompt::slotDiff()
         return;
     }
 
-    m_diffFile = new QTemporaryFile(QLatin1String("XXXXXX.diff"));
+    m_diffFile = new QTemporaryFile(QDir::temp().filePath(QLatin1String("XXXXXX.diff")));
     m_diffFile->open();
 
     // Start a KProcess that creates a diff
     m_proc = new KProcess(this);
     m_proc->setOutputChannelMode(KProcess::MergedChannels);
-    *m_proc << QStringLiteral("diff") << QStringLiteral("-u") << QStringLiteral("-") << m_doc->url().toLocalFile();
+    *m_proc << m_fullDiffPath << QStringLiteral("-u") << QStringLiteral("-") << m_doc->url().toLocalFile();
     connect(m_proc, &KProcess::readyRead, this, &KateModOnHdPrompt::slotDataAvailable);
     connect(m_proc, &KProcess::finished, this, &KateModOnHdPrompt::slotPDone);
 
@@ -1424,7 +1539,7 @@ void KateModOnHdPrompt::slotPDone()
     m_proc = nullptr;
 
     if (es != QProcess::NormalExit) {
-        KMessageBox::sorry(nullptr,
+        KMessageBox::error(nullptr,
                            i18n("The diff command failed. Please make sure that "
                                 "diff(1) is installed and in your PATH."),
                            i18n("Error Creating Diff"));
@@ -1446,7 +1561,7 @@ void KateModOnHdPrompt::slotPDone()
     m_diffFile = nullptr;
 
     KIO::OpenUrlJob *job = new KIO::OpenUrlJob(url, QStringLiteral("text/x-patch"));
-    job->setUiDelegate(new KIO::JobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, nullptr /*TODO window*/));
+    job->setUiDelegate(KIO::createDefaultJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, m_doc->activeView()));
     job->setDeleteTemporaryFile(true); // delete the file, once the client exits
     job->start();
 }

@@ -106,12 +106,18 @@ public:
     Q_INVOKABLE void shiftToMatchingBracket(int cnt = 1);
 
     Q_INVOKABLE void type(const QString &str);
+    Q_INVOKABLE void paste(const QString &str);
 
     /**
      * Toggle auto brackets. If you make use of it, make sure to
      * disable them again at the end of your test, otherwise any following tests may fail.
      */
     Q_INVOKABLE void setAutoBrackets(bool enable = true);
+
+    /*
+     * Whether to replace tabs with spaces
+     */
+    Q_INVOKABLE void replaceTabs(bool enable = true);
 
     // Aliases
     Q_INVOKABLE void enter(int cnt = 1); // KeyReturn

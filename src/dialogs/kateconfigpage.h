@@ -13,10 +13,11 @@ class KFontRequester;
 class KUrlRequester;
 class QAbstractButton;
 class QAbstractSlider;
-class QAbstractSpinBox;
+class QSpinBox;
 class QComboBox;
 class QGroupBox;
 class QLineEdit;
+class QDoubleSpinBox;
 
 class KateConfigPage : public KTextEditor::ConfigPage
 {
@@ -33,15 +34,16 @@ public:
         return m_changed;
     }
 
-    void observeChanges(KateConfigPage *page);
-    void observeChanges(KUrlRequester *requester);
-    void observeChanges(QAbstractButton *button);
-    void observeChanges(QAbstractSlider *slider);
-    void observeChanges(QAbstractSpinBox *spinBox);
-    void observeChanges(QComboBox *comboBox);
-    void observeChanges(QGroupBox *groupBox);
-    void observeChanges(QLineEdit *lineEdit);
-    void observeChanges(KFontRequester *chooser);
+    void observeChanges(KateConfigPage *page) const;
+    void observeChanges(KUrlRequester *requester) const;
+    void observeChanges(QAbstractButton *button) const;
+    void observeChanges(QAbstractSlider *slider) const;
+    void observeChanges(QSpinBox *spinBox) const;
+    void observeChanges(QDoubleSpinBox *spinBox) const;
+    void observeChanges(QComboBox *comboBox) const;
+    void observeChanges(QGroupBox *groupBox) const;
+    void observeChanges(QLineEdit *lineEdit) const;
+    void observeChanges(KFontRequester *chooser) const;
 
 protected Q_SLOTS:
     void slotChanged();

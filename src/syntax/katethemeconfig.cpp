@@ -15,6 +15,7 @@
 #include "katedocument.h"
 #include "kateglobal.h"
 #include "katehighlight.h"
+#include "katerenderer.h"
 #include "katestyletreewidget.h"
 #include "katesyntaxmanager.h"
 #include "kateview.h"
@@ -38,61 +39,80 @@
 /**
  * Return the translated name of default style @p n.
  */
-static inline QString defaultStyleName(int n)
+static inline QString defaultStyleName(KTextEditor::DefaultStyle style)
 {
-    static QStringList translatedNames;
-    if (translatedNames.isEmpty()) {
-        translatedNames << i18nc("@item:intable Text context", "Normal");
-        translatedNames << i18nc("@item:intable Text context", "Keyword");
-        translatedNames << i18nc("@item:intable Text context", "Function");
-        translatedNames << i18nc("@item:intable Text context", "Variable");
-        translatedNames << i18nc("@item:intable Text context", "Control Flow");
-        translatedNames << i18nc("@item:intable Text context", "Operator");
-        translatedNames << i18nc("@item:intable Text context", "Built-in");
-        translatedNames << i18nc("@item:intable Text context", "Extension");
-        translatedNames << i18nc("@item:intable Text context", "Preprocessor");
-        translatedNames << i18nc("@item:intable Text context", "Attribute");
+    using namespace KTextEditor;
+    switch (style) {
+    case dsNormal:
+        return i18nc("@item:intable Text context", "Normal");
+    case dsKeyword:
+        return i18nc("@item:intable Text context", "Keyword");
+    case dsFunction:
+        return i18nc("@item:intable Text context", "Function");
+    case dsVariable:
+        return i18nc("@item:intable Text context", "Variable");
+    case dsControlFlow:
+        return i18nc("@item:intable Text context", "Control Flow");
+    case dsOperator:
+        return i18nc("@item:intable Text context", "Operator");
+    case dsBuiltIn:
+        return i18nc("@item:intable Text context", "Built-in");
+    case dsExtension:
+        return i18nc("@item:intable Text context", "Extension");
+    case dsPreprocessor:
+        return i18nc("@item:intable Text context", "Preprocessor");
+    case dsAttribute:
+        return i18nc("@item:intable Text context", "Attribute");
 
-        translatedNames << i18nc("@item:intable Text context", "Character");
-        translatedNames << i18nc("@item:intable Text context", "Special Character");
-        translatedNames << i18nc("@item:intable Text context", "String");
-        translatedNames << i18nc("@item:intable Text context", "Verbatim String");
-        translatedNames << i18nc("@item:intable Text context", "Special String");
-        translatedNames << i18nc("@item:intable Text context", "Imports, Modules, Includes");
+    case dsChar:
+        return i18nc("@item:intable Text context", "Character");
+    case dsSpecialChar:
+        return i18nc("@item:intable Text context", "Special Character");
+    case dsString:
+        return i18nc("@item:intable Text context", "String");
+    case dsVerbatimString:
+        return i18nc("@item:intable Text context", "Verbatim String");
+    case dsSpecialString:
+        return i18nc("@item:intable Text context", "Special String");
+    case dsImport:
+        return i18nc("@item:intable Text context", "Imports, Modules, Includes");
 
-        translatedNames << i18nc("@item:intable Text context", "Data Type");
-        translatedNames << i18nc("@item:intable Text context", "Decimal/Value");
-        translatedNames << i18nc("@item:intable Text context", "Base-N Integer");
-        translatedNames << i18nc("@item:intable Text context", "Floating Point");
-        translatedNames << i18nc("@item:intable Text context", "Constant");
+    case dsDataType:
+        return i18nc("@item:intable Text context", "Data Type");
+    case dsDecVal:
+        return i18nc("@item:intable Text context", "Decimal/Value");
+    case dsBaseN:
+        return i18nc("@item:intable Text context", "Base-N Integer");
+    case dsFloat:
+        return i18nc("@item:intable Text context", "Floating Point");
+    case dsConstant:
+        return i18nc("@item:intable Text context", "Constant");
 
-        translatedNames << i18nc("@item:intable Text context", "Comment");
-        translatedNames << i18nc("@item:intable Text context", "Documentation");
-        translatedNames << i18nc("@item:intable Text context", "Annotation");
-        translatedNames << i18nc("@item:intable Text context", "Comment Variable");
+    case dsComment:
+        return i18nc("@item:intable Text context", "Comment");
+    case dsDocumentation:
+        return i18nc("@item:intable Text context", "Documentation");
+    case dsAnnotation:
+        return i18nc("@item:intable Text context", "Annotation");
+    case dsCommentVar:
+        return i18nc("@item:intable Text context", "Comment Variable");
+    case dsRegionMarker:
         // this next one is for denoting the beginning/end of a user defined folding region
-        translatedNames << i18nc("@item:intable Text context", "Region Marker");
-        translatedNames << i18nc("@item:intable Text context", "Information");
-        translatedNames << i18nc("@item:intable Text context", "Warning");
-        translatedNames << i18nc("@item:intable Text context", "Alert");
+        return i18nc("@item:intable Text context", "Region Marker");
+    case dsInformation:
+        return i18nc("@item:intable Text context", "Information");
+    case dsWarning:
+        return i18nc("@item:intable Text context", "Warning");
+    case dsAlert:
+        return i18nc("@item:intable Text context", "Alert");
 
-        translatedNames << i18nc("@item:intable Text context", "Others");
+    case dsOthers:
+        return i18nc("@item:intable Text context", "Others");
+    case dsError:
         // this one is for marking invalid input
-        translatedNames << i18nc("@item:intable Text context", "Error");
-    }
-
-    // sanity checks
-    Q_ASSERT(n >= 0);
-    Q_ASSERT(n < translatedNames.size());
-    return translatedNames[n];
-}
-
-/**
- * Return the number of default styles.
- */
-static int defaultStyleCount()
-{
-    return KTextEditor::dsError + 1;
+        return i18nc("@item:intable Text context", "Error");
+    };
+    Q_UNREACHABLE();
 }
 
 /**
@@ -359,7 +379,7 @@ void KateThemeConfigColorTab::schemaChanged(const QString &newSchema)
 {
     // ensure invalid or read-only stuff can't be changed
     const auto theme = KateHlManager::self()->repository().theme(newSchema);
-    setDisabled(!theme.isValid() || theme.isReadOnly());
+    ui->setReadOnly(!theme.isValid() || theme.isReadOnly());
 
     // save current schema
     if (!m_currentSchema.isEmpty()) {
@@ -491,10 +511,11 @@ KateAttributeList *KateThemeConfigDefaultStylesTab::attributeList(const QString 
     auto it = m_defaultStyleLists.find(schema);
     if (it == m_defaultStyleLists.end()) {
         // get list of all default styles
+        const auto numStyles = KTextEditor::defaultStyleCount();
         KateAttributeList list;
-        list.reserve(defaultStyleCount());
+        list.reserve(numStyles);
         const KSyntaxHighlighting::Theme currentTheme = KateHlManager::self()->repository().theme(schema);
-        for (int z = 0; z < defaultStyleCount(); z++) {
+        for (int z = 0; z < numStyles; z++) {
             KTextEditor::Attribute::Ptr i(new KTextEditor::Attribute());
             const auto style = defaultStyleToTextStyle(static_cast<KTextEditor::DefaultStyle>(z));
 
@@ -534,7 +555,7 @@ void KateThemeConfigDefaultStylesTab::schemaChanged(const QString &schema)
 {
     // ensure invalid or read-only stuff can't be changed
     const auto theme = KateHlManager::self()->repository().theme(schema);
-    setDisabled(!theme.isValid() || theme.isReadOnly());
+    m_defaultStyles->setReadOnly(!theme.isValid() || theme.isReadOnly());
 
     m_currentSchema = schema;
 
@@ -547,35 +568,35 @@ void KateThemeConfigDefaultStylesTab::schemaChanged(const QString &schema)
     QTreeWidgetItem *parent = new QTreeWidgetItem(m_defaultStyles, QStringList() << i18nc("@item:intable", "Normal Text & Source Code"));
     parent->setFirstColumnSpanned(true);
     for (int i = (int)KTextEditor::dsNormal; i <= (int)KTextEditor::dsAttribute; ++i) {
-        m_defaultStyles->addItem(parent, defaultStyleName(i), l->at(i));
+        m_defaultStyles->addItem(parent, defaultStyleName(static_cast<KTextEditor::DefaultStyle>(i)), l->at(i));
     }
 
     // Number, Types & Constants
     parent = new QTreeWidgetItem(m_defaultStyles, QStringList() << i18nc("@item:intable", "Numbers, Types & Constants"));
     parent->setFirstColumnSpanned(true);
     for (int i = (int)KTextEditor::dsDataType; i <= (int)KTextEditor::dsConstant; ++i) {
-        m_defaultStyles->addItem(parent, defaultStyleName(i), l->at(i));
+        m_defaultStyles->addItem(parent, defaultStyleName(static_cast<KTextEditor::DefaultStyle>(i)), l->at(i));
     }
 
     // strings & characters
     parent = new QTreeWidgetItem(m_defaultStyles, QStringList() << i18nc("@item:intable", "Strings & Characters"));
     parent->setFirstColumnSpanned(true);
     for (int i = (int)KTextEditor::dsChar; i <= (int)KTextEditor::dsImport; ++i) {
-        m_defaultStyles->addItem(parent, defaultStyleName(i), l->at(i));
+        m_defaultStyles->addItem(parent, defaultStyleName(static_cast<KTextEditor::DefaultStyle>(i)), l->at(i));
     }
 
     // comments & documentation
     parent = new QTreeWidgetItem(m_defaultStyles, QStringList() << i18nc("@item:intable", "Comments & Documentation"));
     parent->setFirstColumnSpanned(true);
     for (int i = (int)KTextEditor::dsComment; i <= (int)KTextEditor::dsAlert; ++i) {
-        m_defaultStyles->addItem(parent, defaultStyleName(i), l->at(i));
+        m_defaultStyles->addItem(parent, defaultStyleName(static_cast<KTextEditor::DefaultStyle>(i)), l->at(i));
     }
 
     // Misc
     parent = new QTreeWidgetItem(m_defaultStyles, QStringList() << i18nc("@item:intable", "Miscellaneous"));
     parent->setFirstColumnSpanned(true);
     for (int i = (int)KTextEditor::dsOthers; i <= (int)KTextEditor::dsError; ++i) {
-        m_defaultStyles->addItem(parent, defaultStyleName(i), l->at(i));
+        m_defaultStyles->addItem(parent, defaultStyleName(static_cast<KTextEditor::DefaultStyle>(i)), l->at(i));
     }
 
     m_defaultStyles->expandAll();
@@ -618,7 +639,8 @@ void KateThemeConfigDefaultStylesTab::apply()
 
         // patch the text-styles part
         QJsonObject styles;
-        for (int z = 0; z < defaultStyleCount(); z++) {
+        const auto numStyles = KTextEditor::defaultStyleCount();
+        for (int z = 0; z < numStyles; z++) {
             QJsonObject style;
             KTextEditor::Attribute::Ptr p = kv.second.at(z);
             if (p->hasProperty(QTextFormat::ForegroundBrush)) {
@@ -691,7 +713,8 @@ KateThemeConfigHighlightTab::KateThemeConfigHighlightTab(KateThemeConfigDefaultS
 
     headerLayout->addStretch();
 
-    for (const auto &hl : KateHlManager::self()->modeList()) {
+    const auto modeList = KateHlManager::self()->modeList();
+    for (const auto &hl : modeList) {
         const auto section = hl.translatedSection();
         if (!section.isEmpty()) {
             hlCombo->addItem(section + QLatin1Char('/') + hl.translatedName());
@@ -786,7 +809,11 @@ void KateThemeConfigHighlightTab::schemaChanged(const QString &schema)
 {
     // ensure invalid or read-only stuff can't be changed
     const auto theme = KateHlManager::self()->repository().theme(schema);
-    setDisabled(!theme.isValid() || theme.isReadOnly());
+
+    // NOTE: None (m_hl == 0) can't be changed with the current way
+    // TODO: removed it from the list?
+    const auto isNoneSchema = m_hl == 0;
+    m_styles->setReadOnly(!theme.isValid() || theme.isReadOnly() || isNoneSchema);
 
     m_schema = schema;
 
@@ -837,10 +864,6 @@ void KateThemeConfigHighlightTab::schemaChanged(const QString &schema)
     if (it1 == subMap.end()) {
         it1 = subMap.insert(m_hl, attributes);
     }
-
-    // None can't be changed with the current way
-    // TODO: removed it from the list?
-    m_styles->setDisabled(m_hl == 0);
 
     QHash<QString, QTreeWidgetItem *> prefixes;
     const auto &attribs = it1.value();
@@ -989,9 +1012,93 @@ void KateThemeConfigHighlightTab::showEvent(QShowEvent *event)
 // BEGIN KateThemeConfigPage -- Main dialog page
 KateThemeConfigPage::KateThemeConfigPage(QWidget *parent)
     : KateConfigPage(parent)
-    , m_currentSchema(-1)
 {
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout->setContentsMargins({});
+
+    QTabWidget *tabWidget = new QTabWidget(this);
+    layout->addWidget(tabWidget);
+
+    auto *themeEditor = new QWidget(this);
+    auto *themeChooser = new QWidget(this);
+    tabWidget->addTab(themeChooser, i18n("Default Theme"));
+    tabWidget->addTab(themeEditor, i18n("Theme Editor"));
+    layoutThemeChooserTab(themeChooser);
+    layoutThemeEditorTab(themeEditor);
+
+    reload();
+}
+
+void KateThemeConfigPage::layoutThemeChooserTab(QWidget *tab)
+{
+    QVBoxLayout *layout = new QVBoxLayout(tab);
+    layout->setContentsMargins({});
+
+    auto *comboLayout = new QHBoxLayout;
+
+    auto lHl = new QLabel(i18n("Select theme:"), this);
+    comboLayout->addWidget(lHl);
+
+    defaultSchemaCombo = new QComboBox(this);
+    comboLayout->addWidget(defaultSchemaCombo);
+    defaultSchemaCombo->setEditable(false);
+    lHl->setBuddy(defaultSchemaCombo);
+    connect(defaultSchemaCombo, qOverload<int>(&QComboBox::currentIndexChanged), this, &KateThemeConfigPage::slotChanged);
+    comboLayout->addStretch();
+
+    layout->addLayout(comboLayout);
+
+    m_doc = new KTextEditor::DocumentPrivate;
+    m_doc->setParent(this);
+
+    const auto code = R"sample(/**
+* SPDX-FileCopyrightText: 2020 Christoph Cullmann <cullmann@kde.org>
+* SPDX-License-Identifier: MIT
+*/
+
+// BEGIN
+#include <QString>
+#include <string>
+// END
+
+/**
+* TODO: improve documentation
+* @param magicArgument some magic argument
+* @return magic return value
+*/
+int main(uint64_t magicArgument)
+{
+    if (magicArgument > 1) {
+        const std::string string = "source file: \"" __FILE__ "\"";
+        const QString qString(QStringLiteral("test"));
+        return qrand();
+    }
+
+    /* BUG: bogus integer constant inside next line */
+    const double g = 1.1e12 * 0b01'01'01'01 - 43a + 0x11234 * 0234ULL - 'c' * 42;
+    return g > 1.3f;
+})sample";
+
+    m_doc->setText(QString::fromUtf8(code));
+    m_doc->setHighlightingMode(QStringLiteral("C++"));
+    m_themePreview = new KTextEditor::ViewPrivate(m_doc, this);
+
+    layout->addWidget(m_themePreview);
+
+    connect(defaultSchemaCombo, qOverload<int>(&QComboBox::currentIndexChanged), this, [this](int idx) {
+        const QString schema = defaultSchemaCombo->itemData(idx).toString();
+        m_themePreview->renderer()->config()->setSchema(schema);
+        if (schema.isEmpty()) {
+            m_themePreview->renderer()->config()->setValue(KateRendererConfig::AutoColorThemeSelection, true);
+        } else {
+            m_themePreview->renderer()->config()->setValue(KateRendererConfig::AutoColorThemeSelection, false);
+        }
+    });
+}
+
+void KateThemeConfigPage::layoutThemeEditorTab(QWidget *tab)
+{
+    QVBoxLayout *layout = new QVBoxLayout(tab);
     layout->setContentsMargins(0, 0, 0, 0);
 
     // header
@@ -1050,18 +1157,6 @@ KateThemeConfigPage::KateThemeConfigPage(QWidget *parent)
 
     QHBoxLayout *footLayout = new QHBoxLayout;
     layout->addLayout(footLayout);
-
-    lHl = new QLabel(i18n("&Default theme for %1:", QCoreApplication::applicationName()), this);
-    footLayout->addWidget(lHl);
-
-    defaultSchemaCombo = new QComboBox(this);
-    footLayout->addWidget(defaultSchemaCombo);
-    defaultSchemaCombo->setEditable(false);
-    lHl->setBuddy(defaultSchemaCombo);
-
-    reload();
-
-    connect(defaultSchemaCombo, qOverload<int>(&QComboBox::currentIndexChanged), this, &KateThemeConfigPage::slotChanged);
 }
 
 void KateThemeConfigPage::exportFullSchema()
@@ -1190,7 +1285,7 @@ void KateThemeConfigPage::refillCombos(const QString &schemaName, const QString 
     // reinitialize combo boxes
     schemaCombo->clear();
     defaultSchemaCombo->clear();
-    defaultSchemaCombo->addItem(i18n("Automatic Selection"), QString());
+    defaultSchemaCombo->addItem(i18n("Follow System Color Scheme"), QString());
     defaultSchemaCombo->insertSeparator(1);
     const auto themes = KateHlManager::self()->sortedThemes();
     for (const auto &theme : themes) {
@@ -1222,6 +1317,8 @@ void KateThemeConfigPage::refillCombos(const QString &schemaName, const QString 
 
     schemaCombo->blockSignals(false);
     defaultSchemaCombo->blockSignals(false);
+
+    m_themePreview->renderer()->config()->setSchema(defaultSchemaName);
 }
 
 void KateThemeConfigPage::reset()
@@ -1300,6 +1397,7 @@ bool KateThemeConfigPage::copyTheme()
         newNameDialog.setInputMode(QInputDialog::TextInput);
         newNameDialog.setWindowTitle(i18n("Copy theme"));
         newNameDialog.setLabelText(i18n("Name for copy of color theme \"%1\":", currentThemeName));
+        newNameDialog.setTextValue(currentThemeName);
         if (newNameDialog.exec() == QDialog::Rejected) {
             return false;
         }

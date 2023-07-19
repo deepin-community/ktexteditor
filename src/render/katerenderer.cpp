@@ -27,6 +27,7 @@
 
 #include <QBrush>
 #include <QPainter>
+#include <QPainterPath>
 #include <QRegularExpression>
 #include <QStack>
 #include <QtMath> // qCeil
@@ -139,20 +140,20 @@ void KateRenderer::setShowSelections(bool showSelections)
     m_showSelections = showSelections;
 }
 
-void KateRenderer::increaseFontSizes(qreal step)
+void KateRenderer::increaseFontSizes(qreal step) const
 {
     QFont f(config()->baseFont());
     f.setPointSizeF(f.pointSizeF() + step);
     config()->setFont(f);
 }
 
-void KateRenderer::resetFontSizes()
+void KateRenderer::resetFontSizes() const
 {
     QFont f(KateRendererConfig::global()->baseFont());
     config()->setFont(f);
 }
 
-void KateRenderer::decreaseFontSizes(qreal step)
+void KateRenderer::decreaseFontSizes(qreal step) const
 {
     QFont f(config()->baseFont());
     if ((f.pointSizeF() - step) > 0) {
@@ -197,7 +198,7 @@ void KateRenderer::paintTextLineBackground(QPainter &paint, KateLineLayoutPtr la
     uint mrk = m_doc->mark(layout->line());
     if (mrk) {
         for (uint bit = 0; bit < 32; bit++) {
-            KTextEditor::MarkInterface::MarkTypes markType = (KTextEditor::MarkInterface::MarkTypes)(1 << bit);
+            KTextEditor::MarkInterface::MarkTypes markType = (KTextEditor::MarkInterface::MarkTypes)(1U << bit);
             if (mrk & markType) {
                 QColor markColor = config()->lineMarkerColor(markType);
 
@@ -241,7 +242,7 @@ void KateRenderer::paintTextLineBackground(QPainter &paint, KateLineLayoutPtr la
     }
 }
 
-void KateRenderer::paintTabstop(QPainter &paint, qreal x, qreal y)
+void KateRenderer::paintTabstop(QPainter &paint, qreal x, qreal y) const
 {
     QPen penBackup(paint.pen());
     QPen pen(config()->tabMarkerColor());
@@ -263,7 +264,7 @@ void KateRenderer::paintTabstop(QPainter &paint, qreal x, qreal y)
     paint.setPen(penBackup);
 }
 
-void KateRenderer::paintSpace(QPainter &paint, qreal x, qreal y)
+void KateRenderer::paintSpace(QPainter &paint, qreal x, qreal y) const
 {
     QPen penBackup(paint.pen());
     QPen pen(config()->tabMarkerColor());
@@ -277,7 +278,7 @@ void KateRenderer::paintSpace(QPainter &paint, qreal x, qreal y)
     paint.setRenderHint(QPainter::Antialiasing, false);
 }
 
-void KateRenderer::paintNonBreakSpace(QPainter &paint, qreal x, qreal y)
+void KateRenderer::paintNonBreakSpace(QPainter &paint, qreal x, qreal y) const
 {
     QPen penBackup(paint.pen());
     QPen pen(config()->tabMarkerColor());
@@ -447,8 +448,7 @@ static bool rangeLessThanForRenderer(const Kate::TextRange *a, const Kate::TextR
     return false;
 }
 
-QVector<QTextLayout::FormatRange>
-KateRenderer::decorationsForLine(const Kate::TextLine &textLine, int line, bool selectionsOnly, bool completionHighlight, bool completionSelected) const
+QVector<QTextLayout::FormatRange> KateRenderer::decorationsForLine(const Kate::TextLine &textLine, int line, bool selectionsOnly) const
 {
     // limit number of attributes we can highlight in reasonable time
     const int limitOfRanges = 1024;
@@ -467,55 +467,52 @@ KateRenderer::decorationsForLine(const Kate::TextLine &textLine, int line, bool 
     RenderRangeVector renderRanges;
     if (!al.isEmpty()) {
         auto &currentRange = renderRanges.pushNewRange();
-        for (int i = 0; i < std::min(al.count(), limitOfRanges); ++i) {
+        for (int i = 0; i < std::min<int>(al.count(), limitOfRanges); ++i) {
             if (al[i].length > 0 && al[i].attributeValue > 0) {
                 currentRange.addRange(KTextEditor::Range(KTextEditor::Cursor(line, al[i].offset), al[i].length), specificAttribute(al[i].attributeValue));
             }
         }
     }
 
-    if (!completionHighlight) {
-        // check for dynamic hl stuff
-        const QSet<Kate::TextRange *> *rangesMouseIn = m_view ? m_view->rangesMouseIn() : nullptr;
-        const QSet<Kate::TextRange *> *rangesCaretIn = m_view ? m_view->rangesCaretIn() : nullptr;
-        bool anyDynamicHlsActive = m_view && (!rangesMouseIn->empty() || !rangesCaretIn->empty());
+    // check for dynamic hl stuff
+    const QSet<Kate::TextRange *> *rangesMouseIn = m_view ? m_view->rangesMouseIn() : nullptr;
+    const QSet<Kate::TextRange *> *rangesCaretIn = m_view ? m_view->rangesCaretIn() : nullptr;
+    bool anyDynamicHlsActive = m_view && (!rangesMouseIn->empty() || !rangesCaretIn->empty());
 
-        // sort all ranges, we want that the most specific ranges win during rendering, multiple equal ranges are kind of random, still better than old smart
-        // rangs behavior ;)
-        std::sort(rangesWithAttributes.begin(), rangesWithAttributes.end(), rangeLessThanForRenderer);
+    // sort all ranges, we want that the most specific ranges win during rendering, multiple equal ranges are kind of random, still better than old smart
+    // rangs behavior ;)
+    std::sort(rangesWithAttributes.begin(), rangesWithAttributes.end(), rangeLessThanForRenderer);
 
-        renderRanges.reserve(rangesWithAttributes.size());
-        // loop over all ranges
-        for (int i = 0; i < rangesWithAttributes.size(); ++i) {
-            // real range
-            Kate::TextRange *kateRange = rangesWithAttributes[i];
+    renderRanges.reserve(rangesWithAttributes.size());
+    // loop over all ranges
+    for (int i = 0; i < rangesWithAttributes.size(); ++i) {
+        // real range
+        Kate::TextRange *kateRange = rangesWithAttributes[i];
 
-            // calculate attribute, default: normal attribute
-            KTextEditor::Attribute::Ptr attribute = kateRange->attribute();
-            if (anyDynamicHlsActive) {
-                // check mouse in
-                if (KTextEditor::Attribute::Ptr attributeMouseIn = attribute->dynamicAttribute(KTextEditor::Attribute::ActivateMouseIn)) {
-                    if (rangesMouseIn->contains(kateRange)) {
-                        attribute = attributeMouseIn;
-                    }
-                }
-
-                // check caret in
-                if (KTextEditor::Attribute::Ptr attributeCaretIn = attribute->dynamicAttribute(KTextEditor::Attribute::ActivateCaretIn)) {
-                    if (rangesCaretIn->contains(kateRange)) {
-                        attribute = attributeCaretIn;
-                    }
+        // calculate attribute, default: normal attribute
+        KTextEditor::Attribute::Ptr attribute = kateRange->attribute();
+        if (anyDynamicHlsActive) {
+            // check mouse in
+            if (KTextEditor::Attribute::Ptr attributeMouseIn = attribute->dynamicAttribute(KTextEditor::Attribute::ActivateMouseIn)) {
+                if (rangesMouseIn->contains(kateRange)) {
+                    attribute = attributeMouseIn;
                 }
             }
 
-            // span range
-            renderRanges.pushNewRange().addRange(*kateRange, std::move(attribute));
+            // check caret in
+            if (KTextEditor::Attribute::Ptr attributeCaretIn = attribute->dynamicAttribute(KTextEditor::Attribute::ActivateCaretIn)) {
+                if (rangesCaretIn->contains(kateRange)) {
+                    attribute = attributeCaretIn;
+                }
+            }
         }
+
+        // span range
+        renderRanges.pushNewRange().addRange(*kateRange, std::move(attribute));
     }
 
     // Add selection highlighting if we're creating the selection decorations
-    if ((m_view && selectionsOnly && showSelections() && m_view->selection()) || (completionHighlight && completionSelected)
-        || (m_view && m_view->blockSelection())) {
+    if ((m_view && selectionsOnly && showSelections() && m_view->selection()) || (m_view && m_view->blockSelection())) {
         auto &currentRange = renderRanges.pushNewRange();
 
         // Set up the selection background attribute TODO: move this elsewhere, eg. into the config?
@@ -524,13 +521,13 @@ KateRenderer::decorationsForLine(const Kate::TextLine &textLine, int line, bool 
             backgroundAttribute = KTextEditor::Attribute::Ptr(new KTextEditor::Attribute());
         }
 
-        backgroundAttribute->setBackground(config()->selectionColor());
+        if (!hasCustomLineHeight()) {
+            backgroundAttribute->setBackground(config()->selectionColor());
+        }
         backgroundAttribute->setForeground(attribute(KTextEditor::dsNormal)->selectedForeground().color());
 
         // Create a range for the current selection
-        if (completionHighlight && completionSelected) {
-            currentRange.addRange(KTextEditor::Range(line, 0, line + 1, 0), backgroundAttribute);
-        } else if (m_view->blockSelection() && m_view->selectionRange().overlapsLine(line)) {
+        if (m_view->blockSelection() && m_view->selectionRange().overlapsLine(line)) {
             currentRange.addRange(m_doc->rangeOnLine(m_view->selectionRange(), line), backgroundAttribute);
         } else {
             currentRange.addRange(m_view->selectionRange(), backgroundAttribute);
@@ -560,6 +557,10 @@ KateRenderer::decorationsForLine(const Kate::TextLine &textLine, int line, bool 
         currentPosition = KTextEditor::Cursor(line, 0);
         endPosition = KTextEditor::Cursor(line + 1, 0);
     }
+
+    // Background formats have lower priority so they get overriden by selection
+    const bool shoudlClearBackground = m_view && hasCustomLineHeight() && m_view->selection();
+    const KTextEditor::Range selectionRange = shoudlClearBackground ? m_view->selectionRange() : KTextEditor::Range::invalid();
 
     // Main iterative loop.  This walks through each set of highlighting ranges, and stops each
     // time the highlighting changes.  It then creates the corresponding QTextLayout::FormatRanges.
@@ -597,15 +598,27 @@ KateRenderer::decorationsForLine(const Kate::TextLine &textLine, int line, bool 
             }
         }
 
+        // Clear background if this position overlaps selection
+        if (shoudlClearBackground && selectionRange.contains(currentPosition) && fr.format.hasProperty(QTextFormat::BackgroundBrush)) {
+            fr.format.clearBackground();
+        }
+
         newHighlight.append(fr);
 
         currentPosition = nextPosition;
     }
 
+    // ensure bold & italic fonts work, even if the main font is e.g. light or something like that
+    for (auto &formatRange : newHighlight) {
+        if (formatRange.format.fontWeight() == QFont::Bold || formatRange.format.fontItalic()) {
+            formatRange.format.setFontStyleName(QString());
+        }
+    }
+
     return newHighlight;
 }
 
-void KateRenderer::assignSelectionBrushesFromAttribute(QTextLayout::FormatRange &target, const KTextEditor::Attribute &attribute) const
+void KateRenderer::assignSelectionBrushesFromAttribute(QTextLayout::FormatRange &target, const KTextEditor::Attribute &attribute)
 {
     if (attribute.hasProperty(SelectedForeground)) {
         target.format.setForeground(attribute.selectedForeground());
@@ -613,6 +626,42 @@ void KateRenderer::assignSelectionBrushesFromAttribute(QTextLayout::FormatRange 
     if (attribute.hasProperty(SelectedBackground)) {
         target.format.setBackground(attribute.selectedBackground());
     }
+}
+
+void KateRenderer::paintTextLineSelection(QPainter &paint, KateLineLayoutPtr layout, const QVector<QTextLayout::FormatRange> &selRanges)
+{
+    QPainterPath p;
+    for (const auto &sel : selRanges) {
+        const int s = sel.start;
+        const int e = sel.start + sel.length;
+
+        const int startViewLine = layout->viewLineForColumn(s);
+        const int endViewLine = layout->viewLineForColumn(e);
+        if (startViewLine == endViewLine) {
+            KateTextLayout l = layout->viewLine(startViewLine);
+            const int startX = cursorToX(l, s);
+            const int endX = cursorToX(l, e);
+            const int y = startViewLine * lineHeight();
+            QRect r(startX, y, (endX - startX), lineHeight());
+            p.addRect(r);
+        } else {
+            for (int l = startViewLine; l <= endViewLine; ++l) {
+                auto kateLayout = layout->viewLine(l);
+                int sx = 0;
+                int width = kateLayout.lineLayout().naturalTextWidth();
+                if (l == startViewLine) {
+                    sx = kateLayout.lineLayout().cursorToX(s);
+                } else if (l == endViewLine) {
+                    width = kateLayout.lineLayout().cursorToX(e);
+                }
+
+                const int y = l * lineHeight();
+                QRect r(sx, y, width - sx, lineHeight());
+                p.addRect(r);
+            }
+        }
+    }
+    paint.fillPath(p, config()->selectionColor());
 }
 
 void KateRenderer::paintTextLine(QPainter &paint, KateLineLayoutPtr range, int xStart, int xEnd, const KTextEditor::Cursor *cursor, PaintTextLineFlags flags)
@@ -677,6 +726,9 @@ void KateRenderer::paintTextLine(QPainter &paint, KateLineLayoutPtr range, int x
             // Draw the text :)
             if (drawSelection) {
                 additionalFormats = decorationsForLine(range->textLine(), range->line(), true);
+                if (hasCustomLineHeight()) {
+                    paintTextLineSelection(paint, range, additionalFormats);
+                }
                 range->layout()->draw(&paint, QPoint(-xStart, 0), additionalFormats);
 
             } else {
@@ -709,7 +761,7 @@ void KateRenderer::paintTextLine(QPainter &paint, KateLineLayoutPtr range, int x
             }
 
             // draw an open box to mark non-breaking spaces
-            const QString &text = range->textLine()->string();
+            const QString &text = range->textLine()->text();
             int y = lineHeight() * i + fm.ascent() - fm.strikeOutPos();
             int nbSpaceIndex = text.indexOf(nbSpaceChar, line.lineLayout().xToCursor(xStart));
 
@@ -793,82 +845,24 @@ void KateRenderer::paintTextLine(QPainter &paint, KateLineLayoutPtr range, int x
             }
         }
 
-        // Draw caret
-        if (drawCaret() && cursor && range->includesCursor(*cursor)) {
-            int caretWidth;
-            int lineWidth = 2;
-            QColor color;
-            QTextLine line = range->layout()->lineForTextPosition(qMin(cursor->column(), range->length()));
-
-            // Determine the caret's style
-            caretStyles style = caretStyle();
-
-            // Make the caret the desired width
-            if (style == Line) {
-                caretWidth = lineWidth;
-            } else if (line.isValid() && cursor->column() < range->length()) {
-                caretWidth = int(line.cursorToX(cursor->column() + 1) - line.cursorToX(cursor->column()));
-                if (caretWidth < 0) {
-                    caretWidth = -caretWidth;
-                }
-            } else {
-                caretWidth = spaceWidth();
-            }
-
-            // Determine the color
-            if (m_caretOverrideColor.isValid()) {
-                // Could actually use the real highlighting system for this...
-                // would be slower, but more accurate for corner cases
-                color = m_caretOverrideColor;
-            } else {
-                // search for the FormatRange that includes the cursor
-                const auto formatRanges = range->layout()->formats();
-                for (const QTextLayout::FormatRange &r : formatRanges) {
-                    if ((r.start <= cursor->column()) && ((r.start + r.length) > cursor->column())) {
-                        // check for Qt::NoBrush, as the returned color is black() and no invalid QColor
-                        QBrush foregroundBrush = r.format.foreground();
-                        if (foregroundBrush != Qt::NoBrush) {
-                            color = r.format.foreground().color();
-                        }
+        // Draw carets
+        if (m_view && cursor && drawCaret()) {
+            const auto &secCursors = view()->secondaryCursors();
+            // Find carets on this line
+            auto mIt = std::lower_bound(secCursors.begin(), secCursors.end(), range->line(), [](const KTextEditor::ViewPrivate::SecondaryCursor &l, int line) {
+                return l.pos->line() < line;
+            });
+            if (mIt != secCursors.end() && mIt->cursor().line() == range->line()) {
+                for (; mIt != secCursors.end(); ++mIt) {
+                    auto cursor = mIt->cursor();
+                    if (cursor.line() == range->line()) {
+                        paintCaret(cursor, range, paint, xStart, xEnd);
+                    } else {
                         break;
                     }
                 }
-                // still no color found, fall back to default style
-                if (!color.isValid()) {
-                    color = attribute(KTextEditor::dsNormal)->foreground().color();
-                }
             }
-
-            paint.save();
-            switch (style) {
-            case Line:
-                paint.setPen(QPen(color, caretWidth));
-                break;
-            case Block:
-                // use a gray caret so it's possible to see the character
-                color.setAlpha(128);
-                paint.setPen(QPen(color, caretWidth));
-                break;
-            case Underline:
-                break;
-            case Half:
-                color.setAlpha(128);
-                paint.setPen(QPen(color, caretWidth));
-                break;
-            }
-
-            if (cursor->column() <= range->length()) {
-                range->layout()->drawCursor(&paint, QPoint(-xStart, 0), cursor->column(), caretWidth);
-            } else {
-                // Off the end of the line... must be block mode. Draw the caret ourselves.
-                const KateTextLayout &lastLine = range->viewLine(range->viewLineCount() - 1);
-                int x = cursorToX(lastLine, KTextEditor::Cursor(range->line(), cursor->column()), true);
-                if ((x >= xStart) && (x <= xEnd)) {
-                    paint.fillRect(x - xStart, (int)lastLine.lineLayout().y(), caretWidth, lineHeight(), color);
-                }
-            }
-
-            paint.restore();
+            paintCaret(*cursor, range, paint, xStart, xEnd);
         }
     }
 
@@ -912,6 +906,98 @@ void KateRenderer::paintTextLine(QPainter &paint, KateLineLayoutPtr range, int x
             inlineNote.provider()->paintInlineNote(inlineNote, paint);
             paint.restore();
         }
+    }
+}
+
+void KateRenderer::paintCaret(const KTextEditor::Cursor &cursor, const KateLineLayoutPtr &range, QPainter &paint, int xStart, int xEnd)
+{
+    if (range->includesCursor(cursor)) {
+        int caretWidth;
+        int lineWidth = 2;
+        QColor color;
+        QTextLine line = range->layout()->lineForTextPosition(qMin(cursor.column(), range->length()));
+
+        // Determine the caret's style
+        caretStyles style = caretStyle();
+
+        // Make the caret the desired width
+        if (style == Line) {
+            caretWidth = lineWidth;
+        } else if (line.isValid() && cursor.column() < range->length()) {
+            caretWidth = int(line.cursorToX(cursor.column() + 1) - line.cursorToX(cursor.column()));
+            if (caretWidth < 0) {
+                caretWidth = -caretWidth;
+            }
+        } else {
+            caretWidth = spaceWidth();
+        }
+
+        // Determine the color
+        if (m_caretOverrideColor.isValid()) {
+            // Could actually use the real highlighting system for this...
+            // would be slower, but more accurate for corner cases
+            color = m_caretOverrideColor;
+        } else {
+            // search for the FormatRange that includes the cursor
+            const auto formatRanges = range->layout()->formats();
+            for (const QTextLayout::FormatRange &r : formatRanges) {
+                if ((r.start <= cursor.column()) && ((r.start + r.length) > cursor.column())) {
+                    // check for Qt::NoBrush, as the returned color is black() and no invalid QColor
+                    QBrush foregroundBrush = r.format.foreground();
+                    if (foregroundBrush != Qt::NoBrush) {
+                        color = r.format.foreground().color();
+                    }
+                    break;
+                }
+            }
+            // still no color found, fall back to default style
+            if (!color.isValid()) {
+                color = attribute(KTextEditor::dsNormal)->foreground().color();
+            }
+        }
+
+        paint.save();
+        switch (style) {
+        case Line:
+            paint.setPen(QPen(color, caretWidth));
+            break;
+        case Block:
+            // use a gray caret so it's possible to see the character
+            color.setAlpha(128);
+            paint.setPen(QPen(color, caretWidth));
+            break;
+        case Underline:
+            break;
+        case Half:
+            color.setAlpha(128);
+            paint.setPen(QPen(color, caretWidth));
+            break;
+        }
+
+        if (cursor.column() <= range->length()) {
+            // Ensure correct cursor placement for RTL text
+            if (range->layout()->textOption().textDirection() == Qt::RightToLeft) {
+                xStart += caretWidth;
+            }
+            qreal width = 0;
+            const auto inlineNotes = m_view->inlineNotes(range->line());
+            for (const auto &inlineNoteData : inlineNotes) {
+                KTextEditor::InlineNote inlineNote(inlineNoteData);
+                if (inlineNote.position().column() == cursor.column()) {
+                    width = inlineNote.width() + (caretStyle() == Line ? 2.0 : 0.0);
+                }
+            }
+            range->layout()->drawCursor(&paint, QPoint(-xStart - width, 0), cursor.column(), caretWidth);
+        } else {
+            // Off the end of the line... must be block mode. Draw the caret ourselves.
+            const KateTextLayout &lastLine = range->viewLine(range->viewLineCount() - 1);
+            int x = cursorToX(lastLine, KTextEditor::Cursor(range->line(), cursor.column()), true);
+            if ((x >= xStart) && (x <= xEnd)) {
+                paint.fillRect(x - xStart, (int)lastLine.lineLayout().y(), caretWidth, lineHeight(), color);
+            }
+        }
+
+        paint.restore();
     }
 }
 
@@ -981,6 +1067,11 @@ void KateRenderer::updateConfig()
     }
 }
 
+bool KateRenderer::hasCustomLineHeight() const
+{
+    return !qFuzzyCompare(config()->lineHeightMultiplier(), 1.0);
+}
+
 void KateRenderer::updateFontHeight()
 {
     // cache font + metrics
@@ -1001,6 +1092,15 @@ void KateRenderer::updateFontHeight()
     // qreal fontHeight = font.ascent() + font.descent();
     m_fontHeight = qMax(1, qCeil(m_fontMetrics.ascent() + m_fontMetrics.descent()));
     m_fontAscent = m_fontMetrics.ascent();
+
+    if (hasCustomLineHeight()) {
+        const auto oldFontHeight = m_fontHeight;
+        const qreal newFontHeight = qreal(m_fontHeight) * config()->lineHeightMultiplier();
+        m_fontHeight = newFontHeight;
+
+        qreal diff = std::abs(oldFontHeight - newFontHeight);
+        m_fontAscent += (diff / 2);
+    }
 }
 
 void KateRenderer::updateMarkerSize()
@@ -1025,9 +1125,9 @@ void KateRenderer::layoutLine(KateLineLayoutPtr lineLayout, int maxwidth, bool c
 
     QTextLayout *l = lineLayout->layout();
     if (!l) {
-        l = new QTextLayout(textLine->string(), m_font);
+        l = new QTextLayout(textLine->text(), m_font);
     } else {
-        l->setText(textLine->string());
+        l->setText(textLine->text());
         l->setFont(m_font);
     }
 
@@ -1055,6 +1155,13 @@ void KateRenderer::layoutLine(KateLineLayoutPtr lineLayout, int maxwidth, bool c
     if (isLineRightToLeft(lineLayout)) {
         opt.setAlignment(Qt::AlignRight);
         opt.setTextDirection(Qt::RightToLeft);
+        // Must turn off this flag otherwise cursor placement
+        // is totally broken.
+        if (view()->config()->dynWordWrap()) {
+            auto flags = opt.flags();
+            flags.setFlag(QTextOption::IncludeTrailingSpaces, false);
+            opt.setFlags(flags);
+        }
     } else {
         opt.setAlignment(Qt::AlignLeft);
         opt.setTextDirection(Qt::LeftToRight);
@@ -1082,7 +1189,8 @@ void KateRenderer::layoutLine(KateLineLayoutPtr lineLayout, int maxwidth, bool c
                 firstLineOffset = width;
             } else if (column < l->text().length()) {
                 QTextCharFormat text_char_format;
-                text_char_format.setFontLetterSpacing(width);
+                const qreal caretWidth = caretStyle() == Line ? 2.0 : 0.0;
+                text_char_format.setFontLetterSpacing(width + caretWidth);
                 text_char_format.setFontLetterSpacingType(QFont::AbsoluteSpacing);
                 decorations.append(QTextLayout::FormatRange{column - 1, 1, text_char_format});
             }
@@ -1148,9 +1256,9 @@ void KateRenderer::layoutLine(KateLineLayoutPtr lineLayout, int maxwidth, bool c
 // 3) QString::isRightToLeft() does not seem to work on my setup
 // 4) isStringRightToLeft() should behave much better than QString::isRightToLeft() therefore:
 // 5) isStringRightToLeft() kicks ass
-bool KateRenderer::isLineRightToLeft(KateLineLayoutPtr lineLayout) const
+bool KateRenderer::isLineRightToLeft(KateLineLayoutPtr lineLayout)
 {
-    QString s = lineLayout->textLine()->string();
+    QString s = lineLayout->textLine()->text();
     int i = 0;
 
     // borrowed from QString::updateProperties()

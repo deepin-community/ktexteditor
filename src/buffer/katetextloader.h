@@ -53,8 +53,10 @@ public:
     {
         // try to get mimetype for on the fly decompression, don't rely on filename!
         QFile testMime(filename);
+        if (testMime.open(QIODevice::ReadOnly)) {
+            m_fileSize = testMime.size();
+        }
         m_mimeType = QMimeDatabase().mimeTypeForFileNameAndData(filename, &testMime).name();
-        m_fileSize = testMime.size();
 
         // construct filter device
         KCompressionDevice::CompressionType compressionType = KCompressionDevice::compressionTypeForMimeType(m_mimeType);
@@ -93,7 +95,7 @@ public:
         // init the hash with the git header
         const QString header = QStringLiteral("blob %1").arg(m_fileSize);
         m_digest.reset();
-        m_digest.addData(header.toLatin1() + '\0');
+        m_digest.addData(QByteArray(header.toLatin1() + '\0'));
 
         // if already opened, close the file...
         if (m_file->isOpen()) {

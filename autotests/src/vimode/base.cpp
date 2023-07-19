@@ -33,9 +33,9 @@ BaseTest::BaseTest()
     mainWindow->setCentralWidget(centralWidget);
     mainWindow->resize(640, 480);
 
-    m_codesToModifiers.insert("ctrl", Qt::ControlModifier);
+    m_codesToModifiers.insert("ctrl", CONTROL_MODIFIER);
     m_codesToModifiers.insert("alt", Qt::AltModifier);
-    m_codesToModifiers.insert("meta", Qt::MetaModifier);
+    m_codesToModifiers.insert("meta", META_MODIFIER);
     m_codesToModifiers.insert("keypad", Qt::KeypadModifier);
 
     m_codesToSpecialKeys.insert("backspace", Qt::Key_Backspace);
@@ -85,6 +85,7 @@ void BaseTest::init()
 
     kate_view = new KTextEditor::ViewPrivate(kate_document, mainWindow);
     mainWindowLayout->addWidget(kate_view);
+    kate_view->config()->setValue(KateViewConfig::AutoBrackets, false);
     kate_view->setInputMode(View::ViInputMode);
     Q_ASSERT(kate_view->currentInputMode()->viewInputMode() == KTextEditor::View::ViInputMode);
     vi_input_mode = dynamic_cast<KateViInputMode *>(kate_view->currentInputMode());
@@ -127,12 +128,12 @@ void BaseTest::TestPressKey(const QString &str)
                 int endOfSpecialKeyAfterModifier = -1;
                 const Qt::Key parsedCodedSpecialKeyAfterModifier = parseCodedSpecialKey(str, i, &endOfSpecialKeyAfterModifier);
                 if (parsedCodedSpecialKeyAfterModifier != Qt::Key_unknown) {
-                    key = QString(parsedCodedSpecialKeyAfterModifier);
+                    key = parsedCodedSpecialKeyAfterModifier <= 0xffff ? QString(QChar(parsedCodedSpecialKeyAfterModifier)) : QString();
                     keyCode = parsedCodedSpecialKeyAfterModifier;
                     i = endOfSpecialKeyAfterModifier;
                 }
             } else if (parsedSpecialKey != Qt::Key_unknown) {
-                key = QString(parsedSpecialKey);
+                key = parsedSpecialKey <= 0xffff ? QString(QChar(parsedSpecialKey)) : QString();
                 keyCode = parsedSpecialKey;
                 i = endOfSpecialKey;
             } else if (str.mid(i, 2) == QString("\\:")) {
@@ -201,7 +202,7 @@ void BaseTest::TestPressKey(const QString &str)
 
 void BaseTest::BeginTest(const QString &original)
 {
-    vi_input_mode_manager->viEnterNormalMode();
+    vi_input_mode->viInputModeManager()->viEnterNormalMode();
     vi_input_mode->reset();
     vi_input_mode_manager = vi_input_mode->viInputModeManager();
     kate_document->setText(original);

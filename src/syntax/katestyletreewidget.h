@@ -30,15 +30,6 @@ public:
 
     void emitChanged();
 
-    void setBgCol(const QColor &c)
-    {
-        bgcol = c;
-    }
-    void setSelCol(const QColor &c)
-    {
-        selcol = c;
-    }
-
     void addItem(QTreeWidgetItem *parent,
                  const QString &styleName,
                  KTextEditor::Attribute::Ptr defaultstyle,
@@ -46,6 +37,9 @@ public:
     void addItem(const QString &styleName, KTextEditor::Attribute::Ptr defaultstyle, KTextEditor::Attribute::Ptr data = KTextEditor::Attribute::Ptr());
 
     void resizeColumns();
+
+    bool readOnly() const;
+    void setReadOnly(bool readOnly);
 
 Q_SIGNALS:
     void changed();
@@ -61,8 +55,7 @@ private Q_SLOTS:
     void updateGroupHeadings();
 
 private:
-    QColor bgcol, selcol;
-    QFont docfont;
+    bool m_readOnly = false;
 };
 
 #endif

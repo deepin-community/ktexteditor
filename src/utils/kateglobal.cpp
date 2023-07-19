@@ -2,6 +2,12 @@
     SPDX-FileCopyrightText: 2001-2010 Christoph Cullmann <cullmann@kde.org>
     SPDX-FileCopyrightText: 2009 Erlend Hamberg <ehamberg@gmail.com>
 
+    For the addScrollablePage original
+    SPDX-FileCopyrightText: 2003 Benjamin C Meyer <ben+kdelibs at meyerhome dot net>
+    SPDX-FileCopyrightText: 2003 Waldo Bastian <bastian@kde.org>
+    SPDX-FileCopyrightText: 2004 Michael Brade <brade@kde.org>
+    SPDX-FileCopyrightText: 2021 Ahmad Samir <a.samirh78@gmail.com>
+
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
@@ -41,6 +47,9 @@
 #include <QClipboard>
 #include <QFrame>
 #include <QPushButton>
+#include <QScreen>
+#include <QScrollArea>
+#include <QScrollBar>
 #include <QStringListModel>
 #include <QTimer>
 
@@ -65,7 +74,7 @@ KTextEditor::EditorPrivate::EditorPrivate(QPointer<KTextEditor::EditorPrivate> &
                   QStringLiteral(KTEXTEDITOR_VERSION_STRING),
                   i18n("Embeddable editor component"),
                   KAboutLicense::LGPL_V2,
-                  i18n("(c) 2000-2021 The Kate Authors"),
+                  i18n("(c) 2000-2022 The Kate Authors"),
                   QString(),
                   QStringLiteral("https://kate-editor.org"))
     , m_dummyApplication(nullptr)
@@ -251,40 +260,89 @@ KTextEditor::Document *KTextEditor::EditorPrivate::createDocument(QObject *paren
 
 // END KTextEditor::Editor config stuff
 
-void KTextEditor::EditorPrivate::configDialog(QWidget *parent)
+// config dialog with improved sizing and that allows scrolling
+class KTextEditorConfigDialog : public KPageDialog
 {
-    QPointer<KPageDialog> kd = new KPageDialog(parent);
-
-    kd->setWindowTitle(i18n("Configure"));
-    kd->setFaceType(KPageDialog::List);
-    kd->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply | QDialogButtonBox::Help);
-
+public:
     QList<KTextEditor::ConfigPage *> editorPages;
-    editorPages.reserve(configPages());
-    for (int i = 0; i < configPages(); ++i) {
-        QFrame *page = new QFrame();
-        KTextEditor::ConfigPage *cp = configPage(i, page);
 
-        KPageWidgetItem *item = kd->addPage(page, cp->name());
-        item->setHeader(cp->fullName());
-        item->setIcon(cp->icon());
+    KTextEditorConfigDialog(KTextEditor::EditorPrivate *editor, QWidget *parent)
+        : KPageDialog(parent)
+    {
+        setWindowTitle(i18n("Configure"));
+        setFaceType(KPageDialog::List);
+        setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Apply | QDialogButtonBox::Help);
 
-        QVBoxLayout *topLayout = new QVBoxLayout(page);
-        topLayout->setContentsMargins(0, 0, 0, 0);
+        // create pages already in construct to have proper layout for sizeHint
+        editorPages.reserve(editor->configPages());
+        for (int i = 0; i < editor->configPages(); ++i) {
+            KTextEditor::ConfigPage *page = editor->configPage(i, this);
+            KPageWidgetItem *item = addScrollablePage(page, page->name());
+            item->setHeader(page->fullName());
+            item->setIcon(page->icon());
 
-        connect(kd->button(QDialogButtonBox::Apply), &QPushButton::clicked, cp, &KTextEditor::ConfigPage::apply);
-        topLayout->addWidget(cp);
-        editorPages.append(cp);
+            connect(button(QDialogButtonBox::Apply), &QPushButton::clicked, page, &KTextEditor::ConfigPage::apply);
+            editorPages.append(page);
+        }
     }
 
+    QSize sizeHint() const override
+    {
+        // start with a bit enlarged default size hint to minimize changes of useless scrollbars
+        QSize size = KPageDialog::sizeHint() * 1.3;
+
+        // enlarge it to half of the main window size, if that is larger
+        if (parentWidget() && parentWidget()->window()) {
+            size = size.expandedTo(parentWidget()->window()->size() * 0.5);
+        }
+
+        // return bounded size to available real screen space
+        return size.boundedTo(screen()->availableSize() * 0.9);
+    }
+
+    KPageWidgetItem *addScrollablePage(QWidget *page, const QString &itemName)
+    {
+        // inspired by KPageWidgetItem *KConfigDialogPrivate::addPageInternal(QWidget *page, const QString &itemName, const QString &pixmapName, const QString
+        // &header)
+        QWidget *frame = new QWidget;
+        QVBoxLayout *boxLayout = new QVBoxLayout(frame);
+        boxLayout->setContentsMargins(0, 0, 0, 0);
+        boxLayout->setContentsMargins(0, 0, 0, 0);
+
+        QScrollArea *scroll = new QScrollArea;
+        scroll->setFrameShape(QFrame::NoFrame);
+        scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        scroll->setWidget(page);
+        scroll->setWidgetResizable(true);
+        scroll->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
+        if (page->minimumSizeHint().height() > scroll->sizeHint().height() - 2) {
+            if (page->sizeHint().width() < scroll->sizeHint().width() + 2) {
+                // QScrollArea is planning only a vertical scroll bar,
+                // try to avoid the horizontal one by reserving space for the vertical one.
+                // Currently KPageViewPrivate::_k_modelChanged() queries the minimumSizeHint().
+                // We can only set the minimumSize(), so this approach relies on QStackedWidget size calculation.
+                scroll->setMinimumWidth(scroll->sizeHint().width() + qBound(0, scroll->verticalScrollBar()->sizeHint().width(), 200) + 4);
+            }
+        }
+
+        boxLayout->addWidget(scroll);
+        return addPage(frame, itemName);
+    }
+};
+
+void KTextEditor::EditorPrivate::configDialog(QWidget *parent)
+{
+    QPointer<KTextEditorConfigDialog> kd = new KTextEditorConfigDialog(this, parent);
     if (kd->exec() && kd) {
         KateGlobalConfig::global()->configStart();
         KateDocumentConfig::global()->configStart();
         KateViewConfig::global()->configStart();
         KateRendererConfig::global()->configStart();
 
-        for (int i = 0; i < editorPages.count(); ++i) {
-            editorPages.at(i)->apply();
+        for (int i = 0; i < kd->editorPages.count(); ++i) {
+            kd->editorPages.at(i)->apply();
         }
 
         KateGlobalConfig::global()->configEnd();
@@ -292,7 +350,6 @@ void KTextEditor::EditorPrivate::configDialog(QWidget *parent)
         KateViewConfig::global()->configEnd();
         KateRendererConfig::global()->configEnd();
     }
-
     delete kd;
 }
 
@@ -411,7 +468,7 @@ void KTextEditor::EditorPrivate::updateColorPalette()
     m_rendererConfig->updateConfig();
 }
 
-void KTextEditor::EditorPrivate::copyToClipboard(const QString &text)
+void KTextEditor::EditorPrivate::copyToClipboard(const QString &text, const QString &fileName)
 {
     // empty => nop
     if (text.isEmpty()) {
@@ -422,10 +479,11 @@ void KTextEditor::EditorPrivate::copyToClipboard(const QString &text)
     QApplication::clipboard()->setText(text, QClipboard::Clipboard);
 
     // LRU, kill potential duplicated, move new entry to top
-    // cut after 10 entries
-    m_clipboardHistory.removeOne(text);
-    m_clipboardHistory.prepend(text);
-    if (m_clipboardHistory.size() > 10) {
+    // cut after X entries
+    auto entry = ClipboardEntry{text, fileName};
+    m_clipboardHistory.removeOne(entry);
+    m_clipboardHistory.prepend(entry);
+    if (m_clipboardHistory.size() > m_viewConfig->clipboardHistoryEntries()) {
         m_clipboardHistory.removeLast();
     }
 
@@ -508,4 +566,20 @@ void KTextEditor::EditorPrivate::emitConfigChanged()
         m_configWasChanged = false;
         Q_EMIT configChanged(this);
     }
+}
+
+void KTextEditor::EditorPrivate::copyToMulticursorClipboard(const QStringList &texts)
+{
+    if (texts.size() == 1) {
+        qWarning() << "Unexpected size 1 of multicursorClipboard. It should either be empty or greater than 1";
+        m_multicursorClipboard = QStringList();
+        Q_ASSERT(false);
+        return;
+    }
+    m_multicursorClipboard = texts;
+}
+
+QStringList KTextEditor::EditorPrivate::multicursorClipboard() const
+{
+    return m_multicursorClipboard;
 }

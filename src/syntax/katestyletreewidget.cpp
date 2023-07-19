@@ -30,7 +30,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
 private:
-    QBrush getBrushForColorColumn(const QModelIndex &index, int column) const;
+    static QBrush getBrushForColorColumn(const QModelIndex &index, int column);
     KateStyleTreeWidget *m_widget;
 };
 // END
@@ -141,13 +141,9 @@ KateStyleTreeWidget::KateStyleTreeWidget(QWidget *parent, bool showUseDefaults)
     headerItem()->setIcon(3, QIcon::fromTheme(QStringLiteral("format-text-underline")));
     headerItem()->setIcon(4, QIcon::fromTheme(QStringLiteral("format-text-strikethrough")));
 
-    // grap the bg color, selected color and default font
-    bgcol = KateRendererConfig::global()->backgroundColor();
-    selcol = KateRendererConfig::global()->selectionColor();
-    docfont = KateRendererConfig::global()->baseFont();
-
+    // grab the background color and apply it to the palette
     QPalette pal = viewport()->palette();
-    pal.setColor(QPalette::Window, bgcol);
+    pal.setColor(QPalette::Window, KateRendererConfig::global()->backgroundColor());
     viewport()->setPalette(pal);
 }
 
@@ -166,6 +162,10 @@ QIcon brushIcon(const QColor &color)
 
 bool KateStyleTreeWidget::edit(const QModelIndex &index, EditTrigger trigger, QEvent *event)
 {
+    if (m_readOnly) {
+        return false;
+    }
+
     if (index.column() == KateStyleTreeWidgetItem::Context) {
         return false;
     }
@@ -204,6 +204,10 @@ void KateStyleTreeWidget::showEvent(QShowEvent *event)
 
 void KateStyleTreeWidget::contextMenuEvent(QContextMenuEvent *event)
 {
+    if (m_readOnly) {
+        return;
+    }
+
     KateStyleTreeWidgetItem *i = dynamic_cast<KateStyleTreeWidgetItem *>(itemAt(event->pos()));
     if (!i) {
         return;
@@ -343,7 +347,7 @@ KateStyleTreeDelegate::KateStyleTreeDelegate(KateStyleTreeWidget *widget)
 {
 }
 
-QBrush KateStyleTreeDelegate::getBrushForColorColumn(const QModelIndex &index, int column) const
+QBrush KateStyleTreeDelegate::getBrushForColorColumn(const QModelIndex &index, int column)
 {
     QModelIndex colorIndex = index.sibling(index.row(), column);
     QVariant displayData = colorIndex.model()->data(colorIndex);
@@ -730,5 +734,15 @@ void KateStyleTreeWidgetItem::unsetColor(int colorId)
 KateStyleTreeWidget *KateStyleTreeWidgetItem::treeWidget() const
 {
     return static_cast<KateStyleTreeWidget *>(QTreeWidgetItem::treeWidget());
+}
+
+bool KateStyleTreeWidget::readOnly() const
+{
+    return m_readOnly;
+}
+
+void KateStyleTreeWidget::setReadOnly(bool readOnly)
+{
+    m_readOnly = readOnly;
 }
 // END

@@ -48,7 +48,7 @@ void ModeBase::yankToClipBoard(QChar chosen_register, const QString &text)
     // textlength > 1 and there is something else then whitespace
     if ((chosen_register == QLatin1Char('0') || chosen_register == QLatin1Char('-') || chosen_register == PrependNumberedRegister) && text.length() > 1
         && !text.trimmed().isEmpty()) {
-        KTextEditor::EditorPrivate::self()->copyToClipboard(text);
+        KTextEditor::EditorPrivate::self()->copyToClipboard(text, m_view->doc()->url().fileName());
     }
 }
 
@@ -68,19 +68,19 @@ bool ModeBase::deleteRange(Range &r, OperationMode mode, bool addToRegister)
         res = doc()->removeText(r.toEditorRange(), mode == Block);
     }
 
-    // the BlackHoleRegister here is only a placeholder to signify that no register was selected
+    // the UnnamedRegister here is only a placeholder to signify that no register was selected
     // this is needed because the fallback register depends on whether the deleted text spans a line/lines
-    QChar chosenRegister = getChosenRegister(BlackHoleRegister);
+    QChar chosenRegister = getChosenRegister(UnnamedRegister);
     if (addToRegister) {
         fillRegister(chosenRegister, removedText, mode);
     }
 
     const QChar lastChar = removedText.count() > 0 ? removedText.back() : QLatin1Char('\0');
-    if (r.startLine != r.endLine || lastChar == QLatin1Char('\n') || lastChar == QLatin1Char('\r')) {
+    if (chosenRegister != BlackHoleRegister && (r.startLine != r.endLine || lastChar == QLatin1Char('\n') || lastChar == QLatin1Char('\r'))) {
         // for deletes spanning a line/lines, always prepend to the numbered registers
         fillRegister(PrependNumberedRegister, removedText, mode);
         chosenRegister = PrependNumberedRegister;
-    } else if (chosenRegister == BlackHoleRegister) {
+    } else if (chosenRegister == UnnamedRegister) {
         // only set the SmallDeleteRegister when no register was selected
         fillRegister(SmallDeleteRegister, removedText, mode);
         chosenRegister = SmallDeleteRegister;
@@ -119,7 +119,7 @@ const QString ModeBase::getRange(Range &r, OperationMode mode) const
 
 const QString ModeBase::getLine(int line) const
 {
-    return (line < 0) ? m_view->currentTextLine() : doc()->line(line);
+    return (line < 0) ? m_view->doc()->line(m_view->cursorPosition().line()) : doc()->line(line);
 }
 
 const QChar ModeBase::getCharUnderCursor() const
@@ -1099,7 +1099,7 @@ QString ModeBase::getVerbatimKeys() const
     return m_keysVerbatim;
 }
 
-const QChar ModeBase::getCharAtVirtualColumn(const QString &line, int virtualColumn, int tabWidth) const
+const QChar ModeBase::getCharAtVirtualColumn(const QString &line, int virtualColumn, int tabWidth)
 {
     int column = 0;
     int tempCol = 0;

@@ -26,6 +26,7 @@ namespace KTextEditor
 {
 class ViewPrivate;
 }
+class DocTip;
 class KateCompletionModel;
 class KateCompletionTree;
 class KateArgumentHintTree;
@@ -66,10 +67,14 @@ public Q_SLOTS:
     void cursorUp();
 
 public:
-    void tab(bool shift);
+    enum Direction {
+        Down,
+        Up,
+    };
 
-    /// Returns whether the current item was expanded/unexpanded
-    bool toggleExpanded(bool forceExpand = false, bool forceUnExpand = false);
+    void tabCompletion(Direction direction = Down);
+
+    void toggleDocumentation();
 
     const KateCompletionModel *model() const;
     KateCompletionModel *model();
@@ -81,6 +86,10 @@ public:
 
     int automaticInvocationDelay() const;
     void setAutomaticInvocationDelay(int delay);
+
+    void setIgnoreBufferSignals(bool ignore) const;
+
+    bool m_ignoreBufferSignals = false;
 
     struct CompletionRange {
         CompletionRange()
@@ -112,14 +121,7 @@ public:
 
     QWidget *currentEmbeddedWidget();
 
-    bool canExpandCurrentItem() const;
-
-    bool canCollapseCurrentItem() const;
-
-    void setCurrentItemExpanded(bool);
-
-    // Returns true if a screen border has been hit
-    bool updatePosition(bool force = false);
+    void updatePosition(bool force = false);
 
     bool eventFilter(QObject *watched, QEvent *event) override;
 
@@ -131,13 +133,16 @@ public:
 
     void updateHeight();
 
+    void showDocTip(const QModelIndex &idx);
+    DocTip *docTip() const
+    {
+        return m_docTip;
+    }
+
 public Q_SLOTS:
     void waitForModelReset();
 
     void abortCompletion();
-    /*    void viewFocusIn();
-        void viewFocusOut();*/
-    void updatePositionSlot();
     void automaticInvocation();
 
     /*    void updateFocus();*/
@@ -149,9 +154,6 @@ public Q_SLOTS:
     bool navigateRight();
     bool navigateAccept();
     bool navigateBack();
-
-    bool hadNavigation() const;
-    void resetHadNavigation();
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -198,6 +200,7 @@ private:
     KateCompletionTree *m_entryList;
     KateArgumentHintModel *m_argumentHintModel;
     KateArgumentHintTree *m_argumentHintTree;
+    DocTip *m_docTip;
 
     QTimer *m_automaticInvocationTimer;
 

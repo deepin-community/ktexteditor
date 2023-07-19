@@ -18,6 +18,8 @@ CamelCursorTest::CamelCursorTest(QObject *parent)
 {
     doc = new KTextEditor::DocumentPrivate(false, false);
     view = static_cast<KTextEditor::ViewPrivate *>(doc->createView(nullptr));
+    view->resize(100, 100);
+    view->show();
 }
 
 CamelCursorTest::~CamelCursorTest()
@@ -70,6 +72,11 @@ void CamelCursorTest::testWordMovementSingleRow_data()
     // CSS Color
     QTest::addRow("#ff00ff")              << QStringLiteral("#ff00ff")                      << 2 << QVector<int>{1, 7} << QStringLiteral("CSS");
     QTest::addRow("#00FF00")              << QStringLiteral("#00FF00")                      << 4 << QVector<int>{1, 3, 4, 7} << QStringLiteral("HTML");
+
+    QTest::addRow("Bug 448692")             << QStringLiteral("asdf a")                     << 2 << QVector<int>{5, 6} << QString();
+    // unicode
+    QTest::addRow("unicode")             << QStringLiteral("𝗺𝗮𝘆∕𝗺𝗶𝗴𝗵𝘁")                   << 3 << QVector<int>{6, 7, 17} << QString();
+
     // clang-format on
 }
 

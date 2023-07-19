@@ -3,36 +3,35 @@ Section: libs
 Priority: optional
 Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
 Uploaders: Aurélien COUDERC <coucouf@debian.org>,
-           Norbert Preining <norbert@preining.info>,
 Build-Depends: cmake (>= 3.16~),
                debhelper-compat (= 13),
+               dh-sequence-kf5,
+               dh-sequence-pkgkde-symbolshelper,
                doxygen,
-               extra-cmake-modules (>= 5.90.0~),
+               extra-cmake-modules (>= 5.103.0~),
                libeditorconfig-dev,
                libgit2-dev (>= 0.22.0~),
                libjs-underscore,
-               libkf5archive-dev (>= 5.90.0~),
-               libkf5auth-dev (>= 5.90.0~),
-               libkf5config-dev (>= 5.90.0~),
-               libkf5guiaddons-dev (>= 5.90.0~),
-               libkf5i18n-dev (>= 5.90.0~),
-               libkf5kio-dev (>= 5.90.0~),
-               libkf5parts-dev (>= 5.90.0~),
-               libkf5sonnet-dev (>= 5.90.0~),
-               libkf5syntaxhighlighting-dev (>= 5.90.0~),
-               libkf5textwidgets-dev (>= 5.90.0~),
+               libkf5archive-dev (>= 5.103.0~),
+               libkf5auth-dev (>= 5.103.0~),
+               libkf5config-dev (>= 5.103.0~),
+               libkf5guiaddons-dev (>= 5.103.0~),
+               libkf5i18n-dev (>= 5.103.0~),
+               libkf5kio-dev (>= 5.103.0~),
+               libkf5parts-dev (>= 5.103.0~),
+               libkf5sonnet-dev (>= 5.103.0~),
+               libkf5syntaxhighlighting-dev (>= 5.103.0~),
+               libkf5textwidgets-dev (>= 5.96.0~),
+               libkf5windowsystem-dev (>= 5.103.0~),
                libqt5sql5-sqlite,
-               libqt5xmlpatterns5-dev (>= 5.8.0~),
                pkg-config,
-               pkg-kde-tools (>= 0.15.15ubuntu1~),
                qtbase5-dev (>= 5.15.2~),
                qtdeclarative5-dev (>= 5.15.2~),
-               qtscript5-dev (>= 5.7.0~),
                qttools5-dev,
                qttools5-dev-tools (>= 5.4),
-               xauth,
-               xvfb,
-Standards-Version: 4.6.0
+               xauth <!nocheck>,
+               xvfb <!nocheck>,
+Standards-Version: 4.6.2
 Homepage: https://invent.kde.org/frameworks/ktexteditor
 Vcs-Browser: https://salsa.debian.org/qt-kde-team/kde/ktexteditor
 Vcs-Git: https://salsa.debian.org/qt-kde-team/kde/ktexteditor.git
@@ -41,9 +40,9 @@ Rules-Requires-Root: no
 Package: ktexteditor-data
 Section: kde
 Architecture: all
-Breaks: libkf5texteditor5 (<< 5.74)
-Replaces: libkf5texteditor5 (<< 5.74)
-Depends: ${misc:Depends}
+Breaks: libkf5texteditor5 (<< 5.74), libkf5texteditor-dev (<< 5.90.0-1),
+Replaces: libkf5texteditor5 (<< 5.74), libkf5texteditor-dev (<< 5.90.0-1),
+Depends: ${misc:Depends},
 Multi-Arch: foreign
 Description: provide advanced plain text editing services
  The KTextEditor interfaces - also called KTE interfaces - are a set
@@ -73,7 +72,7 @@ Description: provide advanced plain text editing services
 Package: libkf5texteditor-bin
 Architecture: any
 Multi-Arch: foreign
-Depends: ${misc:Depends}, ${shlibs:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends},
 Description: provide advanced plain text editing services (binaries)
  The KTextEditor interfaces - also called KTE interfaces - are a set
  of well-defined interfaces which an application or library can
@@ -88,14 +87,14 @@ Description: provide advanced plain text editing services (binaries)
 Package: libkf5texteditor-dev
 Section: libdevel
 Architecture: any
-Depends: libkf5parts-dev (>= 5.90.0~),
-         libkf5syntaxhighlighting-dev (>= 5.90.0~),
+Depends: libkf5parts-dev (>= 5.103.0~),
+         libkf5syntaxhighlighting-dev (>= 5.103.0~),
          libkf5texteditor5 (= ${binary:Version}),
          qtbase5-dev (>= 5.15.2~),
          ${misc:Depends},
-Recommends: libkf5texteditor-doc (= ${source:Version})
-Breaks: ktexteditor-data (<< 5.69.0-2~)
-Replaces: ktexteditor-data (<< 5.69.0-2~)
+Recommends: libkf5texteditor-doc (= ${source:Version}),
+Breaks: ktexteditor-data (<< 5.69.0-2~),
+Replaces: ktexteditor-data (<< 5.69.0-2~),
 Description: provide advanced plain text editing services
  The KTextEditor interfaces - also called KTE interfaces - are a set
  of well-defined interfaces which an application or library can
@@ -110,7 +109,7 @@ Description: provide advanced plain text editing services
 Package: libkf5texteditor-doc
 Architecture: all
 Multi-Arch: foreign
-Depends: ${misc:Depends}
+Depends: ${misc:Depends},
 Description: provide advanced plain text editing services (documentation)
  The KTextEditor interfaces - also called KTE interfaces - are a set
  of well-defined interfaces which an application or library can
@@ -139,4 +138,4 @@ Description: provide advanced plain text editing services
  use. The only implementation right now is the Kate Editor Component
  (Kate Part).
 Multi-Arch: same
-Recommends: ktexteditor-katepart (= ${binary:Version})
+Recommends: ktexteditor-katepart (= ${binary:Version}),
