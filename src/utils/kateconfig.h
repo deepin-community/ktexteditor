@@ -83,6 +83,16 @@ public:
     }
 
     /**
+     * Is given key set in this config object?
+     * @param key config key, aka enum from KateConfig* classes
+     * @return is the wanted key set?
+     */
+    bool isSet(const int key) const
+    {
+        return m_configEntries.find(key) != m_configEntries.end();
+    }
+
+    /**
      * Get a config value.
      * @param key config key, aka enum from KateConfig* classes
      * @return value for the wanted key, will assert if key is not valid
@@ -532,7 +542,30 @@ public:
         /**
          * Camel Cursor Movement?
          */
-        CamelCursor
+        CamelCursor,
+
+        /**
+         * Automatically detect file indentation
+         */
+        AutoDetectIndent,
+
+        /**
+         * Automatically save?
+         */
+        AutoSave,
+        /**
+         * Automatically save on focus lost
+         */
+        AutoSaveOnFocusOut,
+        /**
+         * Auto save interval
+         */
+        AutoSaveInteral,
+
+        /**
+         * Should we auto-reload if the old state is in version control?
+         */
+        AutoReloadIfStateIsInVersionControl
     };
 
 public:
@@ -833,7 +866,7 @@ public:
      * Based on current set eol mode.
      * @return current end of line string
      */
-    QString eolString();
+    QString eolString() const;
 
     void setEol(int mode)
     {
@@ -912,6 +945,31 @@ public:
         return value(CamelCursor).toBool();
     }
 
+    void setAutoDetectIndent(bool on)
+    {
+        setValue(AutoDetectIndent, on);
+    }
+
+    bool autoDetectIndent() const
+    {
+        return value(AutoDetectIndent).toBool();
+    }
+
+    bool autoSave() const
+    {
+        return value(AutoSave).toBool();
+    }
+
+    bool autoSaveOnFocusOut() const
+    {
+        return value(AutoSaveOnFocusOut).toBool();
+    }
+
+    int autoSaveInterval() const
+    {
+        return value(AutoSaveInteral).toInt();
+    }
+
 private:
     static KateDocumentConfig *s_global;
     KTextEditor::DocumentPrivate *m_doc = nullptr;
@@ -945,7 +1003,9 @@ public:
 
     /**
      * All known config keys
-     * Keep them sorted alphabetic for our convenience
+     * Keep them sorted alphabetically for our convenience.
+     * Keep the same order when adding config entries with addConfigEntry() in
+     * KateViewConfig::KateViewConfig() otherwise the code will assert.
      */
     enum ConfigEntryTypes {
         AllowMarkMenu,
@@ -956,6 +1016,7 @@ public:
         BackspaceRemoveComposedCharacters,
         BookmarkSorting,
         CharsToEncloseSelection,
+        ClipboardHistoryEntries,
         DefaultMarkType,
         DynWordWrapAlignIndent,
         DynWordWrapIndicators,
@@ -971,6 +1032,7 @@ public:
         ScrollBarMiniMapWidth,
         ScrollPastEnd,
         SearchFlags,
+        TabCompletion,
         ShowBracketMatchPreview,
         ShowFoldingBar,
         ShowFoldingPreview,
@@ -992,6 +1054,18 @@ public:
         WordCompletion,
         WordCompletionMinimalWordLength,
         WordCompletionRemoveTail,
+        ShowFocusFrame,
+        ShowDocWithCompletion,
+        MultiCursorModifier,
+        ShowFoldingOnHoverOnly,
+        ShowStatusbarLineColumn,
+        ShowStatusbarDictionary,
+        ShowStatusbarInputMode,
+        ShowStatusbarHighlightingMode,
+        ShowStatusbarTabSettings,
+        ShowStatusbarFileEncoding,
+        StatusbarLineColumnCompact,
+        ShowStatusbarEOL,
     };
 
 public:
@@ -1073,6 +1147,26 @@ public:
     int showScrollbars() const
     {
         return value(ShowScrollbars).toInt();
+    }
+
+    bool showFocusFrame() const
+    {
+        return value(ShowFocusFrame).toBool();
+    }
+
+    bool showDocWithCompletion() const
+    {
+        return value(ShowDocWithCompletion).toBool();
+    }
+
+    Qt::KeyboardModifiers multiCursorModifiers() const
+    {
+        return static_cast<Qt::KeyboardModifiers>(value(MultiCursorModifier).toInt());
+    }
+
+    void setMultiCursorModifiers(Qt::KeyboardModifiers m)
+    {
+        setValue(MultiCursorModifier, (int)m);
     }
 
     bool iconBar() const
@@ -1177,6 +1271,11 @@ public:
         return value(AutomaticCompletionPreselectFirst).toBool();
     }
 
+    bool tabCompletion() const
+    {
+        return value(TabCompletion).toBool();
+    }
+
     bool wordCompletion() const
     {
         return value(WordCompletion).toBool();
@@ -1210,6 +1309,11 @@ public:
     bool mousePasteAtCursorPosition() const
     {
         return value(MousePasteAtCursorPosition).toBool();
+    }
+
+    int clipboardHistoryEntries() const
+    {
+        return value(ClipboardHistoryEntries).toInt();
     }
 
     bool scrollPastEnd() const
@@ -1259,6 +1363,11 @@ public:
     bool backspaceRemoveComposed() const
     {
         return value(BackspaceRemoveComposedCharacters).toBool();
+    }
+
+    bool showFoldingOnHoverOnly() const
+    {
+        return value(ShowFoldingOnHoverOnly).toBool();
     }
 
 private:
@@ -1388,7 +1497,7 @@ public:
     bool showWholeBracketExpression() const;
     void setShowWholeBracketExpression(bool on);
 
-    bool animateBracketMatching() const;
+    static bool animateBracketMatching();
     void setAnimateBracketMatching(bool on);
 
     const QColor &templateBackgroundColor() const;
@@ -1408,17 +1517,18 @@ public:
     const QColor &replaceHighlightColor() const;
     void setReplaceHighlightColor(const QColor &col);
 
+    void setLineHeightMultiplier(qreal value);
+
+    qreal lineHeightMultiplier() const
+    {
+        return s_global->m_lineHeightMultiplier;
+    }
+
 private:
     /**
      * Read the schema properties from the config file.
      */
     void setSchemaInternal(const QString &schema);
-
-    /**
-     * Set the font but drop style name before that.
-     * Otherwise e.g. styles like bold/italic/... will not work
-     */
-    void setFontWithDroppedStyleName(const QFont &font);
 
     QString m_schema;
     QFont m_font;
@@ -1446,6 +1556,8 @@ private:
     QColor m_savedLineColor;
     QColor m_searchHighlightColor;
     QColor m_replaceHighlightColor;
+
+    qreal m_lineHeightMultiplier = 1.0;
 
     bool m_wordWrapMarker = false;
     bool m_showIndentationLines = false;

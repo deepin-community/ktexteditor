@@ -1,5 +1,6 @@
 /*
     SPDX-FileCopyrightText: 2007 David Nolden <david.nolden.kdevelop@art-master.de>
+    SPDX-FileCopyrightText: 2022 Waqar Ahmed <waqar.17a@gmail.com>
 
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
@@ -8,144 +9,145 @@
 
 #include <ktexteditor/codecompletionmodel.h>
 
-#include "katedocument.h"
-#include "katehighlight.h"
 #include "katepartdebug.h"
-#include "katerenderer.h"
-#include "katerenderrange.h"
-#include "katetextline.h"
-#include "kateview.h"
-
 #include "katecompletionmodel.h"
-#include "katecompletiontree.h"
-#include "katecompletionwidget.h"
 
-// Currently disable because it doesn't work
-#define DISABLE_INTERNAL_HIGHLIGHTING
+#include <QApplication>
+#include <QPainter>
 
-KateCompletionDelegate::KateCompletionDelegate(ExpandingWidgetModel *model, KateCompletionWidget *parent)
-    : ExpandingDelegate(model, parent)
-    , m_cachedRow(-1)
+KateCompletionDelegate::KateCompletionDelegate(QObject *parent)
+    : QStyledItemDelegate(parent)
 {
 }
 
-void KateCompletionDelegate::adjustStyle(const QModelIndex &index, QStyleOptionViewItem &option) const
+static void paintItemViewText(QPainter *p, const QString &text, const QStyleOptionViewItem &options, QVector<QTextLayout::FormatRange> formats)
 {
-    if (index.column() == 0) {
-        // We always want to use the match-color if available, also for highlighted items.
-        ///@todo Only do this for the "current" item, for others the model is asked for the match color.
-        uint color = model()->matchColor(index);
-        if (color != 0) {
-            QColor match(color);
+    // set formats
+    QTextLayout textLayout(text, options.font, p->device());
+    auto fmts = textLayout.formats();
+    formats.append(fmts);
+    textLayout.setFormats(formats);
 
-            for (int a = 0; a <= 2; a++) {
-                option.palette.setColor((QPalette::ColorGroup)a, QPalette::Highlight, match);
-            }
+    // set alignment, rtls etc
+    QTextOption textOption;
+    textOption.setTextDirection(options.direction);
+    textOption.setAlignment(QStyle::visualAlignment(options.direction, options.displayAlignment));
+    textLayout.setTextOption(textOption);
+
+    // layout the text
+    textLayout.beginLayout();
+
+    QTextLine line = textLayout.createLine();
+    if (!line.isValid())
+        return;
+
+    const int lineWidth = options.rect.width();
+    line.setLineWidth(lineWidth);
+    line.setPosition(QPointF(0, 0));
+
+    textLayout.endLayout();
+
+    int y = QStyle::alignedRect(Qt::LayoutDirectionAuto, options.displayAlignment, textLayout.boundingRect().size().toSize(), options.rect).y();
+
+    // draw the text
+    const auto pos = QPointF(options.rect.x(), y);
+    textLayout.draw(p, pos);
+}
+
+void KateCompletionDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o, const QModelIndex &index) const
+{
+    QStyleOptionViewItem opt = o;
+    initStyleOption(&opt, index);
+    QString text = opt.text;
+
+    if (text.isEmpty()) {
+        QStyledItemDelegate::paint(painter, o, index);
+        return;
+    }
+
+    auto *style = opt.widget->style() ? opt.widget->style() : qApp->style();
+
+    opt.text.clear();
+
+    style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, opt.widget);
+
+    QRect textRect = style->subElementRect(QStyle::SE_ItemViewItemText, &opt, opt.widget);
+
+    const bool isGroup = index.data(KateCompletionModel::IsNonEmptyGroup).toBool();
+    if (!isGroup && !opt.features.testFlag(QStyleOptionViewItem::HasDecoration)) {
+        // 3 because 2 margins for the icon, and one left margin for the text
+        int hMargins = style->pixelMetric(QStyle::PM_FocusFrameHMargin) * 3;
+        textRect.adjust(hMargins + opt.decorationSize.width(), 0, 0, 0);
+    }
+
+#if 0
+    auto p = painter->pen();
+    painter->setPen(Qt::yellow);
+    painter->drawRect(opt.rect);
+
+    painter->setPen(Qt::red);
+    painter->drawRect(textRect);
+    painter->setPen(p);
+#endif
+
+    auto highlightings = createHighlighting(index);
+    opt.rect = textRect;
+    opt.displayAlignment = m_alignTop ? Qt::AlignTop : Qt::AlignVCenter;
+    paintItemViewText(painter, text, opt, std::move(highlightings));
+}
+
+QSize KateCompletionDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    if (index.data().toString().isEmpty()) {
+        return QStyledItemDelegate::sizeHint(option, index);
+    }
+
+    QSize size = QStyledItemDelegate::sizeHint(option, index);
+    if (!index.data(Qt::DecorationRole).isNull()) {
+        return size;
+    }
+    const int hMargins = option.widget->style()->pixelMetric(QStyle::PM_FocusFrameHMargin) * 3;
+    size.rwidth() += option.decorationSize.width() + hMargins;
+    return size;
+}
+
+static QVector<QTextLayout::FormatRange> highlightingFromVariantList(const QList<QVariant> &customHighlights)
+{
+    QVector<QTextLayout::FormatRange> ret;
+
+    for (int i = 0; i + 2 < customHighlights.count(); i += 3) {
+        if (!customHighlights[i].canConvert<int>() || !customHighlights[i + 1].canConvert<int>() || !customHighlights[i + 2].canConvert<QTextFormat>()) {
+            qCWarning(LOG_KTE) << "Unable to convert triple to custom formatting.";
+            continue;
         }
+
+        QTextLayout::FormatRange format;
+        format.start = customHighlights[i].toInt();
+        format.length = customHighlights[i + 1].toInt();
+        format.format = customHighlights[i + 2].value<QTextFormat>().toCharFormat();
+
+        if (!format.format.isValid()) {
+            qCWarning(LOG_KTE) << "Format is not valid";
+        }
+
+        ret << format;
     }
+    return ret;
 }
 
-KateRenderer *KateCompletionDelegate::renderer() const
+QVector<QTextLayout::FormatRange> KateCompletionDelegate::createHighlighting(const QModelIndex &index)
 {
-    return widget()->view()->renderer();
-}
-
-KateCompletionWidget *KateCompletionDelegate::widget() const
-{
-    return static_cast<KateCompletionWidget *>(const_cast<QObject *>(parent()));
-}
-
-KTextEditor::DocumentPrivate *KateCompletionDelegate::document() const
-{
-    return widget()->view()->doc();
-}
-
-void KateCompletionDelegate::heightChanged() const
-{
-    if (parent()) {
-        widget()->updateHeight();
-    }
-}
-
-QVector<QTextLayout::FormatRange> KateCompletionDelegate::createHighlighting(const QModelIndex &index, QStyleOptionViewItem &option) const
-{
-    QVariant highlight = model()->data(index, KTextEditor::CodeCompletionModel::HighlightingMethod);
+    QVariant highlight = index.data(KTextEditor::CodeCompletionModel::HighlightingMethod);
 
     // TODO: config enable specifying no highlight as default
     int highlightMethod = KTextEditor::CodeCompletionModel::InternalHighlighting;
-    if (highlight.canConvert(QVariant::Int)) {
+    if (highlight.canConvert<int>()) {
         highlightMethod = highlight.toInt();
     }
 
     if (highlightMethod & KTextEditor::CodeCompletionModel::CustomHighlighting) {
-        m_currentColumnStart = 0;
-        return highlightingFromVariantList(model()->data(index, KTextEditor::CodeCompletionModel::CustomHighlight).toList());
+        return highlightingFromVariantList(index.data(KTextEditor::CodeCompletionModel::CustomHighlight).toList());
     }
 
-#ifdef DISABLE_INTERNAL_HIGHLIGHTING
-    return QVector<QTextLayout::FormatRange>();
-#endif
-
-    if (index.row() == m_cachedRow && highlightMethod & KTextEditor::CodeCompletionModel::InternalHighlighting) {
-        if (index.column() < m_cachedColumnStarts.size()) {
-            m_currentColumnStart = m_cachedColumnStarts[index.column()];
-        } else {
-            qCWarning(LOG_KTE) << "Column-count does not match";
-        }
-
-        return m_cachedHighlights;
-    }
-
-    ///@todo reset the cache when the model changed
-    m_cachedRow = index.row();
-
-    KTextEditor::Cursor completionStart = widget()->completionRange()->start();
-
-    QString startText = document()->text(KTextEditor::Range(completionStart.line(), 0, completionStart.line(), completionStart.column()));
-
-    QString lineContent = startText;
-
-    int len = completionStart.column();
-    m_cachedColumnStarts.clear();
-
-    for (int i = 0; i < KTextEditor::CodeCompletionModel::ColumnCount; ++i) {
-        m_cachedColumnStarts.append(len);
-        QString text = model()->data(model()->index(index.row(), i, index.parent()), Qt::DisplayRole).toString();
-        lineContent += text;
-        len += text.length();
-    }
-
-    Kate::TextLine thisLine = Kate::TextLine(new Kate::TextLineData(lineContent));
-
-    // qCDebug(LOG_KTE) << "About to highlight with mode " << highlightMethod << " text [" << thisLine->string() << "]";
-
-    if (highlightMethod & KTextEditor::CodeCompletionModel::InternalHighlighting) {
-        Kate::TextLine previousLine;
-        if (completionStart.line()) {
-            previousLine = document()->kateTextLine(completionStart.line() - 1);
-        } else {
-            previousLine = Kate::TextLine(new Kate::TextLineData());
-        }
-
-        Kate::TextLine nextLine;
-        if ((completionStart.line() + 1) < document()->lines()) {
-            nextLine = document()->kateTextLine(completionStart.line() + 1);
-        } else {
-            nextLine = Kate::TextLine(new Kate::TextLineData());
-        }
-
-        bool ctxChanged = false;
-        document()->highlight()->doHighlight(previousLine.data(), thisLine.data(), nextLine.data(), ctxChanged);
-    }
-
-    m_currentColumnStart = m_cachedColumnStarts[index.column()];
-
-    QVector<QTextLayout::FormatRange> ret = renderer()->decorationsForLine(thisLine, 0, false, true, option.state & QStyle::State_Selected);
-
-    // Remove background-colors
-    for (QVector<QTextLayout::FormatRange>::iterator it = ret.begin(); it != ret.end(); ++it) {
-        (*it).format.clearBackground();
-    }
-
-    return ret;
+    return {};
 }

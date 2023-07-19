@@ -328,7 +328,7 @@ bool KateVariableExpansionManager::expandVariable(const QString &name, KTextEdit
     return false;
 }
 
-QString KateVariableExpansionManager::expandText(const QString &text, KTextEditor::View *view) const
+QString KateVariableExpansionManager::expandText(const QString &text, KTextEditor::View *view)
 {
     return KateMacroExpander::expandMacro(text, view);
 }
@@ -380,7 +380,7 @@ void KateVariableExpansionManager::showDialog(const QVector<QWidget *> &widgets,
     }
 
     // add provided variables...
-    for (const auto &var : vars) {
+    for (const auto &var : std::as_const(vars)) {
         if (var.isValid()) {
             dlg->addVariable(var);
         }

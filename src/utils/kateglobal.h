@@ -344,14 +344,36 @@ public:
     /**
      * Copy text to clipboard an remember it in the history
      * @param text text to copy to clipboard, does nothing if empty!
+     * @param fileName fileName of the text to copy, used for highlighting
      */
-    void copyToClipboard(const QString &text);
+    void copyToClipboard(const QString &text, const QString &fileName);
+
+    /**
+     * A clipboard entry stores the copied text and the filename of
+     * the copied text.
+     */
+    struct ClipboardEntry {
+        /**
+         * The copied text
+         */
+        QString text;
+        /**
+         * The file name of the file containing the copied text,
+         * used for syntax highlighting
+         */
+        QString fileName;
+    };
+
+    friend inline bool operator==(const ClipboardEntry &lhs, const ClipboardEntry &rhs)
+    {
+        return lhs.text == rhs.text && lhs.fileName == rhs.fileName;
+    }
 
     /**
      * Clipboard history, filled with text we ever copied
      * to clipboard via copyToClipboard.
      */
-    const QStringList &clipboardHistory() const
+    const QVector<ClipboardEntry> &clipboardHistory() const
     {
         return m_clipboardHistory;
     }
@@ -406,6 +428,10 @@ public:
      * Trigger delayed emission of config changed.
      */
     void triggerConfigChanged();
+
+    void copyToMulticursorClipboard(const QStringList &texts);
+
+    QStringList multicursorClipboard() const;
 
 private Q_SLOTS:
     /**
@@ -515,7 +541,7 @@ private:
     /**
      * clipboard history
      */
-    QStringList m_clipboardHistory;
+    QVector<ClipboardEntry> m_clipboardHistory;
 
     /**
      * Dummy application object to be null safe
@@ -537,6 +563,14 @@ private:
      * for all input modes in the KTextEditor::View::InputMode we have here an entry
      */
     std::array<std::unique_ptr<KateAbstractInputModeFactory>, KTextEditor::View::ViInputMode + 1> m_inputModeFactories;
+
+    /**
+     * simple list that stores text copied
+     * from all cursors selection
+     * It's main purpose is providing multi-paste
+     * support.
+     */
+    QStringList m_multicursorClipboard;
 
     /**
      * Shared history models for search & replace.

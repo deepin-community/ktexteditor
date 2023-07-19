@@ -97,7 +97,9 @@ bool AppCommands::exec(KTextEditor::View *view, const QString &cmd, QString &msg
                 }
             }
 
-            QTimer::singleShot(0, this, SLOT(quit()));
+            QTimer::singleShot(0, this, [this, app]() {
+                closeDocuments(app->documents());
+            });
         } else {
             if (save && view->document()->isModified()) {
                 view->document()->documentSave();
@@ -110,11 +112,8 @@ bool AppCommands::exec(KTextEditor::View *view, const QString &cmd, QString &msg
             if (mainWin->views().size() > 1) {
                 QTimer::singleShot(0, this, SLOT(closeCurrentView()));
             } else {
-                if (app->documents().size() > 1) {
-                    QTimer::singleShot(0, this, SLOT(closeCurrentDocument()));
-                } else {
-                    QTimer::singleShot(0, this, SLOT(quit()));
-                }
+                Q_ASSERT(app->documents().size() > 0);
+                QTimer::singleShot(0, this, SLOT(closeCurrentDocument()));
             }
         }
     } else if ((match = re_exit.match(command)).hasMatch()) {
@@ -271,7 +270,7 @@ bool AppCommands::help(KTextEditor::View *view, const QString &cmd, QString &msg
             "<p><b>e[dit] &mdash; reload current document</b></p>"
             "<p>Usage: <tt><b>e[dit]</b></tt></p>"
             "<p>Starts <b>e</b>diting the current document again. This is useful to re-edit"
-            " the current file, when it has been changed by another program.</p>");
+            " the current file, when it was modified on disk.</p>");
         return true;
     }
 
@@ -287,6 +286,14 @@ KTextEditor::View *AppCommands::findViewInDifferentSplitView(KTextEditor::MainWi
         }
     }
     return nullptr;
+}
+
+void AppCommands::closeDocuments(const QList<KTextEditor::Document *> &documents)
+{
+    KTextEditor::Application *app = KTextEditor::Editor::instance()->application();
+    QTimer::singleShot(0, app, [app, documents]() {
+        app->closeDocuments(documents);
+    });
 }
 
 void AppCommands::closeCurrentDocument()

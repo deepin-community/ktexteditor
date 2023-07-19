@@ -52,7 +52,7 @@ KateHighlighting *KateHlManager::getHl(int n)
     return it->second.get();
 }
 
-int KateHlManager::nameFind(const QString &name)
+int KateHlManager::nameFind(const QString &name) const
 {
     const auto modeList = this->modeList();
     int idx = 0;
@@ -79,7 +79,8 @@ void KateHlManager::reload()
     // let all documents use the new highlighters
     // will be created on demand
     // if old hl not found, use none
-    for (auto doc : KTextEditor::EditorPrivate::self()->kateDocuments()) {
+    const auto docs = KTextEditor::EditorPrivate::self()->kateDocuments();
+    for (auto doc : docs) {
         auto hlMode = doc->highlightingMode();
         if (nameFind(hlMode) < 0) {
             hlMode = QStringLiteral("None");

@@ -854,11 +854,11 @@ void EmulatedCommandBarTest::EmulatedCommandBarTests()
     // Test no highlighting when bar is dismissed.
     DoTest("foo bar xyz", "/bar\\ctrl-c", "foo bar xyz");
     QCOMPARE(rangesOnFirstLine().size(), rangesInitial.size());
-    DoTest("foo bar xyz", "/bar\\enter", "foo bar xyz");
+    DoTest("foo bar xyz", ":set-nohls\\enter/bar\\enter", "foo bar xyz");
     QCOMPARE(rangesOnFirstLine().size(), rangesInitial.size());
     DoTest("foo bar xyz", "/bar\\ctrl-[", "foo bar xyz");
     QCOMPARE(rangesOnFirstLine().size(), rangesInitial.size());
-    DoTest("foo bar xyz", "/bar\\return", "foo bar xyz");
+    DoTest("foo bar xyz", ":set-nohls\\enter/bar\\return", "foo bar xyz");
     QCOMPARE(rangesOnFirstLine().size(), rangesInitial.size());
     DoTest("foo bar xyz", "/bar\\esc", "foo bar xyz");
     QCOMPARE(rangesOnFirstLine().size(), rangesInitial.size());
@@ -1512,7 +1512,7 @@ void EmulatedCommandBarTest::EmulatedCommandBarTests()
     FinishTest("foo");
 
     const int commandResponseMessageTimeOutMSOverride = QString::fromLatin1(qgetenv("KATE_VIMODE_TEST_COMMANDRESPONSEMESSAGETIMEOUTMS")).toInt();
-    const long commandResponseMessageTimeOutMS = (commandResponseMessageTimeOutMSOverride > 0) ? commandResponseMessageTimeOutMSOverride : 4000;
+    const long commandResponseMessageTimeOutMS = (commandResponseMessageTimeOutMSOverride > 0) ? commandResponseMessageTimeOutMSOverride : 2000;
     {
         // If there is any output from the command, show it in a label for a short amount of time
         // (make sure the bar type indicator is hidden, here, as it looks messy).
@@ -1578,13 +1578,9 @@ void EmulatedCommandBarTest::EmulatedCommandBarTests()
         // The timeout should be cancelled when we invoke the command bar again.
         BeginTest("");
         TestPressKey(":commandthatdoesnotexist\\enter");
-        const QDateTime waitStartedTime = QDateTime::currentDateTime();
         TestPressKey(":");
         // Wait ample time for the timeout to fire.  Do not use waitForEmulatedCommandBarToHide for this!
-        while (waitStartedTime.msecsTo(QDateTime::currentDateTime()) < commandResponseMessageTimeOutMS * 2) {
-            QApplication::processEvents();
-        }
-        QVERIFY(emulatedCommandBar->isVisible());
+        QTRY_VERIFY_WITH_TIMEOUT(emulatedCommandBar->isVisible(), commandResponseMessageTimeOutMS * 2);
         TestPressKey("\\esc"); // Dismiss the bar.
         FinishTest("");
     }
@@ -1596,7 +1592,6 @@ void EmulatedCommandBarTest::EmulatedCommandBarTests()
         TestPressKey(":commandthatdoesnotexist\\enter");
         // Wait for any focus changes to take effect.
         QApplication::processEvents();
-        const QDateTime waitStartedTime = QDateTime::currentDateTime();
         QLineEdit *dummyToFocus = new QLineEdit(QString("Sausage"), mainWindow);
         // Take focus away from kate_view by giving it to dummyToFocus.
         QApplication::setActiveWindow(mainWindow);
@@ -1606,24 +1601,17 @@ void EmulatedCommandBarTest::EmulatedCommandBarTests()
         dummyToFocus->setEnabled(true);
         dummyToFocus->setFocus();
         // Allow dummyToFocus to receive focus.
-        while (!dummyToFocus->hasFocus()) {
-            QApplication::processEvents();
-        }
-        QVERIFY(dummyToFocus->hasFocus());
+        QTRY_VERIFY(dummyToFocus->hasFocus());
         // Wait ample time for the timeout to fire.  Do not use waitForEmulatedCommandBarToHide for this -
         // the bar never actually hides in this instance, and I think it would take some deep changes in
         // Kate to make it do so (the KateCommandLineBar as the same issue).
-        while (waitStartedTime.msecsTo(QDateTime::currentDateTime()) < commandResponseMessageTimeOutMS * 2) {
-            QApplication::processEvents();
-        }
+        QTest::qWait(commandResponseMessageTimeOutMS * 2);
         QVERIFY(dummyToFocus->hasFocus());
         QVERIFY(emulatedCommandBar->isVisible());
         mainWindowLayout->removeWidget(dummyToFocus);
         // Restore focus to the kate_view.
         kate_view->setFocus();
-        while (!kate_view->hasFocus()) {
-            QApplication::processEvents();
-        }
+        QTRY_VERIFY(kate_view->hasFocus());
         // *Now* wait for the command bar to disappear - giving kate_view focus should trigger it.
         waitForEmulatedCommandBarToHide(commandResponseMessageTimeOutMS * 4);
         FinishTest("");
@@ -3221,12 +3209,15 @@ void EmulatedCommandBarTest::EmulatedCommandBarTests()
     vi_global->mappings()->add(Mappings::NormalModeMapping, "H", ":s/foo/bar/gc<enter>nnyqggidone<esc>", Mappings::Recursive);
     DoTest("foo foo foo foo foo foo", "H", "donefoo foo bar foo foo foo");
 
+#ifndef Q_OS_MACOS
     // Don't swallow "Ctrl+<key>" meant for the text edit.
+    // On MacOS the QKeySequence for undo is defined as "Ctrl+Z" as well, however it's actually Cmd+Z...
     if (QKeySequence::keyBindings(QKeySequence::Undo).contains(QKeySequence("Ctrl+Z"))) {
         DoTest("foo bar", "/bar\\ctrl-z\\enterrX", "Xoo bar");
     } else {
         qWarning() << "Skipped test: Ctrl+Z is not Undo on this platform";
     }
+#endif
 
     // Don't give invalid cursor position to updateCursor in Visual Mode: it will cause a crash!
     DoTest("xyz\nfoo\nbar\n123", "/foo\\\\nbar\\\\n\\enterggv//e\\enter\\ctrl-crX", "xyz\nfoo\nbaX\n123");
@@ -3355,11 +3346,7 @@ QLabel *EmulatedCommandBarTest::commandResponseMessageDisplay()
 
 void EmulatedCommandBarTest::waitForEmulatedCommandBarToHide(long int timeout)
 {
-    const QDateTime waitStartedTime = QDateTime::currentDateTime();
-    while (emulatedCommandBar()->isVisible() && waitStartedTime.msecsTo(QDateTime::currentDateTime()) < timeout) {
-        QApplication::processEvents();
-    }
-    QVERIFY(!emulatedCommandBar()->isVisible());
+    QTRY_VERIFY_WITH_TIMEOUT(!emulatedCommandBar()->isVisible(), timeout);
 }
 
 void EmulatedCommandBarTest::verifyShowsNumberOfReplacementsAcrossNumberOfLines(int numReplacements, int acrossNumLines)

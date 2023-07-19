@@ -7,7 +7,24 @@
 #include "attribute.h"
 #include "kateextendedattribute.h"
 
+#include <KSyntaxHighlighting/Theme>
+
+#include <QMetaEnum>
+
 using namespace KTextEditor;
+
+[[maybe_unused]] int syntaxHighlightingStyleCount()
+{
+    auto metaEnum = QMetaEnum::fromType<KSyntaxHighlighting::Theme::TextStyle>();
+    return metaEnum.keyCount();
+}
+
+int KTextEditor::defaultStyleCount()
+{
+    auto styleCount = KTextEditor::dsError + 1;
+    Q_ASSERT(syntaxHighlightingStyleCount() == styleCount);
+    return styleCount;
+}
 
 class KTextEditor::AttributePrivate
 {
@@ -183,7 +200,11 @@ bool Attribute::fontBold() const
 
 void Attribute::setFontBold(bool bold)
 {
-    setFontWeight(bold ? QFont::Bold : QFont::Normal);
+    if (bold) {
+        setFontWeight(QFont::Bold);
+    } else {
+        clearProperty(QTextFormat::FontWeight);
+    }
 }
 
 bool Attribute::hasAnyProperty() const

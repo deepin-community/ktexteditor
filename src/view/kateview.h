@@ -38,11 +38,12 @@ namespace KTextEditor
 class AnnotationModel;
 class Message;
 class InlineNoteProvider;
+class DocumentPrivate;
 }
 
-namespace KTextEditor
+namespace Kate
 {
-class DocumentPrivate;
+class TextCursor;
 }
 class KateBookmarks;
 class KateViewConfig;
@@ -64,6 +65,7 @@ class KateAbstractInputMode;
 class KateScriptActionMenu;
 class KateMessageLayout;
 class KateInlineNoteData;
+class MulticursorTest;
 
 class KToggleAction;
 class KSelectAction;
@@ -75,12 +77,12 @@ namespace KTextEditor
 //
 // Kate KTextEditor::View class ;)
 //
-class KTEXTEDITOR_EXPORT ViewPrivate : public KTextEditor::View,
-                                       public KTextEditor::TextHintInterface,
-                                       public KTextEditor::CodeCompletionInterfaceV2,
-                                       public KTextEditor::ConfigInterface,
-                                       public KTextEditor::InlineNoteInterface,
-                                       public KTextEditor::AnnotationViewInterfaceV2
+class KTEXTEDITOR_EXPORT ViewPrivate final : public KTextEditor::View,
+                                             public KTextEditor::TextHintInterface,
+                                             public KTextEditor::CodeCompletionInterfaceV2,
+                                             public KTextEditor::ConfigInterface,
+                                             public KTextEditor::InlineNoteInterface,
+                                             public KTextEditor::AnnotationViewInterfaceV2
 {
     Q_OBJECT
     Q_INTERFACES(KTextEditor::TextHintInterface)
@@ -95,6 +97,7 @@ class KTEXTEDITOR_EXPORT ViewPrivate : public KTextEditor::View,
     friend class ::KateViewInternal;
     friend class ::KateIconBorder;
     friend class ::KateTextPreview;
+    friend MulticursorTest;
 
 public:
     ViewPrivate(KTextEditor::DocumentPrivate *doc, QWidget *parent, KTextEditor::MainWindow *mainWindow = nullptr);
@@ -116,7 +119,7 @@ public:
     InputMode viewInputMode() const override;
     QString viewInputModeHuman() const override;
 
-    void setInputMode(InputMode mode);
+    void setInputMode(InputMode mode, const bool rememberInConfig = true);
 
 public:
     KateViewInternal *getViewInternal()
@@ -192,6 +195,91 @@ public:
 
     bool mouseTrackingEnabled() const override;
     bool setMouseTrackingEnabled(bool enable) override;
+
+    /*
+     * multicursor stuff
+     */
+
+    // Helper structs to work with multicursors
+    struct PlainSecondaryCursor {
+        KTextEditor::Cursor pos;
+        KTextEditor::Range range;
+        friend bool operator<(const PlainSecondaryCursor &l, const PlainSecondaryCursor &r)
+        {
+            return l.pos < r.pos;
+        }
+    };
+    struct SecondaryCursor {
+        std::unique_ptr<Kate::TextCursor> pos;
+        std::unique_ptr<Kate::TextRange> range;
+        KTextEditor::Cursor anchor = KTextEditor::Cursor::invalid();
+
+        KTextEditor::Cursor cursor() const
+        {
+            return pos->toCursor();
+        }
+
+        friend bool operator<(const SecondaryCursor &l, const SecondaryCursor &r)
+        {
+            return l.cursor() < r.cursor();
+        }
+
+        friend bool operator<(const SecondaryCursor &l, const KTextEditor::Cursor &r)
+        {
+            return l.cursor() < r;
+        }
+
+        friend bool operator==(const SecondaryCursor &l, const SecondaryCursor &r)
+        {
+            return l.cursor() == r.cursor();
+        }
+
+        void clearSelection()
+        {
+            range.reset();
+            anchor = KTextEditor::Cursor::invalid();
+        }
+    };
+
+    // Just a helper to control the states in which we disallow multicursor
+    bool isMulticursorNotAllowed() const;
+
+    // Adds a secondary cursor
+    void addSecondaryCursor(const KTextEditor::Cursor &cursor);
+    void setSecondaryCursors(const QVector<KTextEditor::Cursor> &positions);
+
+    const std::vector<SecondaryCursor> &secondaryCursors() const;
+    QVector<PlainSecondaryCursor> plainSecondaryCursors() const;
+    void addSecondaryCursorsWithSelection(const QVector<PlainSecondaryCursor> &cursorsWithSelection);
+
+    void clearSecondaryCursors();
+    void clearSecondarySelections();
+
+    // Check all the cursors, and remove cursors which have the same positions
+    // if @p matchLine is true, cursors whose line are same will be considered equal
+    void ensureUniqueCursors(bool matchLine = false);
+
+    // For multicursor external api
+    QVector<KTextEditor::Cursor> cursors() const;
+    QVector<KTextEditor::Range> selectionRanges() const;
+
+    void setCursors(const QVector<KTextEditor::Cursor> &cursorPositions);
+    void setSelections(const QVector<KTextEditor::Range> &selectionRanges);
+
+    // Returns true if primary or secondary cursors have selection
+    bool hasSelections() const;
+
+private:
+    bool removeSecondaryCursors(const std::vector<KTextEditor::Cursor> &cursorToRemove, bool removeIfOverlapsSelection = false);
+    Kate::TextRange *newSecondarySelectionRange(KTextEditor::Range);
+    void sortCursors();
+    void paintCursors();
+
+    std::vector<SecondaryCursor> m_secondaryCursors;
+    bool m_skipCurrentSelection = false;
+
+    void addSecondaryCursorDown();
+    void addSecondaryCursorUp();
 
 private:
     void notifyMousePositionChanged(const KTextEditor::Cursor newPosition);
@@ -451,7 +539,7 @@ public:
     */
     bool isOverwriteMode() const;
 
-    QString currentTextLine();
+    bool isLineRTL(int line) const;
 
     QTextLayout *textLayout(int line) const;
     QTextLayout *textLayout(const KTextEditor::Cursor pos) const;
@@ -460,7 +548,9 @@ public Q_SLOTS:
     void indent();
     void unIndent();
     void cleanIndent();
-    void align();
+    void formatIndent();
+    void align(); // alias of formatIndent, for backward compatibility
+    void alignOn();
     void comment();
     void uncomment();
     void toggleComment();
@@ -520,6 +610,10 @@ public Q_SLOTS:
      * blocks of code inside a function.
      */
     void noIndentNewline();
+
+    void newLineAbove();
+
+    void newLineBelow();
 
     /**
      * Insert a tabulator char at current cursor position.
@@ -637,10 +731,15 @@ public Q_SLOTS:
     void find();
     void findSelectedForwards();
     void findSelectedBackwards();
+    void findNextOccurunceAndSelect();
+    void findAllOccuruncesAndSelect();
+    void skipCurrentOccurunceSelection();
     void replace();
     void findNext();
     void findPrevious();
     void showSearchWrappedHint(bool isReverseSearch);
+    void createMultiCursorsFromSelection();
+    void removeCursorsFromEmptyLines();
 
     void setFoldingMarkersOn(bool enable); // Not in KTextEditor::View, but should be
     void setIconBorder(bool enable);
@@ -660,6 +759,7 @@ public Q_SLOTS:
 
 public:
     int getEol() const;
+    QMenu *getEolMenu();
 
 public:
     KateRenderer *renderer();
@@ -705,7 +805,7 @@ public Q_SLOTS:
     void toggleWriteLock();
     void switchToCmdLine();
     void slotReadWriteChanged();
-    void slotClipboardHistoryChanged();
+    void toggleCamelCaseCursor();
 
 Q_SIGNALS:
     void dropEventPass(QDropEvent *);
@@ -751,7 +851,6 @@ private:
     std::vector<QAction *> m_editActions;
     QAction *m_editUndo;
     QAction *m_editRedo;
-    QAction *m_pasteMenu;
     bool m_gotoBottomAfterReload;
     KToggleAction *m_toggleFoldingMarkers;
     KToggleAction *m_toggleIconBar;
@@ -774,6 +873,7 @@ private:
     QAction *m_copy;
     QAction *m_copyHtmlAction;
     QAction *m_paste;
+    QAction *m_clipboardHistory;
     // always nullptr if paste selection isn't supported
     QAction *m_pasteSelection = nullptr;
     QAction *m_swapWithClipboard;
@@ -900,6 +1000,13 @@ private Q_SLOTS:
      */
     void applyFoldingState();
 
+public:
+    /**
+     * Clear any saved folding state
+     */
+    void clearFoldingState();
+
+private:
     void clearHighlights();
     void createHighlights();
 

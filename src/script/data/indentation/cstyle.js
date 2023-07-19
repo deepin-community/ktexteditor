@@ -41,6 +41,7 @@ function dbg() {
     }
 }
 
+const multiLineStringLiteralStartRegex = /R"(.+)?\(/
 
 //BEGIN global variables and functions
 // maximum number of lines we look backwards/forward to find out the indentation
@@ -200,48 +201,46 @@ function lastNonSpace(text)
     return -1;
 }
 
-// /**
-//  * Check, whether the beginning of line is inside a "..." string context.
-//  * Note: the function does not check for comments
-//  * return: leading whitespaces as string, or null if not in a string
-//  */
-// function inString(line)
-// {
-//     var currentLine = line;
-//     var currentString;
-//
-//     // go line up as long as the previous line ends with an escape character '\'
-//     while (currentLine >= 0) {
-//         currentString = document.line(currentLine - 1);
-//         if (currentString.charAt(document.lastColumn(currentLine - 1)) != '\\')
-//             break;
-//         --currentLine;
-//     }
-//
-//     // iterate through all lines and toggle bool insideString for every quote
-//     var insideString = false;
-//     var indentation = null;
-//     while (currentLine < line) {
-//         currentString = document.line(currentLine);
-//         var char1;
-//         var i;
-//         var lineLength = document.lineLength(currentLine);
-//         for (i = 0; i < lineLength; ++i) {
-//             char1 = currentString.charAt(i);
-//             if (char1 == "\\") {
-//                 // skip escaped character
-//                 ++i;
-//             } else if (char1 == "\"") {
-//                 insideString = !insideString;
-//                 if (insideString)
-//                     indentation = currentString.substring(0, document.firstColumn(currentLine) + 1);
-//             }
-//         }
-//         ++currentLine;
-//     }
-//
-//     return insideString ? indentation : null;
-// }
+/**
+ * Don't indent when in a multiline string literal of form "something\
+nextline"
+ * Note: the function does not check for comments
+ */
+function tryString(line)
+{
+    var currentLine = line;
+    var currentString;
+
+    // go line up as long as the previous line ends with an escape character '\'
+    while (currentLine >= 0) {
+        currentString = document.line(currentLine - 1);
+        if (currentString.charAt(document.lastColumn(currentLine - 1)) != '\\')
+            break;
+        --currentLine;
+    }
+
+    // iterate through all lines and toggle bool insideString for every quote
+    var insideString = false;
+    var indentation = -1;
+    while (currentLine < line) {
+        currentString = document.line(currentLine);
+        var char1;
+        var i;
+        var lineLength = document.lineLength(currentLine);
+        for (i = 0; i < lineLength; ++i) {
+            char1 = currentString.charAt(i);
+            if (char1 == "\\") {
+                // skip escaped character
+                ++i;
+            } else if (char1 == "\"") {
+                insideString = !insideString;
+            }
+        }
+        ++currentLine;
+    }
+
+    return insideString ? 0 : -1;
+}
 
 /**
  * C comment checking. If the previous line begins with a "/*" or a "* ", then
@@ -356,7 +355,7 @@ function tryCppComment(line)
 }
 
 /**
- * If the last non-empty line ends with a {, take its indentation level (or
+ * If the last non-empty line ends with a { or [, take its indentation level (or
  * maybe the one found by tryParenthesisBeforeBrace()) and return it increased
  * by 1 indetation level (special case: namespaces indentation depends on
  * cfgIndentNamespace). If not found, return null.
@@ -378,9 +377,12 @@ function tryBrace(line)
     var lastPos = document.lastColumn(currentLine);
     var indentation = -1;
 
-
     var currentString = document.line(currentLine);
     var matchColumn = currentString.search(/\{[^\}]*$/);
+    // line ends with [, e.g., array in js or dart
+    if (matchColumn == -1 && currentString.endsWith("[")) {
+        matchColumn = currentString.length - 1;
+    }
 
     if (matchColumn != -1 && document.isCode(currentLine, matchColumn)) {
         dbg("tryBrace: Closing bracket in line " + currentLine);
@@ -448,12 +450,44 @@ function tryCKeywords(line, isBrace)
         //     --b)
         cursor = document.anchor(currentLine, lastPos, '(');
         if (cursor.isValid()) {
-            indentation = document.toVirtualColumn(cursor.line, cursor.column + 1);
+            // Same line, we know there is a keyword here
+            if (cursor.line == line) {
+                indentation = document.toVirtualColumn(cursor.line, cursor.column + 1);
+            } else {
+                // check that the returned cursor's line contains
+                // a keyword and isn't a func call.
+                var cursorLine = document.line(cursor.line);
+                var s = cursorLine.search(/^\s*(if\b|for(each)?|do\b|while|switch|[}]?\s*else(if)?)/);
+                if (s != -1) {
+                    indentation = document.toVirtualColumn(cursor.line, cursor.column + 1);
+                }
+            }
         }
     }
 
     if (indentation != -1) dbg("tryCKeywords: success in line " + currentLine);
     return indentation;
+}
+
+/**
+ * Is this line a single statement of a condition:
+ * if (true)
+ *     doWork();
+ * - Finds the previous non empty line
+ * - Checks if it has control keyword
+ * - Checks if it doesn't have brace
+ */
+function isSingleStmtCondition(line)
+{
+    if (line > 1) {
+        var prev = lastNonEmptyLine(line - 1);
+        var prevText = document.line(prev);
+        var hasKeyword = prevText.search(/^\s*(if\b|[}]?\s*else(if)?\b|do\b|while\b|for(each)?\b)/);
+        if (hasKeyword != -1 && !prevText.contains("{")) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -485,6 +519,18 @@ function tryCondition(line)
         if (currentIndentation == 0)
             return -1;
 
+        // Is this a condition with only one stmt in it
+        var singleStmt = isSingleStmtCondition(currentLine);
+        if (singleStmt) {
+            var leftBrace = findLeftBrace(currentLine, 0);
+            if (leftBrace != -1) {
+                indentation = leftBrace + gIndentWidth;
+                dbg("tryCondition(1): success in line " + currentLine);
+                return indentation;
+            }
+        }
+
+
         var lineDelimiter = 10; // 10 limit search, hope this is a sane value
         while (currentLine > 0 && lineDelimiter > 0) {
             --currentLine;
@@ -504,7 +550,7 @@ function tryCondition(line)
         }
     }
 
-    if (indentation != -1) dbg("tryCondition: success in line " + currentLine);
+    if (indentation != -1) dbg("tryCondition(2): success in line " + currentLine);
     return indentation;
 }
 
@@ -592,6 +638,10 @@ function tryStatement(line)
                 while (document.isSpace(braceCursor.line, indentation))
                     ++indentation;
             }
+        } else if (gMode == "Dart" && result[2] == ',' && currentString.contains("(") && currentString.contains(")")) {
+            // Dart has a lot of stuff and function calls inside ctors
+            // and code is not aligned at the opening paren hence:
+            // do nothing
         } else {
             cursor = document.anchor(currentLine, result[1].length, '(');
         }
@@ -704,6 +754,60 @@ function tryMatchedAnchor(line, alignOnly)
     return indentation + gIndentWidth;
 }
 
+function escapeForRegex(string) {
+    if (string !== null) {
+        return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    }
+    return string;
+}
+
+/**
+ * Don't indent on multiline string literals of form R"[optional delimiter text]()[optional delimiter text]"
+ */
+function tryMultiLineStringLiteral(line) {
+    var currentLine = line;
+    var currentString;
+    var delim = "";
+    var found = false;
+
+    // go line up as long as the previous line ends with an escape character '\'
+    // go line up until we find something of form R"[delim](
+    while (currentLine >= 0) {
+        currentString = document.line(currentLine - 1);
+        var startMatch = currentString.match(multiLineStringLiteralStartRegex);
+        if (startMatch !== null) {
+            found = true;
+            delim = startMatch[1];
+            break;
+        }
+        --currentLine;
+    }
+
+    if (!found) {
+        return -1;
+    }
+
+    // iterate through all lines and toggle bool insideString for every quote
+    var insideString = true;
+    var endReached = false;
+    var indentation = null;
+    const multiLineStringLiteralEndRegex = new RegExp('\\)' + escapeForRegex(delim) + '"');
+    while (currentLine < line) {
+        currentString = document.line(currentLine);
+        dbg(currentString);
+        var endMatch = currentString.match(multiLineStringLiteralEndRegex);
+        if (endMatch !== null) {
+            dbg("End reached: " + currentString);
+            endReached = true;
+            break;
+        }
+        ++currentLine;
+    }
+    indentation = document.firstVirtualColumn(line);
+    dbg(endReached ? -1 : indentation);
+    return endReached ? -1 : indentation;
+}
+
 /**
  * Indent line.
  * Return filler or null.
@@ -721,6 +825,10 @@ function indentLine(line, alignOnly)
         filler = tryCComment(line);
     if (filler == -1 && !alignOnly)
         filler = tryCppComment(line);
+    if (filler == -1)
+        filler = tryMultiLineStringLiteral(line);
+    if (filler == -1)
+        filler = tryString(line);
     if (filler == -1)
         filler = trySwitchStatement(line);
     if (filler == -1)
@@ -777,7 +885,7 @@ function processChar(line, c)
     } else if (firstPos == column - 1 && c == '}'  && firstPos > prevFirstPos) {
         // align indentation to previous line when creating new block with auto brackets enabled
         // prevents over-indentation for if blocks and loops
-        return prevFirstPos;
+        return document.toVirtualColumn(line - 1, prevFirstPos);
     } else if (cfgSnapSlash && c == '/' && lastPos == column - 1) {
         // try to snap the string "* /" to "*/"
         var currentString = document.line(line);

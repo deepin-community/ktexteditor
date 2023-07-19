@@ -310,7 +310,8 @@ void SearchMode::editTextChanged(const QString &newText)
         }
     }
 
-    updateMatchHighlight(match);
+    if (!viInputModeManager()->searcher()->isHighlightSearchEnabled())
+        updateMatchHighlight(match);
 }
 
 void SearchMode::deactivate(bool wasAborted)
@@ -339,6 +340,7 @@ void SearchMode::deactivate(bool wasAborted)
     // from Vim-style regex; without case-sensitivity markers stripped; etc.
     // Vim does this even if the search was aborted, so we follow suit.
     viInputModeManager()->globalState()->searchHistory()->append(m_edit->text());
+    viInputModeManager()->searcher()->patternDone(wasAborted);
 }
 
 CompletionStartParams SearchMode::completionInvoked(Completer::CompletionInvocation invocationType)

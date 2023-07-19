@@ -13,6 +13,7 @@
 #include <QWidget>
 
 class KColorButton;
+class KFontRequester;
 
 class QCheckBox;
 class QLabel;
@@ -79,7 +80,6 @@ public:
     bool useFooterBackground();
 
 public Q_SLOTS:
-    void setHFFont();
     void showContextMenu(const QPoint &pos);
 
 private:
@@ -87,7 +87,7 @@ private:
     void writeSettings();
 
     QCheckBox *cbEnableHeader, *cbEnableFooter;
-    QLabel *lFontPreview;
+    KFontRequester *lFontPreview;
     QGroupBox *gbHeader, *gbFooter;
     QLineEdit *leHeaderLeft, *leHeaderCenter, *leHeaderRight;
     KColorButton *kcbtnHeaderFg, *kcbtnHeaderBg;
@@ -117,6 +117,7 @@ public:
     ~KatePrintLayout() override;
 
     QString colorScheme();
+    QFont textFont();
     bool useBackground();
     bool useBox();
     int boxWidth();
@@ -128,6 +129,7 @@ private:
     void writeSettings();
 
     QComboBox *cmbSchema;
+    KFontRequester *lFontPreview;
     QCheckBox *cbEnableBox;
     QCheckBox *cbDrawBackground;
     QGroupBox *gbBoxProps;

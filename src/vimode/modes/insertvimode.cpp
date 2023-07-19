@@ -17,6 +17,7 @@
 #include "kateviinputmode.h"
 #include <vimode/completionrecorder.h>
 #include <vimode/completionreplayer.h>
+#include <vimode/emulatedcommandbar/emulatedcommandbar.h>
 #include <vimode/inputmodemanager.h>
 #include <vimode/keyparser.h>
 #include <vimode/lastchangerecorder.h>
@@ -300,13 +301,14 @@ bool InsertViMode::commandSwitchToNormalModeForJustOneCommand()
 bool InsertViMode::handleKeypress(const QKeyEvent *e)
 {
     // backspace should work even if the shift key is down
-    if (e->modifiers() != Qt::ControlModifier && e->key() == Qt::Key_Backspace) {
+    if (e->modifiers() != CONTROL_MODIFIER && e->key() == Qt::Key_Backspace) {
         m_view->backspace();
         return true;
     }
 
     if (m_keys.isEmpty() && !m_waitingRegister) {
-        if (e->modifiers() == Qt::NoModifier) {
+        // on macOS the KeypadModifier is set for arrow keys too
+        if (e->modifiers() == Qt::NoModifier || e->modifiers() == Qt::KeypadModifier) {
             switch (e->key()) {
             case Qt::Key_Escape:
                 leaveInsertMode();
@@ -343,6 +345,7 @@ bool InsertViMode::handleKeypress(const QKeyEvent *e)
                 return true;
             case Qt::Key_Enter:
             case Qt::Key_Return:
+            case Qt::Key_Tab:
                 if (m_view->completionWidget()->isCompletionActive() && !m_viInputModeManager->macroRecorder()->isReplaying()
                     && !m_viInputModeManager->lastChangeRecorder()->isReplaying()) {
                     m_isExecutingCompletion = true;
@@ -357,12 +360,16 @@ bool InsertViMode::handleKeypress(const QKeyEvent *e)
                         completionFinished();
                         return true;
                     }
+                } else if (m_viInputModeManager->inputAdapter()->viModeEmulatedCommandBar()->isSendingSyntheticSearchCompletedKeypress()) {
+                    // BUG #451076, Do not record/send return for a newline when doing a search via Ctrl+F/Edit->Find menu
+                    m_viInputModeManager->doNotLogCurrentKeypress();
+                    return true;
                 }
                 Q_FALLTHROUGH();
             default:
                 return false;
             }
-        } else if (e->modifiers() == Qt::ControlModifier) {
+        } else if (e->modifiers() == CONTROL_MODIFIER) {
             switch (e->key()) {
             case Qt::Key_BracketLeft:
             case Qt::Key_3:

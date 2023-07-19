@@ -6,7 +6,7 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
 
 %:
-	dh $@ --with kf5,pkgkde_symbolshelper --buildsystem kf5 --without build_stamp
+	dh $@
 
 override_dh_auto_configure:
 	dh_auto_configure -- -DBUILD_QCH=ON

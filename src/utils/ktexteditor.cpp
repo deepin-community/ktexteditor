@@ -41,10 +41,12 @@
 
 using namespace KTextEditor;
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 Cursor Cursor::fromString(const QStringRef &str) Q_DECL_NOEXCEPT
 {
     return fromString(QStringView(str));
 }
+#endif
 
 Cursor Cursor::fromString(QStringView str) Q_DECL_NOEXCEPT
 {
@@ -181,6 +183,26 @@ void View::setViewInputMode(InputMode inputMode)
 KSyntaxHighlighting::Theme View::theme() const
 {
     return KateHlManager::self()->repository().theme(d->renderer()->config()->schema());
+}
+
+void View::setCursorPositions(const QVector<KTextEditor::Cursor> &positions)
+{
+    d->setCursors(positions);
+}
+
+QVector<KTextEditor::Cursor> View::cursorPositions() const
+{
+    return d->cursors();
+}
+
+void View::setSelections(const QVector<KTextEditor::Range> &ranges)
+{
+    d->setSelections(ranges);
+}
+
+QVector<KTextEditor::Range> View::selectionRanges() const
+{
+    return d->selectionRanges();
 }
 
 ConfigPage::ConfigPage(QWidget *parent)

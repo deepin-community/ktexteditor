@@ -91,7 +91,7 @@ protected:
 
     int findLineStartingWitchChar(const QChar &c, int count, bool forward = true) const;
     void updateCursor(const KTextEditor::Cursor c) const;
-    const QChar getCharAtVirtualColumn(const QString &line, int virtualColumn, int tabWidht) const;
+    static const QChar getCharAtVirtualColumn(const QString &line, int virtualColumn, int tabWidht);
 
     void addToNumberUnderCursor(int count);
 

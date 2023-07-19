@@ -90,6 +90,11 @@ Q_SIGNALS:
 public:
     /**
      * Get a list of all views for this main window.
+     *
+     * It is beneficial if the list is sorted by most recently used,
+     * as the library will e.g. try to use the most recent used url() by walking over this
+     * list for save and other such things.
+     *
      * @return all views, might be empty!
      */
     QList<KTextEditor::View *> views();
@@ -301,6 +306,73 @@ Q_SIGNALS:
      * @param pluginView the deleted plugin view
      */
     void pluginViewDeleted(const QString &name, QObject *pluginView);
+
+    //
+    // Custom widget handling
+    //
+public:
+    /**
+     * Add a widget to the main window.
+     * This is useful to show non-KTextEditor::View widgets in the main window.
+     * The host application should try to manage this like some KTextEditor::View (e.g. as a tab) and provide
+     * the means to close it.
+     * \param widget widget to add
+     * \return success, if false, the plugin needs to take care to show the widget itself, otherwise
+     *         the main window will take ownership of the widget
+     * \since 5.98
+     */
+    bool addWidget(QWidget *widget);
+
+    //
+    // Message output
+    //
+public:
+    /**
+     * Display a message to the user.
+     * The host application might show this inside a dedicated output view.
+     *
+     * \param message incoming message we shall handle
+     * \return true, if the host application was able to handle the message, else false
+     * \since 5.98
+     *
+     * details of message format:
+     *
+     * message text, will be trimmed before output
+     *
+     *    message["text"] = i18n("your cool message")
+     *
+     * the text will be split in lines, all lines beside the first can be collapsed away
+     *
+     * message type, we support at the moment
+     *
+     *    message["type"] = "Error"
+     *    message["type"] = "Warning"
+     *    message["type"] = "Info"
+     *    message["type"] = "Log"
+     *
+     * this is take from https://microsoft.github.io/language-server-protocol/specification#window_showMessage MessageType of LSP
+     *
+     * will lead to appropriate icons/... in the output view
+     *
+     * a message should have some category, like Git, LSP, ....
+     *
+     *    message["category"] = i18n(...)
+     *
+     * will be used to allow the user to filter for
+     *
+     * one can additionally provide a categoryIcon
+     *
+     *    message["categoryIcon"] = QIcon(...)
+     *
+     * the categoryIcon icon QVariant must contain a QIcon, nothing else!
+     *
+     * A string token can be passed to allow to replace messages already send out with new ones.
+     * That is useful for e.g. progress output
+     *
+     *     message["token"] = "yourmessagetoken"
+     *
+     */
+    bool showMessage(const QVariantMap &message);
 
 private:
     /**

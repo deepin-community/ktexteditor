@@ -273,7 +273,7 @@ bool KateCommands::CoreCommands::exec(KTextEditor::View *view, const QString &_c
         if (range.isValid()) {
             v->doc()->editStart();
             for (int line = range.start().line(); line <= range.end().line(); line++) {
-                v->doc()->comment(v, line, 0, 1);
+                v->doc()->comment(v, line, 0, KTextEditor::DocumentPrivate::Comment);
             }
             v->doc()->editEnd();
         } else {
@@ -284,7 +284,7 @@ bool KateCommands::CoreCommands::exec(KTextEditor::View *view, const QString &_c
         if (range.isValid()) {
             v->doc()->editStart();
             for (int line = range.start().line(); line <= range.end().line(); line++) {
-                v->doc()->comment(v, line, 0, -1);
+                v->doc()->comment(v, line, 0, KTextEditor::DocumentPrivate::UnComment);
             }
             v->doc()->editEnd();
         } else {
@@ -454,7 +454,8 @@ KCompletion *KateCommands::CoreCommands::completionObject(KTextEditor::View *vie
     if (cmd == QLatin1String("set-highlight")) {
         QStringList l;
         l.reserve(KateHlManager::self()->modeList().size());
-        for (const auto &hl : KateHlManager::self()->modeList()) {
+        const auto modeList = KateHlManager::self()->modeList();
+        for (const auto &hl : modeList) {
             l << hl.name();
         }
 

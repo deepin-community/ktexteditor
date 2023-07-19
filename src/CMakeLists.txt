@@ -44,7 +44,6 @@ include_directories(
 # KTextEditor interface sources
 set(ktexteditor_LIB_SRCS
 # text buffer & buffer helpers
-buffer/katesecuretextbuffer.cpp
 buffer/katetextbuffer.cpp
 buffer/katetextblock.cpp
 buffer/katetextline.cpp
@@ -61,8 +60,7 @@ completion/kateargumenthinttree.cpp
 completion/kateargumenthintmodel.cpp
 completion/katecompletiondelegate.cpp
 completion/expandingtree/expandingwidgetmodel.cpp
-completion/expandingtree/expandingdelegate.cpp
-completion/expandingtree/expandingtree.cpp
+completion/documentation_tip.cpp
 
 # simple internal word completion
 completion/katewordcompletion.cpp
@@ -74,6 +72,7 @@ completion/katekeywordcompletion.cpp
 dialogs/kateconfigpage.cpp
 dialogs/katedialogs.cpp
 dialogs/kateconfigpage.cpp
+dialogs/clipboardhistorydialog.cpp
 
 # document (THE document, buffer, lines/cursors/..., CORE STUFF)
 document/katedocument.cpp
@@ -169,6 +168,7 @@ utils/katecmds.cpp
 utils/kateconfig.cpp
 utils/katebookmarks.cpp
 utils/kateautoindent.cpp
+utils/kateindentdetecter.cpp
 utils/katetemplatehandler.cpp
 utils/kateglobal.cpp
 utils/katecmd.cpp
@@ -214,6 +214,10 @@ if(EditorConfig_FOUND)
     set(ktexteditor_LIB_SRCS ${ktexteditor_LIB_SRCS} document/editorconfig.cpp)
 endif()
 
+if(HAVE_KAUTH)
+    set(ktexteditor_LIB_SRCS ${ktexteditor_LIB_SRCS} buffer/katesecuretextbuffer.cpp)
+endif()
+
 ecm_qt_declare_logging_category(ktexteditor_LIB_SRCS
     HEADER katepartdebug.h
     IDENTIFIER LOG_KTE
@@ -235,6 +239,7 @@ dialogs/filetypeconfigwidget.ui
 dialogs/indentationconfigwidget.ui
 dialogs/opensaveconfigwidget.ui
 dialogs/opensaveconfigadvwidget.ui
+dialogs/statusbarconfigwidget.ui
 search/searchbarincremental.ui
 search/searchbarpower.ui
 spellcheck/spellcheckbar.ui
@@ -274,6 +279,7 @@ vimode/emulatedcommandbar/interactivesedreplacemode.cpp
 vimode/emulatedcommandbar/searchmode.cpp
 vimode/emulatedcommandbar/commandmode.cpp
 vimode/commandrangeexpressionparser.cpp
+vimode/keyevent.cpp
 vimode/keymapper.cpp
 vimode/marks.cpp
 vimode/jumps.cpp
@@ -315,11 +321,14 @@ PRIVATE
   KF5::GuiAddons
   KF5::ItemViews
   KF5::SonnetCore
+  KF5::WindowSystem
   KF5::SonnetUi
-  KF5::TextWidgets
-  KF5::AuthCore
   ${KTEXTEDITOR_OPTIONAL_LIBS}
 )
+
+if(HAVE_KAUTH)
+  target_link_libraries(KF5TextEditor PRIVATE KF5::AuthCore)
+endif()
 
 set_target_properties(KF5TextEditor
    PROPERTIES
@@ -355,7 +364,7 @@ if(ENABLE_PCH)
     )
 endif()
 
-install(TARGETS KF5TextEditor EXPORT KF5TextEditorTargets ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5TextEditor EXPORT KF5TextEditorTargets ${KF_INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/ktexteditor_export.h
@@ -395,14 +404,13 @@ include(ECMGeneratePriFile)
 ecm_generate_pri_file(BASE_NAME KTextEditor LIB_NAME KF5TextEditor DEPS "KParts" FILENAME_VAR PRI_FILENAME INCLUDE_INSTALL_DIR ${KDE_INSTALL_INCLUDEDIR_KF}/KTextEditor)
 install(FILES ${PRI_FILENAME} DESTINATION ${ECM_MKSPECS_INSTALL_DIR})
 
-
-add_executable(kauth_ktexteditor_helper buffer/katesecuretextbuffer.cpp)
-target_link_libraries(kauth_ktexteditor_helper
-  KF5::AuthCore
-)
-install(TARGETS kauth_ktexteditor_helper DESTINATION ${KAUTH_HELPER_INSTALL_DIR} )
-kauth_install_helper_files(kauth_ktexteditor_helper org.kde.ktexteditor.katetextbuffer root)
-kauth_install_actions(org.kde.ktexteditor.katetextbuffer buffer/org.kde.ktexteditor.katetextbuffer.actions)
+if(HAVE_KAUTH)
+    add_executable(kauth_ktexteditor_helper buffer/katesecuretextbuffer.cpp)
+    target_link_libraries(kauth_ktexteditor_helper KF5::AuthCore)
+    install(TARGETS kauth_ktexteditor_helper DESTINATION ${KAUTH_HELPER_INSTALL_DIR} )
+    kauth_install_helper_files(kauth_ktexteditor_helper org.kde.ktexteditor.katetextbuffer root)
+    kauth_install_actions(org.kde.ktexteditor.katetextbuffer buffer/org.kde.ktexteditor.katetextbuffer.actions)
+endif()
 
 # add part
 add_subdirectory(part)

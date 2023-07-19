@@ -13,6 +13,8 @@
 #include "katepartdebug.h"
 #include "katesyntaxmanager.h"
 #include "kateview.h"
+
+#include <QActionGroup>
 // END Includes
 
 void KateModeMenu::init()
@@ -24,11 +26,6 @@ void KateModeMenu::init()
     connect(menu(), &QMenu::aboutToShow, this, &KateModeMenu::slotAboutToShow);
 
     m_actionGroup = new QActionGroup(menu());
-}
-
-KateModeMenu::~KateModeMenu()
-{
-    qDeleteAll(subMenus);
 }
 
 void KateModeMenu::updateMenu(KTextEditor::Document *doc)
@@ -52,7 +49,8 @@ void KateModeMenu::slotAboutToShow()
         if (!hlSection.isEmpty() && !names.contains(hlName)) {
             if (!subMenusName.contains(hlSection)) {
                 subMenusName << hlSection;
-                QMenu *qmenu = new QMenu(hlSection);
+                // pass proper parent for cleanup + Wayland correctness
+                QMenu *qmenu = new QMenu(hlSection, menu());
                 connect(qmenu, &QMenu::triggered, this, &KateModeMenu::setType);
                 subMenus.append(qmenu);
                 menu()->addMenu(qmenu);

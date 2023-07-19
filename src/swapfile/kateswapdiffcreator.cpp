@@ -8,12 +8,13 @@
 #include "katepartdebug.h"
 #include "kateswapfile.h"
 
-#include <KIO/JobUiDelegate>
+#include <KIO/JobUiDelegateFactory>
 #include <KIO/OpenUrlJob>
 #include <KLocalizedString>
 #include <KMessageBox>
 
 #include <QDir>
+#include <QStandardPaths>
 #include <QTextCodec>
 
 // BEGIN SwapDiffCreator
@@ -37,9 +38,9 @@ void SwapDiffCreator::viewDiff()
     }
 
     // create all needed tempfiles
-    m_originalFile.setFileTemplate(QDir::tempPath() + QLatin1String("/katepart_XXXXXX.original"));
-    m_recoveredFile.setFileTemplate(QDir::tempPath() + QLatin1String("/katepart_XXXXXX.recovered"));
-    m_diffFile.setFileTemplate(QDir::tempPath() + QLatin1String("/katepart_XXXXXX.diff"));
+    m_originalFile.setFileTemplate(QDir::temp().filePath(QStringLiteral("katepart_XXXXXX.original")));
+    m_recoveredFile.setFileTemplate(QDir::temp().filePath(QStringLiteral("katepart_XXXXXX.recovered")));
+    m_diffFile.setFileTemplate(QDir::temp().filePath(QStringLiteral("katepart_XXXXXX.diff")));
 
     if (!m_originalFile.open() || !m_recoveredFile.open() || !m_diffFile.open()) {
         qCWarning(LOG_KTE) << "Can't open temporary files needed for diffing";
@@ -58,7 +59,9 @@ void SwapDiffCreator::viewDiff()
     // store original text in a file as utf-8 and close it
     {
         QTextStream stream(&m_originalFile);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         stream.setCodec(QTextCodec::codecForName("UTF-8"));
+#endif
         stream << recoverDoc.text();
     }
     m_originalFile.close();
@@ -70,7 +73,9 @@ void SwapDiffCreator::viewDiff()
     // store recovered text in a file as utf-8 and close it
     {
         QTextStream stream(&m_recoveredFile);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         stream.setCodec(QTextCodec::codecForName("UTF-8"));
+#endif
         stream << recoverDoc.text();
     }
     m_recoveredFile.close();
@@ -81,13 +86,21 @@ void SwapDiffCreator::viewDiff()
     connect(&m_proc, &QProcess::readyRead, this, &SwapDiffCreator::slotDataAvailable, Qt::UniqueConnection);
     connect(&m_proc, &QProcess::finished, this, &SwapDiffCreator::slotDiffFinished, Qt::UniqueConnection);
 
-    // try to start diff process, if we can't be started be done with error
-    m_proc.start(QStringLiteral("diff"), QStringList() << QStringLiteral("-u") << m_originalFile.fileName() << m_recoveredFile.fileName());
-    if (!m_proc.waitForStarted()) {
-        KMessageBox::sorry(nullptr,
-                           i18n("The diff command could not be started. Please make sure that "
+    // use diff from PATH only => inform if not found at all
+    const QString fullDiffPath = QStandardPaths::findExecutable(QStringLiteral("diff"));
+    if (fullDiffPath.isEmpty()) {
+        KMessageBox::error(nullptr,
+                           i18n("The diff command could not be found. Please make sure that "
                                 "diff(1) is installed and in your PATH."),
                            i18n("Error Creating Diff"));
+        deleteLater();
+        return;
+    }
+
+    // try to start the diff program, might fail, too
+    m_proc.start(fullDiffPath, QStringList() << QStringLiteral("-u") << m_originalFile.fileName() << m_recoveredFile.fileName());
+    if (!m_proc.waitForStarted()) {
+        KMessageBox::error(nullptr, i18n("The diff command '%1' could not be started.").arg(fullDiffPath), i18n("Error Creating Diff"));
         deleteLater();
         return;
     }
@@ -118,7 +131,7 @@ void SwapDiffCreator::slotDiffFinished()
 
     // check exit status
     if (es != QProcess::NormalExit) {
-        KMessageBox::sorry(nullptr,
+        KMessageBox::error(nullptr,
                            i18n("The diff command failed. Please make sure that "
                                 "diff(1) is installed and in your PATH."),
                            i18n("Error Creating Diff"));
@@ -138,7 +151,7 @@ void SwapDiffCreator::slotDiffFinished()
     m_diffFile.setAutoRemove(false);
 
     KIO::OpenUrlJob *job = new KIO::OpenUrlJob(QUrl::fromLocalFile(m_diffFile.fileName()), QStringLiteral("text/x-patch"));
-    job->setUiDelegate(new KIO::JobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, m_swapFile->document()->activeView()));
+    job->setUiDelegate(KIO::createDefaultJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, m_swapFile->document()->activeView()));
     job->setDeleteTemporaryFile(true); // delete the file, once the client exits
     job->start();
 

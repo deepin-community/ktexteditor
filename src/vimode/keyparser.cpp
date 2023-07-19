@@ -7,7 +7,9 @@
 
 #include <QKeyEvent>
 #include <QStringList>
+#include <vimode/keyevent.h>
 #include <vimode/keyparser.h>
+#include "definitions.h"
 
 using namespace KateVi;
 
@@ -568,7 +570,7 @@ const QString KeyParser::encodeKeySequence(const QString &keys) const
                                     endOfBlock = keys.length() - 1;
                                 }
                                 encodedSequence.clear();
-                                encodedSequence.append(m_nameToKeyCode.value(QStringLiteral("invalid")));
+                                encodedSequence.append(QChar(m_nameToKeyCode.value(QStringLiteral("invalid"))));
                                 break;
                             }
                         }
@@ -662,26 +664,32 @@ const QString KeyParser::decodeKeySequence(const QString &keys) const
 
 const QChar KeyParser::KeyEventToQChar(const QKeyEvent &keyEvent)
 {
-    const int keyCode = keyEvent.key();
-    const QString text = keyEvent.text();
-    const Qt::KeyboardModifiers mods = keyEvent.modifiers();
+    return KeyEventToQChar(keyEvent.key(), keyEvent.text(), keyEvent.modifiers());
+}
 
+const QChar KeyParser::KeyEventToQChar(const KeyEvent &keyEvent)
+{
+    return KeyEventToQChar(keyEvent.key(), keyEvent.text(), keyEvent.modifiers());
+}
+
+const QChar KeyParser::KeyEventToQChar(int keyCode, const QString &text, Qt::KeyboardModifiers mods) const
+{
     // If previous key press was AltGr, return key value right away and don't go
     // down the "handle modifiers" code path. AltGr is really confusing...
     if (mods & Qt::GroupSwitchModifier) {
         return (!text.isEmpty()) ? text.at(0) : QChar();
     }
 
-    if (text.isEmpty() || (text.length() == 1 && text.at(0) < 0x20) || keyCode == Qt::Key_Delete
+    if (text.isEmpty() || (text.length() == 1 && text.at(0) < QChar(0x20)) || keyCode == Qt::Key_Delete
         || (mods != Qt::NoModifier && mods != Qt::ShiftModifier && mods != Qt::KeypadModifier)) {
         QString keyPress;
         keyPress.reserve(11);
 
         keyPress.append(QLatin1Char('<'));
         keyPress.append((mods & Qt::ShiftModifier) ? QStringLiteral("s-") : QString());
-        keyPress.append((mods & Qt::ControlModifier) ? QStringLiteral("c-") : QString());
+        keyPress.append((mods & CONTROL_MODIFIER) ? QStringLiteral("c-") : QString());
         keyPress.append((mods & Qt::AltModifier) ? QStringLiteral("a-") : QString());
-        keyPress.append((mods & Qt::MetaModifier) ? QStringLiteral("m-") : QString());
+        keyPress.append((mods & META_MODIFIER) ? QStringLiteral("m-") : QString());
         keyPress.append(keyCode <= 0xFF ? QChar(keyCode) : qt2vi(keyCode));
         keyPress.append(QLatin1Char('>'));
 

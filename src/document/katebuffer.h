@@ -27,7 +27,7 @@ class KateHighlighting;
  * @author Waldo Bastian <bastian@kde.org>
  * @author Christoph Cullmann <cullmann@kde.org>
  */
-class KTEXTEDITOR_EXPORT KateBuffer : public Kate::TextBuffer
+class KTEXTEDITOR_EXPORT KateBuffer final : public Kate::TextBuffer
 {
     Q_OBJECT
 
@@ -228,6 +228,13 @@ public:
      * Invalidate highlighting of whole buffer.
      */
     void invalidateHighlighting();
+
+    /**
+     * For a given line, compute if folding starts here.
+     * @param startLine start line
+     * @return does folding start here and is it indentation based?
+     */
+    std::pair<bool, bool> isFoldingStartingOnLine(int startLine);
 
     /**
      * For a given line, compute the folding range that starts there

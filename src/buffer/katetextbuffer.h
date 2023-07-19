@@ -32,7 +32,7 @@ class TextRange;
 class TextCursor;
 class TextBlock;
 class TextLineData;
-typedef QSharedPointer<TextLineData> TextLine;
+typedef std::shared_ptr<TextLineData> TextLine;
 /**
  * Class representing a text buffer.
  * The interface is line based, internally the text will be stored in blocks of text lines.
@@ -163,15 +163,6 @@ public:
     EndOfLineMode endOfLineMode() const
     {
         return m_endOfLineMode;
-    }
-
-    /**
-     * Set whether to insert a newline character on save at the end of the file
-     * @param newlineAtEof should newline be added if non-existing
-     */
-    void setNewLineAtEof(bool newlineAtEof)
-    {
-        m_newLineAtEof = newlineAtEof;
     }
 
     /**
@@ -665,11 +656,6 @@ private:
      * End of line mode, default is Unix
      */
     EndOfLineMode m_endOfLineMode;
-
-    /**
-     * Insert newline character at the end of the file?
-     */
-    bool m_newLineAtEof;
 
     /**
      * Limit for line length, longer lines will be wrapped on load

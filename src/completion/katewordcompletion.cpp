@@ -192,7 +192,7 @@ void KateWordCompletionModel::completionInvoked(KTextEditor::View *view, const K
  * ignoring any dublets and words shorter than configured and/or
  * reasonable minimum length.
  */
-QStringList KateWordCompletionModel::allMatches(KTextEditor::View *view, const KTextEditor::Range &range) const
+QStringList KateWordCompletionModel::allMatches(KTextEditor::View *view, const KTextEditor::Range &range)
 {
     QSet<QString> result;
     const int minWordSize = qMax(2, qobject_cast<KTextEditor::ViewPrivate *>(view)->config()->wordCompletionMinimalWordLength());
@@ -281,13 +281,13 @@ KateWordCompletionView::KateWordCompletionView(KTextEditor::View *view, KActionC
 
     action = new QAction(i18n("Reuse Word Above"), this);
     ac->addAction(QStringLiteral("doccomplete_bw"), action);
-    ac->setDefaultShortcut(action, Qt::CTRL + Qt::Key_8);
+    ac->setDefaultShortcut(action, Qt::CTRL | Qt::Key_8);
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(action, &QAction::triggered, this, &KateWordCompletionView::completeBackwards);
 
     action = new QAction(i18n("Reuse Word Below"), this);
     ac->addAction(QStringLiteral("doccomplete_fw"), action);
-    ac->setDefaultShortcut(action, Qt::CTRL + Qt::Key_9);
+    ac->setDefaultShortcut(action, Qt::CTRL | Qt::Key_9);
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(action, &QAction::triggered, this, &KateWordCompletionView::completeForwards);
 }
@@ -482,7 +482,7 @@ void KateWordCompletionView::slotCursorMoved()
 }
 
 // Contributed by <brain@hdsnet.hu> FIXME
-QString KateWordCompletionView::findLongestUnique(const QStringList &matches, int lead) const
+QString KateWordCompletionView::findLongestUnique(const QStringList &matches, int lead)
 {
     QString partial = matches.first();
 

@@ -57,7 +57,7 @@ void MacroRecorder::record(const QKeyEvent &event)
     if (isRepeatOfLastShortcutOverrideAsKeyPress(event, m_eventsLog)) {
         return;
     }
-    m_eventsLog.append(event);
+    m_eventsLog.append(KeyEvent::fromQKeyEvent(event));
 }
 
 void MacroRecorder::dropLast()
@@ -87,7 +87,7 @@ void MacroRecorder::replay(const QChar &macroRegister)
     m_macrosBeingReplayedCount--;
 }
 
-bool MacroRecorder::isReplaying()
+bool MacroRecorder::isReplaying() const
 {
     return m_macrosBeingReplayedCount > 0;
 }

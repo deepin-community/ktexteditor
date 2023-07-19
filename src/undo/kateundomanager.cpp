@@ -11,6 +11,7 @@
 #include "katedocument.h"
 #include "katemodifiedundo.h"
 #include "katepartdebug.h"
+#include "kateview.h"
 
 #include <QBitArray>
 
@@ -22,6 +23,31 @@ KateUndoManager::KateUndoManager(KTextEditor::DocumentPrivate *doc)
     connect(this, &KateUndoManager::redoEnd, this, &KateUndoManager::undoChanged);
 
     connect(doc, &KTextEditor::DocumentPrivate::viewCreated, this, &KateUndoManager::viewCreated);
+
+    // Before reload save history
+    connect(doc, &KTextEditor::DocumentPrivate::aboutToReload, this, [this] {
+        savedUndoItems = undoItems;
+        savedRedoItems = redoItems;
+        undoItems.clear();
+        redoItems.clear();
+        docChecksumBeforeReload = m_document->checksum();
+    });
+
+    // After reload restore it only if checksum of the doc is same
+    connect(doc, &KTextEditor::DocumentPrivate::loaded, this, [this](KTextEditor::Document *doc) {
+        if (doc && !doc->checksum().isEmpty() && !docChecksumBeforeReload.isEmpty() && doc->checksum() == docChecksumBeforeReload) {
+            undoItems = savedUndoItems;
+            redoItems = savedRedoItems;
+            Q_EMIT undoChanged();
+        } else {
+            // Else delete everything, we don't want to leak
+            qDeleteAll(savedUndoItems);
+            qDeleteAll(savedRedoItems);
+        }
+        docChecksumBeforeReload.clear();
+        savedUndoItems.clear();
+        savedRedoItems.clear();
+    });
 }
 
 KateUndoManager::~KateUndoManager()
@@ -40,7 +66,7 @@ KTextEditor::Document *KateUndoManager::document()
     return m_document;
 }
 
-void KateUndoManager::viewCreated(KTextEditor::Document *, KTextEditor::View *newView)
+void KateUndoManager::viewCreated(KTextEditor::Document *, KTextEditor::View *newView) const
 {
     connect(newView, &KTextEditor::View::cursorPositionChanged, this, &KateUndoManager::undoCancel);
 }
@@ -55,10 +81,14 @@ void KateUndoManager::editStart()
     Q_ASSERT(m_editCurrentUndo == nullptr); // make sure to enter a clean state
 
     const KTextEditor::Cursor cursorPosition = activeView() ? activeView()->cursorPosition() : KTextEditor::Cursor::invalid();
-    const KTextEditor::Range selectionRange = activeView() ? activeView()->selectionRange() : KTextEditor::Range::invalid();
+    const KTextEditor::Range primarySelectionRange = activeView() ? activeView()->selectionRange() : KTextEditor::Range::invalid();
+    QVector<KTextEditor::ViewPrivate::PlainSecondaryCursor> secondaryCursors;
+    if (activeView()) {
+        secondaryCursors = activeView()->plainSecondaryCursors();
+    }
 
     // new current undo item
-    m_editCurrentUndo = new KateUndoGroup(this, cursorPosition, selectionRange);
+    m_editCurrentUndo = new KateUndoGroup(this, cursorPosition, primarySelectionRange, secondaryCursors);
 
     Q_ASSERT(m_editCurrentUndo != nullptr); // a new undo group must be created by this method
 }
@@ -75,7 +105,12 @@ void KateUndoManager::editEnd()
     const KTextEditor::Cursor cursorPosition = activeView() ? activeView()->cursorPosition() : KTextEditor::Cursor::invalid();
     const KTextEditor::Range selectionRange = activeView() ? activeView()->selectionRange() : KTextEditor::Range::invalid();
 
-    m_editCurrentUndo->editEnd(cursorPosition, selectionRange);
+    QVector<KTextEditor::ViewPrivate::PlainSecondaryCursor> secondaryCursors;
+    if (activeView()) {
+        secondaryCursors = activeView()->plainSecondaryCursors();
+    }
+
+    m_editCurrentUndo->editEnd(cursorPosition, selectionRange, secondaryCursors);
 
     bool changedUndo = false;
 
@@ -429,7 +464,7 @@ void KateUndoManager::setAllowComplexMerge(bool allow)
     m_undoComplexMerge = allow;
 }
 
-KTextEditor::View *KateUndoManager::activeView()
+KTextEditor::ViewPrivate *KateUndoManager::activeView()
 {
-    return m_document->activeView();
+    return static_cast<KTextEditor::ViewPrivate *>(m_document->activeView());
 }

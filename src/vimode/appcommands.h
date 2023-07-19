@@ -45,10 +45,11 @@ private:
      * view with the given \p view. If such view could not be found, then
      * nullptr is returned.
      */
-    KTextEditor::View *findViewInDifferentSplitView(KTextEditor::MainWindow *window, KTextEditor::View *view);
+    static KTextEditor::View *findViewInDifferentSplitView(KTextEditor::MainWindow *window, KTextEditor::View *view);
 
 private Q_SLOTS:
     void closeCurrentDocument();
+    void closeDocuments(const QList<KTextEditor::Document *> &documents);
     void closeCurrentView();
     void closeCurrentSplitView();
     void closeOtherSplitViews();
@@ -99,8 +100,8 @@ private:
     void firstTab(KTextEditor::View *);
     void lastTab(KTextEditor::View *);
 
-    void activateDocument(KTextEditor::View *, KTextEditor::Document *);
-    QList<KTextEditor::Document *> documents();
+    static void activateDocument(KTextEditor::View *, KTextEditor::Document *);
+    static QList<KTextEditor::Document *> documents();
 };
 
 }

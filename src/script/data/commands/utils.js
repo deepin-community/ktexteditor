@@ -1,12 +1,16 @@
 var katescript = {
-    "author": "Dominik Haumann <dhdev@gmx.de>, Milian Wolff <mail@milianw.de>, Gerald Senarclens de Grancy <oss@senarclens.eu>, Alex Turbov <i.zaufi@gmail.com>",
+    "author": "Dominik Haumann <dhdev@gmx.de>, Milian Wolff <mail@milianw.de>, Gerald Senarclens de Grancy <oss@senarclens.eu>, Alex Turbov <i.zaufi@gmail.com>, Pablo Rauzy <r_NOSPAM_@uzy.me>",
     "license": "LGPL-2.1+",
-    "revision": 9,
+    "revision": 10,
     "kate-version": "5.1",
-    "functions": ["sort", "moveLinesDown", "moveLinesUp", "natsort", "uniq", "rtrim", "ltrim", "trim", "join", "rmblank", "unwrap", "each", "filter", "map", "duplicateLinesUp", "duplicateLinesDown", "rewrap", "encodeURISelection", "decodeURISelection"],
+    "functions": ["sort", "sortuniq", "moveLinesDown", "moveLinesUp", "natsort", "uniq", "rtrim", "ltrim", "trim", "join", "rmblank", "alignon", "unwrap", "each", "filter", "map", "duplicateLinesUp", "duplicateLinesDown", "rewrap", "encodeURISelection", "decodeURISelection", "fsel", "bsel"],
     "actions": [
         {   "function": "sort",
-            "name": "Sort Selected Text",
+            "name": "Sort Selected Text Alphabetically",
+            "category": "Editing"
+        },
+        {   "function": "sortuniq",
+            "name": "Remove Duplicates and Sort Selected Text Alphabetically",
             "category": "Editing"
         },
         {   "function": "moveLinesDown",
@@ -21,12 +25,10 @@ var katescript = {
         },
         {   "function": "duplicateLinesDown",
             "name": "Duplicate Selected Lines Down",
-            "shortcut": "Ctrl+Alt+Down",
             "category": "Editing"
         },
         {   "function": "duplicateLinesUp",
             "name": "Duplicate Selected Lines Up",
-            "shortcut": "Ctrl+Alt+Up",
             "category": "Editing"
         },
         {   "function": "encodeURISelection",
@@ -51,17 +53,30 @@ function sort()
 function uniq()
 {
     each(function(lines) {
-        for ( var i = 1; i < lines.length; ++i ) {
-          for ( var j = i - 1; j >= 0; --j ) {
-            if ( lines[i] == lines[j] ) {
-              lines.splice(i, 1);
-              // gets increased in the for
-              --i;
-              break;
+        var uniq_lines = [];
+        var seen = new Set();
+        for ( var i = 0; i < lines.length; ++i ) {
+            if (!seen.has(lines[i])) {
+                seen.add(lines[i]);
+                uniq_lines.push(lines[i]);
             }
-          }
         }
-        return lines;
+        return uniq_lines;
+    });
+}
+
+function sortuniq()
+{
+    each(function(lines) {
+        var uniq_lines = [];
+        var seen = new Set();
+        for ( var i = 0; i < lines.length; ++i ) {
+            if (!seen.has(lines[i])) {
+                seen.add(lines[i]);
+                uniq_lines.push(lines[i]);
+            }
+        }
+        return uniq_lines.sort();
     });
 }
 
@@ -88,6 +103,18 @@ function trim()
 function rmblank()
 {
     filter(function(l) { return l.length > 0; });
+}
+
+function alignon(pattern)
+{
+    if (typeof pattern == "undefined") {
+        pattern = "";
+    }
+    var selection = view.selection();
+    if (!selection.isValid()) {
+        selection = document.documentRange();
+    }
+    view.alignOn(selection, pattern);
 }
 
 function join(separator)
@@ -357,6 +384,34 @@ function decodeURISelection()
     _uri_transform_selection(decodeURIComponent);
 }
 
+function fsel(target) // forward select
+{
+    startSel = view.cursorPosition();
+    if (typeof target == "undefined") { // by default, select til the end of the current line
+        endSel = new Cursor(startSel.line, document.lastColumn(startSel.line) + 1);
+    } else { // otherwise, select to the first occurrence of the given target (including it)
+        match = view.searchText(new Range(startSel, document.documentRange().end), target);
+        if (!match.isValid()) return false;
+        else endSel = match.end;
+    }
+    view.setCursorPosition(endSel);
+    view.setSelection(new Range(startSel, endSel));
+}
+
+function bsel(target) // backward select
+{
+    endSel = view.cursorPosition();
+    if (typeof target == "undefined") { // by default, select from the beginning of the current line
+        startSel = new Cursor(endSel.line, 0);
+    } else { // otherwise, select from the last occurrence of the given target (including it)
+        match = view.searchText(new Range(document.documentRange().start, endSel), target, true);
+        if (!match.isValid()) return false;
+        else startSel = match.start;
+    }
+    view.setCursorPosition(startSel);
+    view.setSelection(new Range(startSel, endSel));
+}
+
 function help(cmd)
 {
     if (cmd == "sort") {
@@ -379,6 +434,8 @@ function help(cmd)
         return i18n("Joins selected lines or whole document. Optionally pass a separator to put between each line:<br><code>join ', '</code> will e.g. join lines and separate them by a comma.");
     } else if (cmd == "rmblank") {
         return i18n("Removes empty lines from selection or whole document.");
+    } else if (cmd == "alignon") {
+        return i18n("This command aligns lines in the selected block or whole document on the column given by a regular expression given as an argument.<br><br>If you give an empty pattern it will align on the first non-blank character by default.<br>If the pattern has a capture it will indent on the captured match.<br><br><i>Examples</i>:<br>'<code>alignon -</code>' will insert spaces before the first '-' of each lines to align them all on the same column.<br>'<code>alignon :\\s+(.)</code>' will insert spaces before the first non-blank character that occurs after a colon to align them all on the same column.");
     } else if (cmd == "unwrap") {
         return "Unwraps all paragraphs in the text selection, or the paragraph under the text cursor if there is no selected text.";
     } else if (cmd == "each") {
@@ -395,6 +452,10 @@ function help(cmd)
         return i18n("Encode special chars in a single line selection, so the result text can be used as URI.");
     } else if (cmd == "decodeURISelection") {
         return i18n("Reverse action of URI encode.");
+    } else if (cmd == "fsel") {
+        return i18n("Select text forward from current cursor position to the first occurrence of the given argument after it (or the end of the current line by default).");
+    } else if (cmd == "bsel") {
+        return i18n("Select text backward from current cursor position to the last occurrence of the given argument before it (or the beginning of the current line by default).");
     }
 }
 
@@ -428,6 +489,7 @@ function each(func)
 {
     func = __toFunc(func, 'lines');
 
+    var cursor = view.cursorPosition();
     var selection = view.selection();
     if (!selection.isValid()) {
         // use whole range
@@ -440,11 +502,15 @@ function each(func)
     var text = document.text(selection);
 
     var lines = text.split("\n");
+    oldLineCount = lines.length;
+    oldCurrentLineLength = document.lineLength(cursor.line);
     lines = func(lines);
     if ( typeof(lines) == "object" ) {
       text = lines.join("\n");
+      newLineCount = lines.length;
     } else if ( typeof(lines) == "string" ) {
       text = lines
+      newLineCount = (lines.match('\n') || []).length;
     } else {
       throw "callback function for each has to return object or array of lines";
     }
@@ -455,6 +521,12 @@ function each(func)
     document.removeText(selection);
     document.insertText(selection.start, text);
     document.editEnd();
+    if (newLineCount == oldLineCount) {
+        if (document.lineLength(cursor.line) != oldCurrentLineLength) {
+            cursor.column = document.lastColumn(cursor.line) + 1;
+        }
+        view.setCursorPosition(cursor);
+    }
 }
 
 function filter(func)

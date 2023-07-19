@@ -8,20 +8,18 @@
 #include "katecompletionmodel.h"
 
 #include "kateargumenthintmodel.h"
-#include "katecompletiondelegate.h"
 #include "katecompletiontree.h"
 #include "katecompletionwidget.h"
-#include "kateconfig.h"
 #include "katepartdebug.h"
 #include "katerenderer.h"
 #include "kateview.h"
 #include <ktexteditor/codecompletionmodelcontrollerinterface.h>
 
+#include <KFuzzyMatcher>
 #include <KLocalizedString>
 
 #include <QApplication>
 #include <QMultiMap>
-#include <QTextEdit>
 #include <QTimer>
 #include <QVarLengthArray>
 
@@ -92,12 +90,12 @@ int HierarchicalModelHandler::inheritanceDepth(const QModelIndex &i) const
 void HierarchicalModelHandler::takeRole(const QModelIndex &index)
 {
     QVariant v = index.data(CodeCompletionModel::GroupRole);
-    if (v.isValid() && v.canConvert(QVariant::Int)) {
+    if (v.isValid() && v.canConvert<int>()) {
         QVariant value = index.data(v.toInt());
         if (v.toInt() == Qt::DisplayRole) {
             m_customGroup = index.data(Qt::DisplayRole).toString();
             QVariant sortingKey = index.data(CodeCompletionModel::InheritanceDepth);
-            if (sortingKey.canConvert(QVariant::Int)) {
+            if (sortingKey.canConvert<int>()) {
                 m_groupSortingKey = sortingKey.toInt();
             }
         } else {
@@ -146,6 +144,14 @@ KateCompletionModel::KateCompletionModel(KateCompletionWidget *parent)
     m_groupHash.insert(0, m_ungrouped);
     m_groupHash.insert(-1, m_argumentHints);
     m_groupHash.insert(BestMatchesProperty, m_argumentHints);
+
+    QList<QList<int>> mergedColumns;
+    mergedColumns << (QList<int>() << 0);
+    mergedColumns << (QList<int>() << 1 << 2 << 3 << 4);
+    mergedColumns << (QList<int>() << 5);
+    m_columnMerges = mergedColumns;
+
+    createGroups();
 }
 
 KateCompletionModel::~KateCompletionModel()
@@ -167,39 +173,29 @@ QVariant KateCompletionModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    if (role == Qt::DecorationRole && index.column() == KTextEditor::CodeCompletionModel::Prefix && isExpandable(index)) {
-        cacheIcons();
-
-        if (!isExpanded(index)) {
-            return QVariant(m_collapsedIcon);
-        } else {
-            return QVariant(m_expandedIcon);
-        }
+    if (role == InternalRole::IsNonEmptyGroup) {
+        auto group = groupForIndex(index);
+        return group && !group->isEmpty;
     }
 
     // groupOfParent returns a group when the index is a member of that group, but not the group head/label.
     if (!hasGroups() || groupOfParent(index)) {
         if (role == Qt::TextAlignmentRole) {
-            if (isColumnMergingEnabled() && !m_columnMerges.isEmpty()) {
-                int c = 0;
-                for (const QList<int> &list : std::as_const(m_columnMerges)) {
-                    if (index.column() < c + list.size()) {
-                        c += list.size();
-                        continue;
-                    } else if (list.count() == 1 && list.first() == CodeCompletionModel::Scope) {
-                        return Qt::AlignRight;
-                    } else {
-                        return QVariant();
-                    }
+            int c = 0;
+            for (const QList<int> &list : std::as_const(m_columnMerges)) {
+                if (index.column() < c + list.size()) {
+                    c += list.size();
+                    continue;
+                } else if (list.count() == 1 && list.first() == CodeCompletionModel::Scope) {
+                    return Qt::AlignRight;
+                } else {
+                    return QVariant();
                 }
-
-            } else if ((!isColumnMergingEnabled() || m_columnMerges.isEmpty()) && index.column() == CodeCompletionModel::Scope) {
-                return Qt::AlignRight;
             }
         }
 
         // Merge text for column merging
-        if (role == Qt::DisplayRole && !m_columnMerges.isEmpty() && isColumnMergingEnabled()) {
+        if (role == Qt::DisplayRole) {
             QString text;
             for (int column : m_columnMerges[index.column()]) {
                 QModelIndex sourceIndex = mapToSource(createIndex(index.row(), column, index.internalPointer()));
@@ -361,10 +357,10 @@ KTextEditor::ViewPrivate *KateCompletionModel::view() const
 
 int KateCompletionModel::columnCount(const QModelIndex &) const
 {
-    return isColumnMergingEnabled() && !m_columnMerges.isEmpty() ? m_columnMerges.count() : KTextEditor::CodeCompletionModel::ColumnCount;
+    return 3;
 }
 
-KateCompletionModel::ModelRow KateCompletionModel::modelRowPair(const QModelIndex &index) const
+KateCompletionModel::ModelRow KateCompletionModel::modelRowPair(const QModelIndex &index)
 {
     return qMakePair(static_cast<CodeCompletionModel *>(const_cast<QAbstractItemModel *>(index.model())), index);
 }
@@ -433,30 +429,6 @@ QModelIndex KateCompletionModel::index(int row, int column, const QModelIndex &p
     return createIndex(row, column, quintptr(0));
 }
 
-/*QModelIndex KateCompletionModel::sibling( int row, int column, const QModelIndex & index ) const
-{
-  if (row < 0 || column < 0 || column >= columnCount(QModelIndex()))
-    return QModelIndex();
-
-  if (!index.isValid()) {
-  }
-
-  if (Group* g = groupOfParent(index)) {
-    if (row >= g->filtered.count())
-      return QModelIndex();
-
-    return createIndex(row, column, g);
-  }
-
-  if (hasGroups())
-    return QModelIndex();
-
-  if (row >= m_ungrouped->filtered.count())
-    return QModelIndex();
-
-  return createIndex(row, column, m_ungrouped);
-}*/
-
 bool KateCompletionModel::hasIndex(int row, int column, const QModelIndex &parent) const
 {
     if (row < 0 || column < 0 || column >= columnCount(QModelIndex())) {
@@ -510,7 +482,6 @@ QModelIndex KateCompletionModel::indexForGroup(Group *g) const
 
 void KateCompletionModel::clearGroups()
 {
-    clearExpanding();
     m_ungrouped->clear();
     m_argumentHints->clear();
     m_bestMatches->clear();
@@ -542,10 +513,10 @@ void KateCompletionModel::clearGroups()
     m_groupHash.insert(BestMatchesProperty, m_bestMatches);
 }
 
-QSet<KateCompletionModel::Group *> KateCompletionModel::createItems(const HierarchicalModelHandler &_handler, const QModelIndex &i, bool notifyModel)
+KateCompletionModel::GroupSet KateCompletionModel::createItems(const HierarchicalModelHandler &_handler, const QModelIndex &i, bool notifyModel)
 {
     HierarchicalModelHandler handler(_handler);
-    QSet<Group *> ret;
+    GroupSet ret;
     QAbstractItemModel *model = handler.model();
 
     if (model->rowCount(i) == 0) {
@@ -555,16 +526,16 @@ QSet<KateCompletionModel::Group *> KateCompletionModel::createItems(const Hierar
         // Non-leaf node, take the role from the node, and recurse to the sub-nodes
         handler.takeRole(i);
         for (int a = 0; a < model->rowCount(i); a++) {
-            ret += createItems(handler, model->index(a, 0, i), notifyModel);
+            ret.merge(createItems(handler, model->index(a, 0, i), notifyModel));
         }
     }
 
     return ret;
 }
 
-QSet<KateCompletionModel::Group *> KateCompletionModel::deleteItems(const QModelIndex &i)
+KateCompletionModel::GroupSet KateCompletionModel::deleteItems(const QModelIndex &i)
 {
-    QSet<Group *> ret;
+    GroupSet ret;
 
     if (i.model()->rowCount(i) == 0) {
         // Leaf node, delete the item
@@ -574,7 +545,7 @@ QSet<KateCompletionModel::Group *> KateCompletionModel::deleteItems(const QModel
     } else {
         // Non-leaf node
         for (int a = 0; a < i.model()->rowCount(i); a++) {
-            ret += deleteItems(i.model()->index(a, 0, i));
+            ret.merge(deleteItems(i.model()->index(a, 0, i)));
         }
     }
 
@@ -588,20 +559,21 @@ void KateCompletionModel::createGroups()
     // new groups.
     clearGroups();
 
-    QSet<Group *> groups;
-
     bool has_groups = false;
+    GroupSet groups;
     for (CodeCompletionModel *sourceModel : std::as_const(m_completionModels)) {
         has_groups |= sourceModel->hasGroups();
         for (int i = 0; i < sourceModel->rowCount(); ++i) {
-            groups += createItems(HierarchicalModelHandler(sourceModel), sourceModel->index(i, 0));
+            groups.merge(createItems(HierarchicalModelHandler(sourceModel), sourceModel->index(i, 0)));
         }
     }
 
     // since notifyModel = false above, we just appended the data as is,
     // we sort it now
     for (auto g : groups) {
-        std::sort(g->prefilter.begin(), g->prefilter.end());
+        // no need to sort prefiltered, it is just the raw dump of everything
+        // filtered is what gets displayed
+        //         std::sort(g->prefilter.begin(), g->prefilter.end());
         std::sort(g->filtered.begin(), g->filtered.end());
     }
 
@@ -629,10 +601,6 @@ KateCompletionModel::Group *KateCompletionModel::createItem(const HierarchicalMo
 
     int completionFlags = handler.getData(CodeCompletionModel::CompletionRole, sourceIndex).toInt();
 
-    // Scope is expensive, should not be used with big models
-    QString scopeIfNeeded =
-        (groupingMethod() & Scope) ? sourceIndex.sibling(sourceIndex.row(), CodeCompletionModel::Scope).data(Qt::DisplayRole).toString() : QString();
-
     int argumentHintDepth = handler.getData(CodeCompletionModel::ArgumentHintDepth, sourceIndex).toInt();
 
     Group *g;
@@ -650,7 +618,7 @@ KateCompletionModel::Group *KateCompletionModel::createItem(const HierarchicalMo
                 m_customGroupHash.insert(customGroup, g);
             }
         } else {
-            g = fetchGroup(completionFlags, scopeIfNeeded, handler.hasHierarchicalRoles());
+            g = fetchGroup(completionFlags, handler.hasHierarchicalRoles());
         }
     }
 
@@ -673,12 +641,12 @@ void KateCompletionModel::slotRowsInserted(const QModelIndex &parent, int start,
         handler.collectRoles(parent);
     }
 
-    QSet<Group *> affectedGroups;
+    GroupSet affectedGroups;
     for (int i = start; i <= end; ++i) {
-        affectedGroups += createItems(handler, handler.model()->index(i, 0, parent), /* notifyModel= */ true);
+        affectedGroups.merge(createItems(handler, handler.model()->index(i, 0, parent), /* notifyModel= */ true));
     }
 
-    for (Group *g : std::as_const(affectedGroups)) {
+    for (auto g : affectedGroups) {
         hideOrShowGroup(g, true);
     }
 }
@@ -687,20 +655,18 @@ void KateCompletionModel::slotRowsRemoved(const QModelIndex &parent, int start, 
 {
     CodeCompletionModel *source = static_cast<CodeCompletionModel *>(sender());
 
-    QSet<Group *> affectedGroups;
-
+    GroupSet affectedGroups;
     for (int i = start; i <= end; ++i) {
         QModelIndex index = source->index(i, 0, parent);
-
-        affectedGroups += deleteItems(index);
+        affectedGroups.merge(deleteItems(index));
     }
 
-    for (Group *g : std::as_const(affectedGroups)) {
+    for (auto g : affectedGroups) {
         hideOrShowGroup(g, true);
     }
 }
 
-KateCompletionModel::Group *KateCompletionModel::fetchGroup(int attribute, const QString &scope, bool forceGrouping)
+KateCompletionModel::Group *KateCompletionModel::fetchGroup(int attribute, bool forceGrouping)
 {
     Q_UNUSED(forceGrouping);
 
@@ -713,17 +679,7 @@ KateCompletionModel::Group *KateCompletionModel::fetchGroup(int attribute, const
     // qCDebug(LOG_KTE) << attribute << " " << groupingAttribute;
 
     if (m_groupHash.contains(groupingAttribute)) {
-        if (groupingMethod() & Scope) {
-            for (QHash<int, Group *>::ConstIterator it = m_groupHash.constFind(groupingAttribute);
-                 it != m_groupHash.constEnd() && it.key() == groupingAttribute;
-                 ++it) {
-                if (it.value()->scope == scope) {
-                    return it.value();
-                }
-            }
-        } else {
-            return m_groupHash.value(groupingAttribute);
-        }
+        return m_groupHash.value(groupingAttribute);
     }
 
     QString st;
@@ -731,80 +687,34 @@ KateCompletionModel::Group *KateCompletionModel::fetchGroup(int attribute, const
     QString it;
     QString title;
 
-    if (groupingMethod() & ScopeType) {
-        if (attribute & KTextEditor::CodeCompletionModel::GlobalScope) {
-            st = QStringLiteral("Global");
-        } else if (attribute & KTextEditor::CodeCompletionModel::NamespaceScope) {
-            st = QStringLiteral("Namespace");
-        } else if (attribute & KTextEditor::CodeCompletionModel::LocalScope) {
-            st = QStringLiteral("Local");
-        }
-
-        title = st;
+    if (attribute & KTextEditor::CodeCompletionModel::GlobalScope) {
+        st = QStringLiteral("Global");
+    } else if (attribute & KTextEditor::CodeCompletionModel::NamespaceScope) {
+        st = QStringLiteral("Namespace");
+    } else if (attribute & KTextEditor::CodeCompletionModel::LocalScope) {
+        st = QStringLiteral("Local");
     }
 
-    if (groupingMethod() & Scope) {
+    title = st;
+
+    if (attribute & KTextEditor::CodeCompletionModel::Public) {
+        at = QStringLiteral("Public");
+    } else if (attribute & KTextEditor::CodeCompletionModel::Protected) {
+        at = QStringLiteral("Protected");
+    } else if (attribute & KTextEditor::CodeCompletionModel::Private) {
+        at = QStringLiteral("Private");
+    }
+
+    if (!at.isEmpty()) {
         if (!title.isEmpty()) {
-            title.append(QLatin1Char(' '));
+            title.append(QLatin1String(", "));
         }
 
-        title.append(scope);
-    }
-
-    if (groupingMethod() & AccessType) {
-        if (attribute & KTextEditor::CodeCompletionModel::Public) {
-            at = QStringLiteral("Public");
-        } else if (attribute & KTextEditor::CodeCompletionModel::Protected) {
-            at = QStringLiteral("Protected");
-        } else if (attribute & KTextEditor::CodeCompletionModel::Private) {
-            at = QStringLiteral("Private");
-        }
-
-        if (accessIncludeStatic() && attribute & KTextEditor::CodeCompletionModel::Static) {
-            at.append(QLatin1String(" Static"));
-        }
-
-        if (accessIncludeConst() && attribute & KTextEditor::CodeCompletionModel::Const) {
-            at.append(QLatin1String(" Const"));
-        }
-
-        if (!at.isEmpty()) {
-            if (!title.isEmpty()) {
-                title.append(QLatin1String(", "));
-            }
-
-            title.append(at);
-        }
-    }
-
-    if (groupingMethod() & ItemType) {
-        if (attribute & CodeCompletionModel::Namespace) {
-            it = i18n("Namespaces");
-        } else if (attribute & CodeCompletionModel::Class) {
-            it = i18n("Classes");
-        } else if (attribute & CodeCompletionModel::Struct) {
-            it = i18n("Structs");
-        } else if (attribute & CodeCompletionModel::Union) {
-            it = i18n("Unions");
-        } else if (attribute & CodeCompletionModel::Function) {
-            it = i18n("Functions");
-        } else if (attribute & CodeCompletionModel::Variable) {
-            it = i18n("Variables");
-        } else if (attribute & CodeCompletionModel::Enum) {
-            it = i18n("Enumerations");
-        }
-
-        if (!it.isEmpty()) {
-            if (!title.isEmpty()) {
-                title.append(QLatin1Char(' '));
-            }
-
-            title.append(it);
-        }
+        title.append(at);
     }
 
     Group *ret = new Group(title, attribute, this);
-    ret->scope = scope;
+    ret->scope = QString();
 
     m_emptyGroups.append(ret);
     m_groupHash.insert(groupingAttribute, ret);
@@ -820,7 +730,7 @@ bool KateCompletionModel::hasGroups() const
     // be populated with a delay from within a background-thread.
     // Proper solution: Ask all attached code-models(Through a new interface) whether they want to use grouping,
     // and if at least one wants to, return true, else return false.
-    return m_groupingEnabled && m_hasGroups;
+    return m_hasGroups;
 }
 
 KateCompletionModel::Group *KateCompletionModel::groupForIndex(const QModelIndex &index) const
@@ -843,17 +753,6 @@ KateCompletionModel::Group *KateCompletionModel::groupForIndex(const QModelIndex
 
     return m_rowTable[index.row()];
 }
-
-/*QMap< int, QVariant > KateCompletionModel::itemData( const QModelIndex & index ) const
-{
-  if (!hasGroups() || groupOfParent(index)) {
-    QModelIndex index = mapToSource(index);
-    if (index.isValid())
-      return index.model()->itemData(index);
-  }
-
-  return QAbstractItemModel::itemData(index);
-}*/
 
 QModelIndex KateCompletionModel::parent(const QModelIndex &index) const
 {
@@ -908,12 +807,6 @@ int KateCompletionModel::rowCount(const QModelIndex &parent) const
     return g->filtered.size();
 }
 
-void KateCompletionModel::sort(int column, Qt::SortOrder order)
-{
-    Q_UNUSED(column)
-    Q_UNUSED(order)
-}
-
 QModelIndex KateCompletionModel::mapToSource(const QModelIndex &proxyIndex) const
 {
     if (!proxyIndex.isValid()) {
@@ -921,6 +814,11 @@ QModelIndex KateCompletionModel::mapToSource(const QModelIndex &proxyIndex) cons
     }
 
     if (Group *g = groupOfParent(proxyIndex)) {
+        if (!m_rowTable.contains(g)) {
+            qWarning() << Q_FUNC_INFO << "Stale proxy index for which there is no group";
+            return {};
+        }
+
         if (proxyIndex.row() >= 0 && proxyIndex.row() < (int)g->filtered.size()) {
             ModelRow source = g->filtered[proxyIndex.row()].sourceRow();
             return source.second.sibling(source.second.row(), proxyIndex.column());
@@ -960,49 +858,23 @@ QModelIndex KateCompletionModel::mapFromSource(const QModelIndex &sourceIndex) c
     return QModelIndex();
 }
 
-void KateCompletionModel::setCurrentCompletion(KTextEditor::CodeCompletionModel *model, const QString &completion)
+void KateCompletionModel::setCurrentCompletion(QMap<KTextEditor::CodeCompletionModel *, QString> currentMatch)
 {
-    auto &current = m_currentMatch[model];
-    if (current == completion) {
-        return;
-    }
+    beginResetModel();
 
-    if (!hasCompletionModel()) {
-        current = completion;
-        return;
-    }
-
-    changeTypes changeType = Change;
-
-    if (current.length() > completion.length() && current.startsWith(completion, m_matchCaseSensitivity)) {
-        // Filter has been broadened
-        changeType = Broaden;
-
-    } else if (current.length() < completion.length() && completion.startsWith(current, m_matchCaseSensitivity)) {
-        // Filter has been narrowed
-        changeType = Narrow;
-    }
-
-    // qCDebug(LOG_KTE) << model << "Old match: " << current << ", new: " << completion << ", type: " << changeType;
-
-    current = completion;
-
-    const bool resetModel = (changeType != Narrow);
-    if (resetModel) {
-        beginResetModel();
-    }
+    m_currentMatch = currentMatch;
 
     if (!hasGroups()) {
-        changeCompletions(m_ungrouped, changeType, !resetModel);
+        changeCompletions(m_ungrouped);
     } else {
         for (Group *g : std::as_const(m_rowTable)) {
             if (g != m_argumentHints) {
-                changeCompletions(g, changeType, !resetModel);
+                changeCompletions(g);
             }
         }
         for (Group *g : std::as_const(m_emptyGroups)) {
             if (g != m_argumentHints) {
-                changeCompletions(g, changeType, !resetModel);
+                changeCompletions(g);
             }
         }
     }
@@ -1010,13 +882,7 @@ void KateCompletionModel::setCurrentCompletion(KTextEditor::CodeCompletionModel 
     // NOTE: best matches are also updated in resort
     resort();
 
-    if (resetModel) {
-        endResetModel();
-    }
-
-    clearExpanding(); // We need to do this, or be aware of expanding-widgets while filtering.
-
-    Q_EMIT layoutChanged();
+    endResetModel();
 }
 
 QString KateCompletionModel::commonPrefixInternal(const QString &forcePrefix) const
@@ -1079,46 +945,16 @@ QString KateCompletionModel::commonPrefix(QModelIndex selectedIndex) const
     return commonPrefix;
 }
 
-void KateCompletionModel::changeCompletions(Group *g, changeTypes changeType, bool notifyModel)
+void KateCompletionModel::changeCompletions(Group *g)
 {
-    if (changeType != Narrow) {
-        g->filtered = g->prefilter;
-        // In the "Broaden" or "Change" case, just re-filter everything,
-        // and don't notify the model. The model is notified afterwards through a reset().
-    }
+    // This code determines what of the filtered items still fit
+    // don't notify the model. The model is notified afterwards through a reset().
+    g->filtered.clear();
+    std::remove_copy_if(g->prefilter.begin(), g->prefilter.end(), std::back_inserter(g->filtered), [](Item &item) {
+        return !item.match();
+    });
 
-    // This code determines what of the filtered items still fit, and computes the ranges that were removed, giving
-    // them to beginRemoveRows(..) in batches
-
-    std::vector<KateCompletionModel::Item> newFiltered;
-    int deleteUntil = -1; // In each state, the range [currentRow+1, deleteUntil] needs to be deleted
-    auto &filtered = g->filtered;
-    newFiltered.reserve(filtered.size());
-    for (int currentRow = filtered.size() - 1; currentRow >= 0; --currentRow) {
-        if (filtered[currentRow].match()) {
-            // This row does not need to be deleted, which means that currentRow+1 to deleteUntil need to be deleted now
-            if (deleteUntil != -1 && notifyModel) {
-                beginRemoveRows(indexForGroup(g), currentRow + 1, deleteUntil);
-                endRemoveRows();
-            }
-            deleteUntil = -1;
-
-            newFiltered.push_back(std::move(filtered[currentRow]));
-        } else {
-            if (deleteUntil == -1) {
-                deleteUntil = currentRow; // Mark that this row needs to be deleted
-            }
-        }
-    }
-
-    if (deleteUntil != -1 && notifyModel) {
-        beginRemoveRows(indexForGroup(g), 0, deleteUntil);
-        endRemoveRows();
-    }
-
-    std::reverse(newFiltered.begin(), newFiltered.end());
-    g->filtered = std::move(newFiltered);
-    hideOrShowGroup(g, notifyModel);
+    hideOrShowGroup(g, /*notifyModel=*/false);
 }
 
 int KateCompletionModel::Group::orderNumber() const
@@ -1251,40 +1087,6 @@ bool KateCompletionModel::hasCompletionModel() const
     return !m_completionModels.isEmpty();
 }
 
-void KateCompletionModel::setGroupingEnabled(bool enable)
-{
-    m_groupingEnabled = enable;
-}
-
-void KateCompletionModel::setColumnMergingEnabled(bool enable)
-{
-    if (m_columnMergingEnabled != enable) {
-        m_columnMergingEnabled = enable;
-    }
-}
-
-bool KateCompletionModel::isColumnMergingEnabled() const
-{
-    return m_columnMergingEnabled;
-}
-
-bool KateCompletionModel::isGroupingEnabled() const
-{
-    return m_groupingEnabled;
-}
-
-const QList<QList<int>> &KateCompletionModel::columnMerges() const
-{
-    return m_columnMerges;
-}
-
-void KateCompletionModel::setColumnMerges(const QList<QList<int>> &columnMerges)
-{
-    beginResetModel();
-    m_columnMerges = columnMerges;
-    endResetModel();
-}
-
 int KateCompletionModel::translateColumn(int sourceColumn) const
 {
     if (m_columnMerges.isEmpty()) {
@@ -1320,127 +1122,32 @@ int KateCompletionModel::groupingAttributes(int attribute) const
 {
     int ret = 0;
 
-    if (m_groupingMethod & ScopeType) {
-        if (countBits(attribute & ScopeTypeMask) > 1) {
-            qCWarning(LOG_KTE) << "Invalid completion model metadata: more than one scope type modifier provided.";
-        }
-
-        if (attribute & KTextEditor::CodeCompletionModel::GlobalScope) {
-            ret |= KTextEditor::CodeCompletionModel::GlobalScope;
-        } else if (attribute & KTextEditor::CodeCompletionModel::NamespaceScope) {
-            ret |= KTextEditor::CodeCompletionModel::NamespaceScope;
-        } else if (attribute & KTextEditor::CodeCompletionModel::LocalScope) {
-            ret |= KTextEditor::CodeCompletionModel::LocalScope;
-        }
+    if (countBits(attribute & ScopeTypeMask) > 1) {
+        qCWarning(LOG_KTE) << "Invalid completion model metadata: more than one scope type modifier provided.";
+    }
+    if (attribute & KTextEditor::CodeCompletionModel::GlobalScope) {
+        ret |= KTextEditor::CodeCompletionModel::GlobalScope;
+    } else if (attribute & KTextEditor::CodeCompletionModel::NamespaceScope) {
+        ret |= KTextEditor::CodeCompletionModel::NamespaceScope;
+    } else if (attribute & KTextEditor::CodeCompletionModel::LocalScope) {
+        ret |= KTextEditor::CodeCompletionModel::LocalScope;
     }
 
-    if (m_groupingMethod & AccessType) {
-        if (countBits(attribute & AccessTypeMask) > 1) {
-            qCWarning(LOG_KTE) << "Invalid completion model metadata: more than one access type modifier provided.";
-        }
-
-        if (attribute & KTextEditor::CodeCompletionModel::Public) {
-            ret |= KTextEditor::CodeCompletionModel::Public;
-        } else if (attribute & KTextEditor::CodeCompletionModel::Protected) {
-            ret |= KTextEditor::CodeCompletionModel::Protected;
-        } else if (attribute & KTextEditor::CodeCompletionModel::Private) {
-            ret |= KTextEditor::CodeCompletionModel::Private;
-        }
-
-        if (accessIncludeStatic() && attribute & KTextEditor::CodeCompletionModel::Static) {
-            ret |= KTextEditor::CodeCompletionModel::Static;
-        }
-
-        if (accessIncludeConst() && attribute & KTextEditor::CodeCompletionModel::Const) {
-            ret |= KTextEditor::CodeCompletionModel::Const;
-        }
+    if (countBits(attribute & AccessTypeMask) > 1) {
+        qCWarning(LOG_KTE) << "Invalid completion model metadata: more than one access type modifier provided.";
     }
-
-    if (m_groupingMethod & ItemType) {
-        if (countBits(attribute & ItemTypeMask) > 1) {
-            qCWarning(LOG_KTE) << "Invalid completion model metadata: more than one item type modifier provided.";
-        }
-
-        if (attribute & KTextEditor::CodeCompletionModel::Namespace) {
-            ret |= KTextEditor::CodeCompletionModel::Namespace;
-        } else if (attribute & KTextEditor::CodeCompletionModel::Class) {
-            ret |= KTextEditor::CodeCompletionModel::Class;
-        } else if (attribute & KTextEditor::CodeCompletionModel::Struct) {
-            ret |= KTextEditor::CodeCompletionModel::Struct;
-        } else if (attribute & KTextEditor::CodeCompletionModel::Union) {
-            ret |= KTextEditor::CodeCompletionModel::Union;
-        } else if (attribute & KTextEditor::CodeCompletionModel::Function) {
-            ret |= KTextEditor::CodeCompletionModel::Function;
-        } else if (attribute & KTextEditor::CodeCompletionModel::Variable) {
-            ret |= KTextEditor::CodeCompletionModel::Variable;
-        } else if (attribute & KTextEditor::CodeCompletionModel::Enum) {
-            ret |= KTextEditor::CodeCompletionModel::Enum;
-        }
-
-        /*
-        if (itemIncludeTemplate() && attribute & KTextEditor::CodeCompletionModel::Template)
-          ret |= KTextEditor::CodeCompletionModel::Template;*/
+    if (attribute & KTextEditor::CodeCompletionModel::Public) {
+        ret |= KTextEditor::CodeCompletionModel::Public;
+    } else if (attribute & KTextEditor::CodeCompletionModel::Protected) {
+        ret |= KTextEditor::CodeCompletionModel::Protected;
+    } else if (attribute & KTextEditor::CodeCompletionModel::Private) {
+        ret |= KTextEditor::CodeCompletionModel::Private;
     }
 
     return ret;
 }
 
-void KateCompletionModel::setGroupingMethod(GroupingMethods m)
-{
-    m_groupingMethod = m;
-
-    createGroups();
-}
-
-bool KateCompletionModel::accessIncludeConst() const
-{
-    return m_accessConst;
-}
-
-void KateCompletionModel::setAccessIncludeConst(bool include)
-{
-    if (m_accessConst != include) {
-        m_accessConst = include;
-
-        if (groupingMethod() & AccessType) {
-            createGroups();
-        }
-    }
-}
-
-bool KateCompletionModel::accessIncludeStatic() const
-{
-    return m_accessStatic;
-}
-
-void KateCompletionModel::setAccessIncludeStatic(bool include)
-{
-    if (m_accessStatic != include) {
-        m_accessStatic = include;
-
-        if (groupingMethod() & AccessType) {
-            createGroups();
-        }
-    }
-}
-
-bool KateCompletionModel::accessIncludeSignalSlot() const
-{
-    return m_accesSignalSlot;
-}
-
-void KateCompletionModel::setAccessIncludeSignalSlot(bool include)
-{
-    if (m_accesSignalSlot != include) {
-        m_accesSignalSlot = include;
-
-        if (groupingMethod() & AccessType) {
-            createGroups();
-        }
-    }
-}
-
-int KateCompletionModel::countBits(int value) const
+int KateCompletionModel::countBits(int value)
 {
     int count = 0;
     for (int i = 1; i; i <<= 1) {
@@ -1450,11 +1157,6 @@ int KateCompletionModel::countBits(int value) const
     }
 
     return count;
-}
-
-KateCompletionModel::GroupingMethods KateCompletionModel::groupingMethod() const
-{
-    return m_groupingMethod;
 }
 
 KateCompletionModel::Item::Item(bool doInitialMatch, KateCompletionModel *m, const HierarchicalModelHandler &handler, ModelRow sr)
@@ -1649,7 +1351,7 @@ bool KateCompletionModel::shouldMatchHideCompletionList() const
         for (const Item &item : std::as_const(group->filtered)) {
             if (item.haveExactMatch()) {
                 KTextEditor::CodeCompletionModelControllerInterface *iface3 =
-                    dynamic_cast<KTextEditor::CodeCompletionModelControllerInterface *>(item.sourceRow().first);
+                    qobject_cast<KTextEditor::CodeCompletionModelControllerInterface *>(item.sourceRow().first);
                 bool hide = false;
                 if (!iface3) {
                     hide = true;
@@ -1680,103 +1382,41 @@ bool KateCompletionModel::shouldMatchHideCompletionList() const
     return doHide;
 }
 
-static inline QChar toLowerIfInsensitive(QChar c, Qt::CaseSensitivity caseSensitive)
+static inline QChar toLower(QChar c)
 {
-    if (caseSensitive != Qt::CaseInsensitive) {
-        return c;
-    }
     return c.isLower() ? c : c.toLower();
 }
 
-static inline bool matchesAbbreviationHelper(const QString &word,
-                                             const QString &typed,
-                                             const QVarLengthArray<int, 32> &offsets,
-                                             Qt::CaseSensitivity caseSensitive,
-                                             int &depth,
-                                             int atWord = -1,
-                                             int i = 0)
-{
-    int atLetter = 1;
-    for (; i < typed.size(); i++) {
-        const QChar c = toLowerIfInsensitive(typed.at(i), caseSensitive);
-        bool haveNextWord = offsets.size() > atWord + 1;
-        bool canCompare = atWord != -1 && word.size() > offsets.at(atWord) + atLetter;
-        if (canCompare && c == toLowerIfInsensitive(word.at(offsets.at(atWord) + atLetter), caseSensitive)) {
-            // the typed letter matches a letter after the current word beginning
-            if (!haveNextWord || c != toLowerIfInsensitive(word.at(offsets.at(atWord + 1)), caseSensitive)) {
-                // good, simple case, no conflict
-                atLetter += 1;
-                continue;
-            }
-            // For maliciously crafted data, the code used here theoretically can have very high
-            // complexity. Thus ensure we don't run into this case, by limiting the amount of branches
-            // we walk through to 128.
-            depth++;
-            if (depth > 128) {
-                return false;
-            }
-            // the letter matches both the next word beginning and the next character in the word
-            if (haveNextWord && matchesAbbreviationHelper(word, typed, offsets, caseSensitive, depth, atWord + 1, i + 1)) {
-                // resolving the conflict by taking the next word's first character worked, fine
-                return true;
-            }
-            // otherwise, continue by taking the next letter in the current word.
-            atLetter += 1;
-            continue;
-        } else if (haveNextWord && c == toLowerIfInsensitive(word.at(offsets.at(atWord + 1)), caseSensitive)) {
-            // the typed letter matches the next word beginning
-            atWord++;
-            atLetter = 1;
-            continue;
-        }
-        // no match
-        return false;
-    }
-    // all characters of the typed word were matched
-    return true;
-}
-
-bool KateCompletionModel::matchesAbbreviation(const QString &word, const QString &typed, Qt::CaseSensitivity caseSensitive)
+bool KateCompletionModel::matchesAbbreviation(const QString &word, const QString &typed, int &score)
 {
     // A mismatch is very likely for random even for the first letter,
     // thus this optimization makes sense.
-    if (toLowerIfInsensitive(word.at(0), caseSensitive) != toLowerIfInsensitive(typed.at(0), caseSensitive)) {
+
+    // We require that first letter must match before we do fuzzy matching.
+    // Not sure how well this well it works in practice, but seems ok so far.
+    // Also, 0 might not be the first letter. Some sources add a space or a marker
+    // at the beginning. So look for first letter
+    const int firstLetter = [&word] {
+        for (auto it = word.cbegin(); it != word.cend(); ++it) {
+            if (it->isLetter())
+                return int(it - word.cbegin());
+        }
+        return 0;
+    }();
+
+    QStringView wordView = word;
+    wordView = wordView.mid(firstLetter);
+
+    if (toLower(wordView.at(0)) != toLower(typed.at(0))) {
         return false;
     }
 
-    // First, check if all letters are contained in the word in the right order.
-    int atLetter = 0;
-    for (const QChar c : typed) {
-        while (toLowerIfInsensitive(c, caseSensitive) != toLowerIfInsensitive(word.at(atLetter), caseSensitive)) {
-            atLetter += 1;
-            if (atLetter >= word.size()) {
-                return false;
-            }
-        }
-    }
-
-    bool haveUnderscore = true;
-    QVarLengthArray<int, 32> offsets;
-    // We want to make "KComplM" match "KateCompletionModel"; this means we need
-    // to allow parts of the typed text to be not part of the actual abbreviation,
-    // which consists only of the uppercased / underscored letters (so "KCM" in this case).
-    // However it might be ambiguous whether a letter is part of such a word or part of
-    // the following abbreviation, so we need to find all possible word offsets first,
-    // then compare.
-    for (int i = 0; i < word.size(); i++) {
-        const QChar c = word.at(i);
-        if (c == QLatin1Char('_')) {
-            haveUnderscore = true;
-        } else if (haveUnderscore || c.isUpper()) {
-            offsets.append(i);
-            haveUnderscore = false;
-        }
-    }
-    int depth = 0;
-    return matchesAbbreviationHelper(word, typed, offsets, caseSensitive, depth);
+    const auto res = KFuzzyMatcher::match(typed, wordView);
+    score = res.score;
+    return res.matched;
 }
 
-static inline bool containsAtWordBeginning(const QString &word, const QString &typed, Qt::CaseSensitivity caseSensitive)
+static inline bool containsAtWordBeginning(const QString &word, const QString &typed)
 {
     if (typed.size() > word.size()) {
         return false;
@@ -1791,7 +1431,7 @@ static inline bool containsAtWordBeginning(const QString &word, const QString &t
         if (!(prev == QLatin1Char('_') || (c.isUpper() && !prev.isUpper()))) {
             continue;
         }
-        if (QStringView(word).mid(i).startsWith(typed, caseSensitive)) {
+        if (QStringView(word).mid(i).startsWith(typed, Qt::CaseInsensitive)) {
             return true;
         }
 
@@ -1805,7 +1445,7 @@ static inline bool containsAtWordBeginning(const QString &word, const QString &t
 
 KateCompletionModel::Item::MatchType KateCompletionModel::Item::match()
 {
-    QString match = model->currentCompletion(m_sourceRow.first);
+    const QString match = model->currentCompletion(m_sourceRow.first);
 
     m_haveExactMatch = false;
 
@@ -1817,29 +1457,28 @@ KateCompletionModel::Item::MatchType KateCompletionModel::Item::match()
         return NoMatch;
     }
 
-    matchCompletion = (m_nameColumn.startsWith(match, model->matchCaseSensitivity()) ? StartsWithMatch : NoMatch);
+    matchCompletion = (m_nameColumn.startsWith(match) ? StartsWithMatch : NoMatch);
+
+    if (matchCompletion == NoMatch && !m_nameColumn.isEmpty() && !match.isEmpty()) {
+        // if still no match, try abbreviation matching
+        int score = 0;
+        if (matchesAbbreviation(m_nameColumn, match, score)) {
+            inheritanceDepth -= score;
+            matchCompletion = AbbreviationMatch;
+        }
+    }
+
     if (matchCompletion == NoMatch) {
         // if no match, try for "contains"
         // Only match when the occurrence is at a "word" beginning, marked by
         // an underscore or a capital. So Foo matches BarFoo and Bar_Foo, but not barfoo.
         // Starting at 1 saves looking at the beginning of the word, that was already checked above.
-        if (containsAtWordBeginning(m_nameColumn, match, model->matchCaseSensitivity())) {
+        if (containsAtWordBeginning(m_nameColumn, match)) {
             matchCompletion = ContainsMatch;
         }
     }
 
-    if (matchCompletion == NoMatch && !m_nameColumn.isEmpty() && !match.isEmpty()) {
-        // if still no match, try abbreviation matching
-        if (matchesAbbreviation(m_nameColumn, match, model->matchCaseSensitivity())) {
-            matchCompletion = AbbreviationMatch;
-        }
-    }
-
     if (matchCompletion && match.length() == m_nameColumn.length()) {
-        if (model->matchCaseSensitivity() == Qt::CaseInsensitive && model->exactMatchCaseSensitivity() == Qt::CaseSensitive
-            && !m_nameColumn.startsWith(match, Qt::CaseSensitive)) {
-            return matchCompletion;
-        }
         matchCompletion = PerfectMatch;
         m_haveExactMatch = true;
     }
@@ -1860,16 +1499,6 @@ const KateCompletionModel::ModelRow &KateCompletionModel::Item::sourceRow() cons
 QString KateCompletionModel::currentCompletion(KTextEditor::CodeCompletionModel *model) const
 {
     return m_currentMatch.value(model);
-}
-
-Qt::CaseSensitivity KateCompletionModel::matchCaseSensitivity() const
-{
-    return m_matchCaseSensitivity;
-}
-
-Qt::CaseSensitivity KateCompletionModel::exactMatchCaseSensitivity() const
-{
-    return m_exactMatchCaseSensitivity;
 }
 
 void KateCompletionModel::addCompletionModel(KTextEditor::CodeCompletionModel *model)
@@ -1924,7 +1553,11 @@ void KateCompletionModel::removeCompletionModel(CodeCompletionModel *model)
         return;
     }
 
-    beginResetModel();
+    bool willCreateGroups = (m_completionModels.size() - 1) > 0;
+
+    if (!willCreateGroups) {
+        beginResetModel();
+    }
     m_currentMatch.remove(model);
 
     clearGroups();
@@ -1932,9 +1565,11 @@ void KateCompletionModel::removeCompletionModel(CodeCompletionModel *model)
     model->disconnect(this);
 
     m_completionModels.removeAll(model);
-    endResetModel();
+    if (!willCreateGroups) {
+        endResetModel();
+    }
 
-    if (!m_completionModels.isEmpty()) {
+    if (willCreateGroups) {
         // This performs the reset
         createGroups();
     }
@@ -1957,12 +1592,12 @@ void KateCompletionModel::makeGroupItemsUnique(bool onlyFiltered)
         {
             std::vector<Item> temp;
             temp.reserve(items.size());
-            had.reserve(items.size());
             for (const Item &item : items) {
                 auto it = had.constFind(item.name());
                 if (it != had.constEnd() && *it != item.sourceRow().first && m_needShadowing.contains(item.sourceRow().first)) {
                     continue;
                 }
+
                 had.insert(item.name(), item.sourceRow().first);
                 temp.push_back(item);
             }
@@ -1993,7 +1628,7 @@ void KateCompletionModel::makeGroupItemsUnique(bool onlyFiltered)
 
     QVector<KTextEditor::CodeCompletionModel *> needShadowing;
     for (KTextEditor::CodeCompletionModel *model : std::as_const(m_completionModels)) {
-        KTextEditor::CodeCompletionModelControllerInterface *v4 = dynamic_cast<KTextEditor::CodeCompletionModelControllerInterface *>(model);
+        KTextEditor::CodeCompletionModelControllerInterface *v4 = qobject_cast<KTextEditor::CodeCompletionModelControllerInterface *>(model);
         if (v4 && v4->shouldHideItemsWithEqualNames()) {
             needShadowing.push_back(model);
         }
@@ -2129,9 +1764,8 @@ void KateCompletionModel::updateBestMatches()
     hideOrShowGroup(m_bestMatches);
 }
 
-void KateCompletionModel::rowSelected(const QModelIndex &row)
+void KateCompletionModel::rowSelected(const QModelIndex & /*row*/) const
 {
-    ExpandingWidgetModel::rowSelected(row);
     ///@todo delay this
     int rc = widget()->argumentHintModel()->rowCount(QModelIndex());
     if (rc == 0) {

@@ -16,6 +16,8 @@
 #include <QJsonDocument>
 #include <QObject>
 
+#include <functional>
+
 namespace Kate
 {
 class TextBuffer;
@@ -174,6 +176,8 @@ public:
      * Print state to stdout for testing
      */
     void debugPrint(const QString &title) const;
+
+    void editEnd(int startLine, int endLine, std::function<bool(int)> isLineFoldingStart);
 
 public Q_SLOTS:
     /**

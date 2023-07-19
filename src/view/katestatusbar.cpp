@@ -20,8 +20,10 @@
 #include <KIconUtils>
 #include <Sonnet/Speller>
 
+#include <QActionGroup>
 #include <QHBoxLayout>
 #include <QInputDialog>
+#include <QStylePainter>
 
 // BEGIN menu
 KateStatusBarOpenUpMenu::KateStatusBarOpenUpMenu(QWidget *parent)
@@ -54,12 +56,41 @@ StatusBarButton::StatusBarButton(KateStatusBar *parent, const QString &text /*= 
     setMinimumSize(QSize(1, minimumSizeHint().height()));
 }
 
+void StatusBarButton::paintEvent(QPaintEvent *)
+{
+    QStylePainter p(this);
+    QStyleOptionButton opt;
+    initStyleOption(&opt);
+    opt.features &= (~QStyleOptionButton::HasMenu);
+    p.drawControl(QStyle::CE_PushButton, opt);
+}
+
+QSize StatusBarButton::sizeHint() const
+{
+    return minimumSizeHint();
+}
+
+QSize StatusBarButton::minimumSizeHint() const
+{
+    const auto fm = QFontMetrics(font());
+    const int h = fm.lineSpacing();
+    QSize size = QPushButton::sizeHint();
+    const int vMmargin = style()->pixelMetric(QStyle::PM_FocusFrameVMargin) * 2;
+    size.setHeight(h + vMmargin);
+
+    const int w = fm.horizontalAdvance(text());
+    const int bm = style()->pixelMetric(QStyle::PM_ButtonMargin) * 2;
+    const int hMargin = style()->pixelMetric(QStyle::PM_FocusFrameHMargin) * 2;
+    size.setWidth(w + bm + hMargin);
+
+    return size;
+}
+
 // END StatusBarButton
 
 KateStatusBar::KateStatusBar(KTextEditor::ViewPrivate *view)
     : KateViewBarWidget(false)
     , m_view(view)
-    , m_modifiedStatus(-1)
     , m_selectionMode(-1)
     , m_wordCounter(nullptr)
 {
@@ -69,23 +100,18 @@ KateStatusBar::KateStatusBar(KTextEditor::ViewPrivate *view)
     // just add our status bar to central widget, full sized
     QHBoxLayout *topLayout = new QHBoxLayout(centralWidget());
     topLayout->setContentsMargins(0, 0, 0, 0);
-    topLayout->setSpacing(4);
+    topLayout->setSpacing(0);
 
-    // show modification state of the document
-    // TODO Using a (StatusBar)Button is currently pointless but handy due to no "setIcon()" function in QLabel.
-    //      Add some useful action when button is clicked, e.g. save document or show tool-tip
-    //      or find a way to not show a "focus frame" when hovered by mouse
-    m_modified = new StatusBarButton(this);
-    topLayout->addWidget(m_modified);
+    // ensure all elements of the status bar are right aligned
+    // for Kate this is nice, as on the left side are the tool view buttons
+    // for KWrite this makes it more consistent with Kate
+    topLayout->addStretch(1);
 
     // show Line XXX, Column XXX
     m_cursorPosition = new StatusBarButton(this);
     topLayout->addWidget(m_cursorPosition);
     m_cursorPosition->setWhatsThis(i18n("Current cursor position. Click to go to a specific line."));
     connect(m_cursorPosition, &StatusBarButton::clicked, m_view, &KTextEditor::ViewPrivate::gotoLine);
-
-    // Separate the status line in a left and right part
-    topLayout->addStretch(1);
 
     // show the zoom level of the text
     m_zoomLevel = new StatusBarButton(this);
@@ -169,6 +195,12 @@ KateStatusBar::KateStatusBar(KTextEditor::ViewPrivate *view)
     m_encoding->setMenu(m_view->encodingAction()->menu());
     m_encoding->setWhatsThis(i18n("Encoding"));
 
+    m_eol = new StatusBarButton(this);
+    m_eol->setWhatsThis(i18n("End of line type"));
+    m_eol->setToolTip(i18n("End of line type"));
+    m_eol->setMenu(m_view->getEolMenu());
+    topLayout->addWidget(m_eol);
+
     // load the mode menu, which contains a scrollable list + search bar.
     // This is an alternative menu to the mode action menu of the view.
     m_modeMenuList = new KateModeMenuList(i18n("Mode"), this);
@@ -186,9 +218,6 @@ KateStatusBar::KateStatusBar(KTextEditor::ViewPrivate *view)
     connect(m_view, &KTextEditor::View::cursorPositionChanged, this, &KateStatusBar::cursorPositionChanged);
     connect(m_view, &KTextEditor::View::viewModeChanged, this, &KateStatusBar::viewModeChanged);
     connect(m_view, &KTextEditor::View::selectionChanged, this, &KateStatusBar::selectionChanged);
-    connect(m_view->document(), &KTextEditor::DocumentPrivate::modifiedChanged, this, &KateStatusBar::modifiedChanged);
-    connect(m_view->doc(), &KTextEditor::DocumentPrivate::modifiedOnDisk, this, &KateStatusBar::modifiedChanged);
-    connect(m_view->doc(), &KTextEditor::DocumentPrivate::readWriteChanged, this, &KateStatusBar::modifiedChanged);
     connect(m_view->doc(), &KTextEditor::Document::configChanged, this, &KateStatusBar::documentConfigChanged);
     connect(m_view->document(), &KTextEditor::DocumentPrivate::modeChanged, this, &KateStatusBar::modeChanged);
     connect(m_view, &KTextEditor::View::configChanged, this, &KateStatusBar::configChanged);
@@ -228,6 +257,11 @@ void KateStatusBar::contextMenuEvent(QContextMenuEvent *event)
     QAction *showWords = menu.addAction(i18n("Show word count"), this, &KateStatusBar::toggleShowWords);
     showWords->setCheckable(true);
     showWords->setChecked(KateViewConfig::global()->showWordCount());
+    auto a = menu.addAction(i18n("Line/Column compact mode"), this, [](bool checked) {
+        KateViewConfig::global()->setValue(KateViewConfig::StatusbarLineColumnCompact, checked);
+    });
+    a->setCheckable(true);
+    a->setChecked(KateViewConfig::global()->value(KateViewConfig::StatusbarLineColumnCompact).toBool());
     menu.exec(event->globalPos());
 }
 
@@ -246,10 +280,10 @@ void KateStatusBar::updateStatus()
     selectionChanged();
     viewModeChanged();
     cursorPositionChanged();
-    modifiedChanged();
     documentConfigChanged();
     modeChanged();
     updateDictionary();
+    updateEOL();
 }
 
 void KateStatusBar::selectionChanged()
@@ -278,16 +312,23 @@ void KateStatusBar::viewModeChanged()
 void KateStatusBar::cursorPositionChanged()
 {
     KTextEditor::Cursor position(m_view->cursorPositionVirtual());
+    const int l = position.line() + 1;
+    const int c = position.column() + 1;
 
     // Update line/column label
     QString text;
-    if (KateViewConfig::global()->showLineCount()) {
-        text = i18n("Line %1 of %2, Column %3",
-                    QLocale().toString(position.line() + 1),
-                    QLocale().toString(m_view->doc()->lines()),
-                    QLocale().toString(position.column() + 1));
+    if (KateViewConfig::global()->value(KateViewConfig::StatusbarLineColumnCompact).toBool()) {
+        if (KateViewConfig::global()->showLineCount()) {
+            text = i18n("%1/%2:%3", QLocale().toString(l), QLocale().toString(m_view->doc()->lines()), QLocale().toString(c));
+        } else {
+            text = i18n("%1:%2", QLocale().toString(l), QLocale().toString(c));
+        }
     } else {
-        text = i18n("Line %1, Column %2", QLocale().toString(position.line() + 1), QLocale().toString(position.column() + 1));
+        if (KateViewConfig::global()->showLineCount()) {
+            text = i18n("Line %1 of %2, Column %3", QLocale().toString(l), QLocale().toString(m_view->doc()->lines()), QLocale().toString(c));
+        } else {
+            text = i18n("Line %1, Column %2", QLocale().toString(l), QLocale().toString(c));
+        }
     }
     if (m_wordCounter) {
         text.append(QLatin1String(", ") + m_wordCount);
@@ -297,6 +338,14 @@ void KateStatusBar::cursorPositionChanged()
 
 void KateStatusBar::updateDictionary()
 {
+    const auto spellchecker = Sonnet::Speller();
+    const auto availableDictionaries = spellchecker.availableDictionaries();
+    // No dictionaries available? => hide
+    if (availableDictionaries.isEmpty()) {
+        m_dictionary->hide();
+        return;
+    }
+
     QString newDict;
     // Check if at the current cursor position is a special dictionary in use
     KTextEditor::Cursor position(m_view->cursorPositionVirtual());
@@ -312,7 +361,7 @@ void KateStatusBar::updateDictionary()
     if (newDict.isEmpty()) {
         newDict = m_view->doc()->defaultDictionary();
         if (newDict.isEmpty()) {
-            newDict = Sonnet::Speller().defaultLanguage();
+            newDict = spellchecker.defaultLanguage();
         }
     }
     // Update button and menu only on a changed dictionary
@@ -322,7 +371,8 @@ void KateStatusBar::updateDictionary()
         m_dictionary->setText(newDict.section(QLatin1Char('-'), 0, 0));
         // For maximum user clearness, change the checked menu option
         m_dictionaryGroup->blockSignals(true);
-        for (auto a : m_dictionaryGroup->actions()) {
+        const auto acts = m_dictionaryGroup->actions();
+        for (auto a : acts) {
             if (a->data().toString() == newDict) {
                 a->setChecked(true);
                 found = true;
@@ -331,59 +381,16 @@ void KateStatusBar::updateDictionary()
         }
         if (!found) {
             // User has chose some other dictionary from combo box, we need to add that
-            QString dictName = Sonnet::Speller().availableDictionaries().key(newDict);
-            QAction *action = m_dictionaryGroup->addAction(dictName);
-            action->setData(newDict);
-            action->setCheckable(true);
-            action->setChecked(true);
-            m_dictionaryMenu->addAction(action);
+            QString dictName = availableDictionaries.key(newDict);
+            if (!dictName.isEmpty()) {
+                QAction *action = m_dictionaryGroup->addAction(dictName);
+                action->setData(newDict);
+                action->setCheckable(true);
+                action->setChecked(true);
+                m_dictionaryMenu->addAction(action);
+            }
         }
         m_dictionaryGroup->blockSignals(false);
-    }
-}
-
-void KateStatusBar::modifiedChanged()
-{
-    const bool mod = m_view->doc()->isModified();
-    const bool modOnHD = m_view->doc()->isModifiedOnDisc();
-    const bool readOnly = !m_view->doc()->isReadWrite();
-
-    // combine to modified status, update only if changed
-    unsigned int newStatus = (unsigned int)mod | ((unsigned int)modOnHD << 1) | ((unsigned int)readOnly << 2);
-    if (m_modifiedStatus == newStatus) {
-        return;
-    }
-
-    m_modifiedStatus = newStatus;
-    switch (m_modifiedStatus) {
-    case 0x0:
-        m_modified->setIcon(QIcon::fromTheme(QStringLiteral("text-plain")));
-        m_modified->setWhatsThis(i18n("Meaning of current icon: Document was not modified since it was loaded"));
-        break;
-
-    case 0x1:
-    case 0x5:
-        m_modified->setIcon(QIcon::fromTheme(QStringLiteral("document-save")));
-        m_modified->setWhatsThis(i18n("Meaning of current icon: Document was modified since it was loaded"));
-        break;
-
-    case 0x2:
-    case 0x6:
-        m_modified->setIcon(QIcon::fromTheme(QStringLiteral("dialog-warning")));
-        m_modified->setWhatsThis(i18n("Meaning of current icon: Document was modified or deleted by another program"));
-        break;
-
-    case 0x3:
-    case 0x7:
-        m_modified->setIcon(
-            QIcon(KIconUtils::addOverlay(QIcon::fromTheme(QStringLiteral("document-save")), QIcon(QStringLiteral("emblem-important")), Qt::TopLeftCorner)));
-        m_modified->setWhatsThis(QString());
-        break;
-
-    default:
-        m_modified->setIcon(QIcon::fromTheme(QStringLiteral("lock")));
-        m_modified->setWhatsThis(i18n("Meaning of current icon: Document is in read-only mode"));
-        break;
     }
 }
 
@@ -424,6 +431,7 @@ void KateStatusBar::documentConfigChanged()
 
     updateGroup(m_tabGroup, tabWidth);
     updateGroup(m_indentGroup, indentationWidth);
+    updateEOL();
 }
 
 void KateStatusBar::modeChanged()
@@ -449,7 +457,8 @@ void KateStatusBar::updateGroup(QActionGroup *group, int w)
     QAction *m1 = nullptr;
     bool found = false;
     // linear search should be fast enough here, no additional hash
-    for (QAction *action : group->actions()) {
+    const auto acts = group->actions();
+    for (QAction *action : acts) {
         int val = action->data().toInt();
         if (val == -1) {
             m1 = action;
@@ -553,12 +562,16 @@ void KateStatusBar::toggleWordCount(bool on)
 void KateStatusBar::wordCountChanged(int wordsInDocument, int wordsInSelection, int charsInDocument, int charsInSelection)
 {
     if (m_wordCounter) {
-        m_wordCount = i18nc("%1 and %3 are the selected words/chars count, %2 and %4 are the total words/chars count.",
-                            "Words %1/%2, Chars %3/%4",
-                            wordsInSelection,
-                            wordsInDocument,
-                            charsInSelection,
-                            charsInDocument);
+        if (charsInSelection > 0) {
+            m_wordCount = i18nc("%1 and %3 are the selected words/chars count, %2 and %4 are the total words/chars count.",
+                                "Words %1/%2, Chars %3/%4",
+                                wordsInSelection,
+                                wordsInDocument,
+                                charsInSelection,
+                                charsInDocument);
+        } else {
+            m_wordCount = i18nc("%1 and %2 are the total words/chars count.", "Words %1, Chars %2", wordsInDocument, charsInDocument);
+        }
     } else {
         m_wordCount.clear();
     }
@@ -576,6 +589,25 @@ void KateStatusBar::configChanged()
     } else {
         m_zoomLevel->hide();
     }
+
+    auto cfg = KateViewConfig::global();
+    auto updateButtonVisibility = [cfg](StatusBarButton *b, KateViewConfig::ConfigEntryTypes c) {
+        bool v = cfg->value(c).toBool();
+        if (v != (!b->isHidden())) {
+            b->setVisible(v);
+        }
+    };
+    updateButtonVisibility(m_inputMode, KateViewConfig::ShowStatusbarInputMode);
+    updateButtonVisibility(m_mode, KateViewConfig::ShowStatusbarHighlightingMode);
+    updateButtonVisibility(m_cursorPosition, KateViewConfig::ShowStatusbarLineColumn);
+    updateButtonVisibility(m_tabsIndent, KateViewConfig::ShowStatusbarTabSettings);
+    updateButtonVisibility(m_encoding, KateViewConfig::ShowStatusbarFileEncoding);
+    updateButtonVisibility(m_eol, KateViewConfig::ShowStatusbarEOL);
+
+    bool v = cfg->value(KateViewConfig::ShowStatusbarDictionary).toBool();
+    if (v != (!m_dictionary->isHidden()) && !Sonnet::Speller().availableDictionaries().isEmpty()) {
+        updateButtonVisibility(m_dictionary, KateViewConfig::ShowStatusbarDictionary);
+    }
 }
 
 void KateStatusBar::changeDictionary(QAction *action)
@@ -588,6 +620,26 @@ void KateStatusBar::changeDictionary(QAction *action)
         m_view->doc()->setDictionary(dictionary, selection);
     } else {
         m_view->doc()->setDefaultDictionary(dictionary);
+    }
+}
+
+void KateStatusBar::updateEOL()
+{
+    const int eol = m_view->getEol();
+    QString text;
+    switch (eol) {
+    case KateDocumentConfig::eolUnix:
+        text = QStringLiteral("LF");
+        break;
+    case KateDocumentConfig::eolDos:
+        text = QStringLiteral("CRLF");
+        break;
+    case KateDocumentConfig::eolMac:
+        text = QStringLiteral("CR");
+        break;
+    }
+    if (text != m_eol->text()) {
+        m_eol->setText(text);
     }
 }
 
